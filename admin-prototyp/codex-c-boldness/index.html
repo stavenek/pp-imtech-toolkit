@@ -1,0 +1,1741 @@
+<!doctype html>
+<html lang="sv" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Prototype - C Boldness</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Archivo+Black&display=swap');
+
+:root {
+  --bg: #f6f4ee;
+  --bg-ink: #111111;
+  --surface: #ffffff;
+  --surface-alt: #f1efe8;
+  --text: #111111;
+  --muted: #5f5a50;
+  --line: #111111;
+  --line-soft: #c8c1b3;
+  --highlight: #ffd100;
+  --danger: #d51f1f;
+  --success: #198f46;
+  --warning: #d68300;
+  --shadow: 8px 8px 0 #111111;
+  --radius: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 72px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 209, 0, 0.2) 0%, transparent 35%),
+    linear-gradient(135deg, #f6f4ee 0%, #ece7dd 100%);
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 1420px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+.topbar {
+  border: 3px solid var(--line);
+  background: var(--bg-ink);
+  color: #fff;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  position: sticky;
+  top: var(--space-sm);
+  z-index: 40;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: "Archivo Black", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.brand-badge {
+  background: var(--highlight);
+  color: #000;
+  border: 2px solid #000;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+.brand-title {
+  font-size: 15px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.select {
+  appearance: none;
+  border: 2px solid #000;
+  background: #fff;
+  color: #000;
+  min-height: 44px;
+  padding: 0 36px 0 12px;
+  font: inherit;
+  font-weight: 700;
+  background-image: linear-gradient(45deg, transparent 50%, #000 50%), linear-gradient(135deg, #000 50%, transparent 50%);
+  background-position: calc(100% - 18px) 18px, calc(100% - 12px) 18px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.button {
+  border: 2px solid #000;
+  background: #fff;
+  color: #000;
+  min-height: 44px;
+  padding: 0 var(--space-md);
+  font: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 #000;
+}
+.button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.button-primary { background: var(--highlight); }
+.button-dark { background: #111; color: #fff; }
+.button-danger { background: #fff; color: var(--danger); border-color: var(--danger); }
+.button-ghost { background: transparent; }
+
+.hero {
+  margin-top: var(--space-xl);
+  background: var(--surface);
+  border: 3px solid var(--line);
+  box-shadow: var(--shadow);
+  padding: var(--space-xl);
+  display: grid;
+  gap: var(--space-md);
+  animation: reveal .35s ease;
+}
+
+.hero-kicker {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--muted);
+  font-size: 12px;
+}
+.hero-title {
+  margin: 0;
+  font-family: "Archivo Black", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  line-height: 1;
+  font-size: clamp(34px, 6vw, 58px);
+}
+.hero-sub {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--muted);
+}
+
+.tabbar {
+  margin-top: var(--space-lg);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.tab {
+  border: 2px solid #000;
+  min-height: 44px;
+  padding: 0 var(--space-md);
+  display: inline-flex;
+  align-items: center;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  cursor: pointer;
+  background: var(--surface);
+}
+.tab.active {
+  background: #111;
+  color: var(--highlight);
+}
+
+.panel {
+  margin-top: var(--space-md);
+  border: 3px solid #000;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: var(--space-lg);
+  display: none;
+  animation: reveal .3s ease;
+}
+.panel.active { display: block; }
+
+.controls {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: 1.2fr .8fr auto;
+  align-items: end;
+  margin-bottom: var(--space-md);
+}
+.field {
+  display: grid;
+  gap: var(--space-2xs);
+}
+.label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.input {
+  border: 2px solid #000;
+  min-height: 44px;
+  background: #fff;
+  padding: 0 12px;
+  font: inherit;
+}
+
+.filter-row {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+.pill {
+  border: 2px solid #000;
+  background: #fff;
+  min-height: 36px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.pill.active {
+  background: #111;
+  color: #fff;
+}
+
+.table-wrap {
+  overflow: auto;
+  border: 2px solid #000;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+.table th,
+.table td {
+  border: 1px solid #000;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+.table th {
+  background: #111;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.table th.sortable { cursor: pointer; }
+.table tr:hover td { background: #fff7cc; }
+
+.icon-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-badge,
+.role-badge,
+.sub-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 8px;
+  border: 1px solid #000;
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.status-registered { background: #e7f8ec; color: #0e6c32; border-color: #0e6c32; }
+.status-pending { background: #fff0d7; color: #9a5f00; border-color: #9a5f00; }
+.status-soft_deleted { background: #ffe5e5; color: #9f1212; border-color: #9f1212; }
+
+.role-super_admin { background: var(--highlight); }
+.role-company_admin { background: #111; color: #fff; }
+.role-null { background: #ececec; color: #333; }
+
+.section-title {
+  margin: 0 0 var(--space-md);
+  font-family: "Archivo Black", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: 26px;
+}
+
+.muted-note {
+  margin-top: var(--space-xs);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.stat {
+  border: 2px solid #000;
+  padding: var(--space-md);
+  background: var(--surface-alt);
+}
+.stat .k {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+.stat .v {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 32px;
+  line-height: 1;
+  margin-top: var(--space-xs);
+}
+
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+  padding: var(--space-md);
+}
+.overlay.show { display: flex; }
+.modal {
+  width: min(780px, 100%);
+  max-height: 88vh;
+  overflow: auto;
+  border: 3px solid #000;
+  background: #fff;
+  box-shadow: var(--shadow);
+  animation: reveal .2s ease;
+}
+.modal-head {
+  border-bottom: 2px solid #000;
+  padding: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-head h3 {
+  margin: 0;
+  font-family: "Archivo Black", sans-serif;
+  text-transform: uppercase;
+  font-size: 24px;
+}
+.modal-body { padding: var(--space-md); }
+.modal-foot {
+  border-top: 2px solid #000;
+  padding: var(--space-md);
+  display: flex;
+  gap: var(--space-xs);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.drawer-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: none;
+}
+.drawer-wrap.show { display: block; }
+.drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .4);
+}
+.drawer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(760px, 100%);
+  background: #fff;
+  border-left: 3px solid #000;
+  box-shadow: -8px 0 0 rgba(0, 0, 0, .1);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  animation: slideIn .25s ease;
+}
+.drawer-head,
+.drawer-foot { padding: var(--space-md); border-bottom: 2px solid #000; }
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.drawer-head h3 {
+  margin: 0;
+  font-family: "Archivo Black", sans-serif;
+  text-transform: uppercase;
+  font-size: 28px;
+  line-height: 1;
+}
+.drawer-body {
+  overflow: auto;
+  padding: var(--space-md);
+  display: grid;
+  gap: var(--space-md);
+}
+.drawer-foot {
+  border-bottom: 0;
+  border-top: 2px solid #000;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+.form-grid .field.full { grid-column: 1 / -1; }
+
+.card {
+  border: 2px solid #000;
+  padding: var(--space-sm);
+  background: var(--surface-alt);
+}
+.card-title {
+  margin: 0 0 var(--space-xs);
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 13px;
+}
+.inline-actions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.member-item {
+  border: 1px solid #000;
+  background: #fff;
+  padding: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+.member-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.dialog {
+  width: min(560px, 100%);
+  border: 3px solid #000;
+  background: #fff;
+  box-shadow: var(--shadow);
+  animation: reveal .2s ease;
+}
+.dialog h4 {
+  margin: 0;
+  padding: var(--space-md);
+  border-bottom: 2px solid #000;
+  text-transform: uppercase;
+}
+.dialog p {
+  margin: 0;
+  padding: var(--space-md);
+  color: var(--muted);
+}
+.dialog .actions {
+  border-top: 2px solid #000;
+  padding: var(--space-md);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+}
+
+.toast-stack {
+  position: fixed;
+  right: var(--space-md);
+  top: var(--space-md);
+  z-index: 120;
+  display: grid;
+  gap: var(--space-xs);
+}
+.toast {
+  border: 2px solid #000;
+  background: var(--highlight);
+  color: #000;
+  padding: 10px 12px;
+  min-width: 240px;
+  box-shadow: 4px 4px 0 #000;
+  font-weight: 700;
+  animation: reveal .2s ease;
+}
+
+.hide { display: none !important; }
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1024px) {
+  .controls { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .app-shell { padding: var(--space-sm); }
+  .hero { padding: var(--space-md); }
+  .hero-title { font-size: 36px; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .table { min-width: 720px; }
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-badge">C-BOLDNESS</span>
+      <span class="brand-title">Integral Admin Prototype</span>
+    </div>
+    <div class="topbar-actions">
+      <label class="label" for="actorRole" style="color:#fff;">Aktiv roll</label>
+      <select id="actorRole" class="select" aria-label="Välj aktiv roll">
+        <option value="super_admin">Super Admin</option>
+        <option value="company_admin">Company Admin</option>
+        <option value="team_leader">Team Leader</option>
+      </select>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-kicker">Frontend-only clickable dummy</div>
+    <h1 class="hero-title">Administration</h1>
+    <p class="hero-sub">Prototype based on the admin specification: domain constraints, role-gated tabs, user and team management flows, slide-over editing patterns and confirmation dialogs.</p>
+  </section>
+
+  <nav class="tabbar" aria-label="Admin tabs">
+    <button class="tab active" data-tab="users">Användare</button>
+    <button class="tab" data-tab="teams">Team</button>
+    <button class="tab" data-tab="organizations">Organisation</button>
+  </nav>
+
+  <section id="panel-users" class="panel active">
+    <h2 class="section-title">Users</h2>
+    <div class="controls">
+      <div class="field">
+        <label class="label" for="searchInput">Sök namn eller e-post</label>
+        <input id="searchInput" class="input" placeholder="Ex: hakan eller @integpartner.com">
+      </div>
+      <div class="field" id="orgFilterWrap">
+        <label class="label" for="orgFilter">Organisation</label>
+        <select id="orgFilter" class="select"></select>
+      </div>
+      <div class="inline-actions">
+        <button id="inviteUserBtn" class="button button-primary">Bjud in användare</button>
+      </div>
+    </div>
+
+    <div class="filter-row" id="roleFilters"></div>
+    <div class="filter-row" id="statusFilters"></div>
+
+    <div class="table-wrap">
+      <table class="table" id="usersTable">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="name">Namn</th>
+            <th>Detaljer</th>
+            <th class="sortable" data-sort="username">Username</th>
+            <th class="sortable" data-sort="email">E-post</th>
+            <th class="sortable" data-sort="status">Registreringsstatus</th>
+            <th class="sortable" data-sort="systemRole">Systemroll</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="muted-note">Tip: switch active role in top-right to preview permission gating.</p>
+  </section>
+
+  <section id="panel-teams" class="panel">
+    <h2 class="section-title">Teams</h2>
+    <div class="stat-grid" id="teamStats"></div>
+    <div class="inline-actions" style="margin-bottom:12px;">
+      <button id="createTeamBtn" class="button button-primary">+ Skapa team</button>
+    </div>
+    <div class="table-wrap">
+      <table class="table" id="teamsTable">
+        <thead>
+          <tr>
+            <th>Titel</th>
+            <th>Medlemmar</th>
+            <th>Teamledare</th>
+            <th>Åtgärd</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="panel-organizations" class="panel">
+    <h2 class="section-title">Organisationer</h2>
+    <div id="orgSuperView">
+      <div class="table-wrap">
+        <table class="table" id="orgTable">
+          <thead>
+            <tr>
+              <th>Organisation</th>
+              <th>Abonnemang</th>
+              <th>Team</th>
+              <th>Användare</th>
+              <th>Åtgärd</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="orgCompanyView" class="card hide"></div>
+  </section>
+
+</div>
+
+<div id="userDetailOverlay" class="overlay" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="userDetailTitle">User</h3>
+      <button class="button button-ghost" data-close="userDetailOverlay">Stäng</button>
+    </div>
+    <div class="modal-body" id="userDetailBody"></div>
+    <div class="modal-foot">
+      <button id="userDetailEdit" class="button button-dark">Redigera</button>
+      <button class="button" data-close="userDetailOverlay">Stäng</button>
+    </div>
+  </div>
+</div>
+
+<div id="userEditDrawerWrap" class="drawer-wrap" aria-hidden="true">
+  <div class="drawer-backdrop" data-close="userEditDrawerWrap"></div>
+  <aside class="drawer">
+    <div class="drawer-head">
+      <h3>Redigera användare</h3>
+      <button class="button" data-close="userEditDrawerWrap">Stäng</button>
+    </div>
+    <div class="drawer-body" id="userEditBody"></div>
+    <div class="drawer-foot">
+      <button id="deactivateBtn" class="button button-danger">Avaktivera konto</button>
+      <div class="inline-actions">
+        <button id="saveUserBtn" class="button button-dark">Spara ändringar</button>
+        <button class="button" data-close="userEditDrawerWrap">Avbryt</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div id="inviteDrawerWrap" class="drawer-wrap" aria-hidden="true">
+  <div class="drawer-backdrop" data-close="inviteDrawerWrap"></div>
+  <aside class="drawer">
+    <div class="drawer-head">
+      <h3>Bjud in användare</h3>
+      <button class="button" data-close="inviteDrawerWrap">Stäng</button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-grid">
+        <div class="field full">
+          <label class="label" for="inviteEmail">E-postadress</label>
+          <input id="inviteEmail" class="input" placeholder="person@company.com">
+        </div>
+        <div class="field full">
+          <span class="label">Välj team</span>
+          <div id="inviteTeamChecks" class="card"></div>
+          <div class="muted-note">Nya användare får systemRole = null och teamRole = member.</div>
+        </div>
+        <div class="field full">
+          <label class="label" for="inviteCsv">Bulk (CSV)</label>
+          <input id="inviteCsv" class="input" type="file" accept=".csv,text/csv">
+          <div class="muted-note">En e-post per rad. Dummy only.</div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-foot">
+      <div class="inline-actions">
+        <button id="sendInviteBtn" class="button button-primary">Skicka inbjudan</button>
+        <button id="sendBulkBtn" class="button">Skicka alla inbjudningar</button>
+      </div>
+      <button class="button" data-close="inviteDrawerWrap">Avbryt</button>
+    </div>
+  </aside>
+</div>
+
+<div id="teamDrawerWrap" class="drawer-wrap" aria-hidden="true">
+  <div class="drawer-backdrop" data-close="teamDrawerWrap"></div>
+  <aside class="drawer">
+    <div class="drawer-head">
+      <h3 id="teamDrawerTitle">Redigera team</h3>
+      <button class="button" data-close="teamDrawerWrap">Stäng</button>
+    </div>
+    <div class="drawer-body" id="teamDrawerBody"></div>
+    <div class="drawer-foot">
+      <button id="teamDeleteBtn" class="button button-danger">Radera team</button>
+      <div class="inline-actions">
+        <button id="teamSaveBtn" class="button button-dark">Spara</button>
+        <button class="button" data-close="teamDrawerWrap">Avbryt</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div id="orgDrawerWrap" class="drawer-wrap" aria-hidden="true">
+  <div class="drawer-backdrop" data-close="orgDrawerWrap"></div>
+  <aside class="drawer">
+    <div class="drawer-head">
+      <h3>Redigera organisation</h3>
+      <button class="button" data-close="orgDrawerWrap">Stäng</button>
+    </div>
+    <div class="drawer-body" id="orgDrawerBody"></div>
+    <div class="drawer-foot">
+      <button id="orgDeleteBtn" class="button button-danger">Radera organisation</button>
+      <div class="inline-actions">
+        <button id="orgSaveBtn" class="button button-dark">Spara</button>
+        <button class="button" data-close="orgDrawerWrap">Avbryt</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div id="confirmOverlay" class="overlay" aria-hidden="true">
+  <div class="dialog">
+    <h4 id="confirmTitle">Bekräfta</h4>
+    <p id="confirmText"></p>
+    <div class="actions">
+      <button id="confirmCancel" class="button">Avbryt</button>
+      <button id="confirmOk" class="button button-danger">Fortsätt</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastStack" class="toast-stack"></div>
+
+<script>
+const state = {
+  actorRole: 'super_admin',
+  actorOrgId: 'org_axelent',
+  actorLeaderTeamIds: ['team_prpl'],
+  activeTab: 'users',
+  selectedOrgId: 'org_axelent',
+  search: '',
+  roleFilter: 'all',
+  statusFilter: 'all',
+  sort: { key: 'name', dir: 'asc' },
+  activeUserId: null,
+  editingUserId: null,
+  editingTeamId: null,
+  editingOrgId: null,
+  confirmAction: null
+};
+
+const db = {
+  organizations: [
+    { id: 'org_axelent', title: 'Axelent Operations', details: 'Manufacturing and growth programs.', subscriptionTier: 'pro' },
+    { id: 'org_imtech', title: 'IM Tech AB', details: 'Pilot customer for toolkit beta.', subscriptionTier: 'plus' },
+    { id: 'org_integ', title: 'IntegPartner', details: 'Platform operator organization.', subscriptionTier: 'basic' }
+  ],
+  teams: [
+    { id: 'team_prpl', title: 'PR-PL/TL', organizationId: 'org_axelent' },
+    { id: 'team_stod', title: 'Stodgrupp', organizationId: 'org_axelent' },
+    { id: 'team_admin', title: 'Admin', organizationId: 'org_imtech' },
+    { id: 'team_test', title: 'Test team', organizationId: 'org_imtech' },
+    { id: 'team_ops', title: 'Ops Circle', organizationId: 'org_integ' }
+  ],
+  users: [
+    {
+      id: 'u_hakan', firstName: 'Hakan', lastName: 'Farnlof', username: '', email: 'hakan.farnlof@integpartner.com',
+      phone: '070-111 22 33', description: 'Runs customer enablement.', systemRole: 'company_admin', organizationId: 'org_axelent',
+      registerDate: '2025-06-01', registerStatus: 'registered', lastActive: '2026-02-07',
+      memberships: [
+        { teamId: 'team_prpl', teamRole: 'team_leader', joinedDate: '2025-06-01' },
+        { teamId: 'team_stod', teamRole: 'member', joinedDate: '2025-08-12' }
+      ]
+    },
+    {
+      id: 'u_fredrik', firstName: 'Fredrik', lastName: 'Carpenhall', username: 'fredrik.c', email: 'fredrik.carpenhall@integpartner.com',
+      phone: '070-991 02 03', description: 'Global platform admin.', systemRole: 'super_admin', organizationId: 'org_integ',
+      registerDate: '2025-04-12', registerStatus: 'registered', lastActive: '2026-02-08',
+      memberships: [{ teamId: 'team_ops', teamRole: 'team_leader', joinedDate: '2025-04-12' }]
+    },
+    {
+      id: 'u_mats', firstName: 'Mats', lastName: 'Eriksson', username: 'mats.e', email: 'mats.eriksson@integpartner.com',
+      phone: '', description: '', systemRole: null, organizationId: 'org_axelent',
+      registerDate: '2025-08-21', registerStatus: 'registered', lastActive: '2026-02-01',
+      memberships: [{ teamId: 'team_prpl', teamRole: 'member', joinedDate: '2025-08-21' }]
+    },
+    {
+      id: 'u_lasse', firstName: 'Lasse', lastName: 'Ramquist', username: '', email: 'lasse.ramquist@integpartner.com',
+      phone: '', description: '', systemRole: null, organizationId: 'org_axelent',
+      registerDate: '2025-09-10', registerStatus: 'pending', lastActive: '-',
+      memberships: [{ teamId: 'team_stod', teamRole: 'member', joinedDate: '2025-09-10' }]
+    },
+    {
+      id: 'u_torbjorn', firstName: 'Torbjorn', lastName: 'Stavenek', username: 'stavenek', email: 'stavenek@gmail.com',
+      phone: '073-500 00 00', description: 'External consultant.', systemRole: null, organizationId: 'org_imtech',
+      registerDate: '2025-10-03', registerStatus: 'registered', lastActive: '2026-01-29',
+      memberships: [
+        { teamId: 'team_admin', teamRole: 'team_leader', joinedDate: '2025-10-03' },
+        { teamId: 'team_test', teamRole: 'member', joinedDate: '2025-11-02' }
+      ]
+    },
+    {
+      id: 'u_deleted', firstName: '*****', lastName: '*****', username: '', email: '*****@*****.***',
+      phone: '', description: '', systemRole: null, organizationId: 'org_axelent',
+      registerDate: '2025-05-18', registerStatus: 'soft_deleted', lastActive: '-',
+      memberships: [{ teamId: 'team_prpl', teamRole: 'member', joinedDate: '2025-05-18' }]
+    }
+  ]
+};
+
+const tabButtons = Array.from(document.querySelectorAll('.tab'));
+const panelMap = {
+  users: document.getElementById('panel-users'),
+  teams: document.getElementById('panel-teams'),
+  organizations: document.getElementById('panel-organizations')
+};
+
+const actorRoleEl = document.getElementById('actorRole');
+const orgFilterEl = document.getElementById('orgFilter');
+const orgFilterWrapEl = document.getElementById('orgFilterWrap');
+const searchInputEl = document.getElementById('searchInput');
+const roleFiltersEl = document.getElementById('roleFilters');
+const statusFiltersEl = document.getElementById('statusFilters');
+
+function orgById(id) { return db.organizations.find(o => o.id === id); }
+function teamById(id) { return db.teams.find(t => t.id === id); }
+function userById(id) { return db.users.find(u => u.id === id); }
+function fullName(user) { return (user.firstName + ' ' + user.lastName).trim(); }
+function systemRoleLabel(role) {
+  if (role === 'super_admin') return 'Super admin';
+  if (role === 'company_admin') return 'Company admin';
+  return 'User';
+}
+function statusLabel(status) {
+  if (status === 'registered') return 'Aktiv';
+  if (status === 'pending') return 'Väntande';
+  return 'Avaktiverad';
+}
+function badgeTier(tier) {
+  if (tier === 'pro') return '<span class="sub-badge" style="background:#ffd100;">PRO</span>';
+  if (tier === 'plus') return '<span class="sub-badge" style="background:#111;color:#fff;">PLUS</span>';
+  return '<span class="sub-badge" style="background:#ececec;">BASIC</span>';
+}
+function teamMemberships(user) {
+  return user.memberships.map(m => ({ ...m, team: teamById(m.teamId) })).filter(m => m.team);
+}
+function isTeamLeader(user, scopeTeamIds = null) {
+  const memberships = teamMemberships(user);
+  return memberships.some(m => m.teamRole === 'team_leader' && (!scopeTeamIds || scopeTeamIds.includes(m.teamId)));
+}
+function visibleTeamsForActor() {
+  if (state.actorRole === 'super_admin') {
+    return db.teams.filter(t => t.organizationId === state.selectedOrgId);
+  }
+  if (state.actorRole === 'company_admin') {
+    return db.teams.filter(t => t.organizationId === state.actorOrgId);
+  }
+  return db.teams.filter(t => state.actorLeaderTeamIds.includes(t.id));
+}
+function visibleUsersForActor() {
+  if (state.actorRole === 'super_admin') {
+    return db.users.filter(u => u.organizationId === state.selectedOrgId);
+  }
+  if (state.actorRole === 'company_admin') {
+    return db.users.filter(u => u.organizationId === state.actorOrgId);
+  }
+  return db.users.filter(u => u.memberships.some(m => state.actorLeaderTeamIds.includes(m.teamId)));
+}
+function canEditUser(target) {
+  if (state.actorRole === 'super_admin') {
+    return target.systemRole !== 'super_admin';
+  }
+  if (state.actorRole === 'company_admin') {
+    return target.organizationId === state.actorOrgId && target.systemRole === null;
+  }
+  return false;
+}
+function canDeactivate(target) {
+  return canEditUser(target) && target.registerStatus !== 'pending';
+}
+function canChangeSystemRole() {
+  return state.actorRole === 'super_admin';
+}
+function canSeeTab(tabName) {
+  if (state.actorRole === 'team_leader') {
+    return tabName === 'users';
+  }
+  return true;
+}
+
+function renderTabVisibility() {
+  tabButtons.forEach(btn => {
+    const tab = btn.dataset.tab;
+    btn.classList.toggle('hide', !canSeeTab(tab));
+  });
+  if (!canSeeTab(state.activeTab)) {
+    state.activeTab = 'users';
+  }
+  tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === state.activeTab));
+  Object.entries(panelMap).forEach(([key, panel]) => panel.classList.toggle('active', key === state.activeTab));
+}
+
+function renderOrgFilter() {
+  orgFilterEl.innerHTML = '';
+  db.organizations.forEach(org => {
+    const opt = document.createElement('option');
+    opt.value = org.id;
+    opt.textContent = org.title;
+    orgFilterEl.appendChild(opt);
+  });
+
+  if (state.actorRole === 'super_admin') {
+    orgFilterWrapEl.classList.remove('hide');
+    orgFilterEl.value = state.selectedOrgId;
+  } else if (state.actorRole === 'company_admin') {
+    orgFilterWrapEl.classList.remove('hide');
+    state.selectedOrgId = state.actorOrgId;
+    orgFilterEl.value = state.actorOrgId;
+    orgFilterEl.disabled = true;
+  } else {
+    orgFilterWrapEl.classList.add('hide');
+    orgFilterEl.disabled = false;
+  }
+}
+
+function renderFilters() {
+  const roleFilters = [
+    { key: 'all', label: 'Alla roller' },
+    { key: 'super_admin', label: 'Super admin' },
+    { key: 'company_admin', label: 'Company admin' },
+    { key: 'null', label: 'User' }
+  ];
+  roleFiltersEl.innerHTML = roleFilters.map(item =>
+    `<button class="pill ${state.roleFilter === item.key ? 'active' : ''}" data-role-filter="${item.key}">${item.label}</button>`
+  ).join('');
+
+  const statusFilters = [
+    { key: 'all', label: 'Alla statusar' },
+    { key: 'registered', label: 'Aktiv' },
+    { key: 'pending', label: 'Väntande' },
+    { key: 'soft_deleted', label: 'Avaktiverad' }
+  ];
+  statusFiltersEl.innerHTML = statusFilters.map(item =>
+    `<button class="pill ${state.statusFilter === item.key ? 'active' : ''}" data-status-filter="${item.key}">${item.label}</button>`
+  ).join('');
+}
+
+function sortedUsers(list) {
+  const sorted = [...list];
+  const dir = state.sort.dir === 'asc' ? 1 : -1;
+  sorted.sort((a, b) => {
+    let av = '';
+    let bv = '';
+    if (state.sort.key === 'name') {
+      av = fullName(a).toLowerCase();
+      bv = fullName(b).toLowerCase();
+    } else if (state.sort.key === 'systemRole') {
+      av = (a.systemRole || '').toLowerCase();
+      bv = (b.systemRole || '').toLowerCase();
+    } else if (state.sort.key === 'status') {
+      av = a.registerStatus;
+      bv = b.registerStatus;
+    } else {
+      av = (a[state.sort.key] || '').toString().toLowerCase();
+      bv = (b[state.sort.key] || '').toString().toLowerCase();
+    }
+    if (av < bv) return -1 * dir;
+    if (av > bv) return 1 * dir;
+    return 0;
+  });
+  return sorted;
+}
+
+function renderUsersTable() {
+  const tbody = document.querySelector('#usersTable tbody');
+  let users = visibleUsersForActor();
+
+  if (state.search.trim()) {
+    const q = state.search.toLowerCase();
+    users = users.filter(user => `${fullName(user)} ${user.email}`.toLowerCase().includes(q));
+  }
+  if (state.roleFilter !== 'all') {
+    users = users.filter(user => (user.systemRole || 'null') === state.roleFilter);
+  }
+  if (state.statusFilter !== 'all') {
+    users = users.filter(user => user.registerStatus === state.statusFilter);
+  }
+
+  users = sortedUsers(users);
+
+  if (!users.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><strong>Inga användare matchar filter.</strong></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = users.map(user => {
+    const leaderIcon = isTeamLeader(user, state.actorRole === 'team_leader' ? state.actorLeaderTeamIds : null)
+      ? ' <span title="Teamledare" style="font-size:14px;">&#128101;</span>'
+      : '';
+    return `
+      <tr>
+        <td><strong>${fullName(user)}</strong>${leaderIcon}</td>
+        <td>
+          <div class="inline-actions">
+            <button class="button" data-detail-user="${user.id}" style="min-height:32px;padding:0 8px;">i</button>
+            ${canEditUser(user) ? `<button class="button" data-edit-user="${user.id}" style="min-height:32px;padding:0 8px;">Edit</button>` : ''}
+          </div>
+        </td>
+        <td>${user.username || '<span class="muted-note">-</span>'}</td>
+        <td><a href="mailto:${user.email}">${user.email}</a></td>
+        <td><span class="status-badge status-${user.registerStatus}">${statusLabel(user.registerStatus)}</span></td>
+        <td><span class="role-badge role-${user.systemRole || 'null'}">${systemRoleLabel(user.systemRole)}</span></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderTeamStats() {
+  const teams = db.teams.filter(t => t.organizationId === (state.actorRole === 'super_admin' ? state.selectedOrgId : state.actorOrgId));
+  const members = db.users.filter(u => teams.some(t => u.memberships.some(m => m.teamId === t.id))).length;
+  const leaders = db.users.filter(u => teams.some(t => u.memberships.some(m => m.teamId === t.id && m.teamRole === 'team_leader'))).length;
+
+  document.getElementById('teamStats').innerHTML = `
+    <div class="stat"><div class="k">Teams</div><div class="v">${teams.length}</div></div>
+    <div class="stat"><div class="k">Users</div><div class="v">${members}</div></div>
+    <div class="stat"><div class="k">Teamledare</div><div class="v">${leaders}</div></div>
+    <div class="stat"><div class="k">Scope</div><div class="v" style="font-size:18px;">${state.actorRole.replace('_', ' ')}</div></div>
+  `;
+}
+
+function teamMembers(teamId) {
+  return db.users.filter(user => user.memberships.some(m => m.teamId === teamId));
+}
+
+function renderTeamsTable() {
+  const body = document.querySelector('#teamsTable tbody');
+  const teams = (state.actorRole === 'super_admin'
+    ? db.teams.filter(t => t.organizationId === state.selectedOrgId)
+    : db.teams.filter(t => t.organizationId === state.actorOrgId)
+  );
+
+  body.innerHTML = teams.map(team => {
+    const members = teamMembers(team.id);
+    const leaders = members.filter(u => u.memberships.some(m => m.teamId === team.id && m.teamRole === 'team_leader'));
+    return `
+      <tr>
+        <td><strong>${team.title}</strong></td>
+        <td>${members.length}</td>
+        <td>${leaders.length ? leaders.map(fullName).join(', ') : '<span class="muted-note">(ingen)</span>'}</td>
+        <td>
+          <div class="inline-actions">
+            <button class="button" style="min-height:32px;padding:0 8px;" data-edit-team="${team.id}">Edit</button>
+            <button class="button button-danger" style="min-height:32px;padding:0 8px;" data-delete-team="${team.id}">Radera</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderOrgPanel() {
+  const superView = document.getElementById('orgSuperView');
+  const companyView = document.getElementById('orgCompanyView');
+
+  if (state.actorRole === 'super_admin') {
+    superView.classList.remove('hide');
+    companyView.classList.add('hide');
+
+    const body = document.querySelector('#orgTable tbody');
+    body.innerHTML = db.organizations.map(org => {
+      const teamCount = db.teams.filter(t => t.organizationId === org.id).length;
+      const userCount = db.users.filter(u => u.organizationId === org.id).length;
+      return `
+        <tr>
+          <td><strong>${org.title}</strong></td>
+          <td>${badgeTier(org.subscriptionTier)}</td>
+          <td>${teamCount}</td>
+          <td>${userCount}</td>
+          <td><button class="button" style="min-height:32px;padding:0 8px;" data-edit-org="${org.id}">Edit</button></td>
+        </tr>
+      `;
+    }).join('');
+  } else {
+    superView.classList.add('hide');
+    companyView.classList.remove('hide');
+    const org = orgById(state.actorOrgId);
+    const teamCount = db.teams.filter(t => t.organizationId === org.id).length;
+    const userCount = db.users.filter(u => u.organizationId === org.id).length;
+
+    companyView.innerHTML = `
+      <h3 class="card-title">Organisation: ${org.title}</h3>
+      <p>${org.details}</p>
+      <p><strong>Abonnemang:</strong> ${org.subscriptionTier.toUpperCase()}</p>
+      <p><strong>Team:</strong> ${teamCount}</p>
+      <p><strong>Användare:</strong> ${userCount}</p>
+      <p class="muted-note">Read-only for Company Admin.</p>
+    `;
+  }
+}
+
+function openOverlay(id) {
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  el.setAttribute('aria-hidden', 'false');
+}
+function closeOverlay(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('show');
+  el.setAttribute('aria-hidden', 'true');
+}
+function openDrawer(id) {
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  el.setAttribute('aria-hidden', 'false');
+}
+function closeDrawer(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('show');
+  el.setAttribute('aria-hidden', 'true');
+}
+
+function openUserDetail(userId) {
+  const user = userById(userId);
+  state.activeUserId = userId;
+
+  const body = document.getElementById('userDetailBody');
+  const visibleMemberships = state.actorRole === 'team_leader'
+    ? teamMemberships(user).filter(m => state.actorLeaderTeamIds.includes(m.teamId))
+    : teamMemberships(user);
+
+  document.getElementById('userDetailTitle').textContent = fullName(user);
+
+  body.innerHTML = `
+    <p><strong>${user.email}</strong></p>
+    <p style="margin:8px 0 12px;"><span class="role-badge role-${user.systemRole || 'null'}">${systemRoleLabel(user.systemRole)}</span></p>
+    <div class="table-wrap" style="margin-bottom:12px;">
+      <table class="table" style="min-width:100%;">
+        <thead><tr><th>Team</th><th>Teamroll</th><th>Joined</th></tr></thead>
+        <tbody>
+          ${visibleMemberships.map(m => `
+            <tr>
+              <td>${m.team.title}</td>
+              <td>${m.teamRole === 'team_leader' ? 'Teamledare' : 'Member'}</td>
+              <td>${m.joinedDate}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Registrerad:</strong> ${user.registerDate}</p>
+    <p><strong>Status:</strong> ${statusLabel(user.registerStatus)}</p>
+    <p><strong>Senast aktiv:</strong> ${user.lastActive}</p>
+  `;
+
+  const editBtn = document.getElementById('userDetailEdit');
+  editBtn.disabled = !canEditUser(user);
+
+  openOverlay('userDetailOverlay');
+}
+
+function renderUserEditDrawer(userId) {
+  const user = userById(userId);
+  state.editingUserId = userId;
+
+  const membershipsHtml = teamMemberships(user).map(m => `
+    <div class="member-item" data-membership-team="${m.teamId}">
+      <div class="member-row">
+        <strong>${m.team.title}</strong>
+        <span>${m.joinedDate}</span>
+      </div>
+      <div class="inline-actions" style="margin-top:8px;">
+        <button class="pill ${m.teamRole === 'team_leader' ? 'active' : ''}" data-set-teamrole="team_leader" data-team="${m.teamId}">Teamledare</button>
+        <button class="pill ${m.teamRole === 'member' ? 'active' : ''}" data-set-teamrole="member" data-team="${m.teamId}">Member</button>
+        <button class="button button-danger" style="min-height:32px;padding:0 8px;" data-remove-team="${m.teamId}">Ta bort fran team</button>
+      </div>
+    </div>
+  `).join('');
+
+  const addOptions = db.teams
+    .filter(team => team.organizationId === user.organizationId)
+    .filter(team => !user.memberships.some(m => m.teamId === team.id))
+    .map(team => `<option value="${team.id}">${team.title}</option>`)
+    .join('');
+
+  document.getElementById('userEditBody').innerHTML = `
+    <div class="form-grid">
+      <div class="field"><label class="label">Förnamn</label><input id="editFirstName" class="input" value="${user.firstName}"></div>
+      <div class="field"><label class="label">Efternamn</label><input id="editLastName" class="input" value="${user.lastName}"></div>
+      <div class="field full"><label class="label">E-post (read-only)</label><input class="input" value="${user.email}" disabled></div>
+      <div class="field"><label class="label">Username</label><input id="editUsername" class="input" value="${user.username}"></div>
+      <div class="field"><label class="label">Telefon</label><input id="editPhone" class="input" value="${user.phone}"></div>
+      <div class="field full"><label class="label">Beskrivning</label><input id="editDescription" class="input" value="${user.description}"></div>
+
+      <div class="field full card">
+        <p class="card-title">Systemroll</p>
+        <div class="inline-actions">
+          <label><input type="radio" name="systemRole" value="null" ${user.systemRole === null ? 'checked' : ''} ${canChangeSystemRole() ? '' : 'disabled'}> User</label>
+          <label><input type="radio" name="systemRole" value="company_admin" ${user.systemRole === 'company_admin' ? 'checked' : ''} ${canChangeSystemRole() ? '' : 'disabled'}> Company admin</label>
+          <label><input type="radio" name="systemRole" value="super_admin" ${user.systemRole === 'super_admin' ? 'checked' : ''} disabled> Super admin</label>
+        </div>
+      </div>
+
+      <div class="field full card">
+        <p class="card-title">Team-medlemskap</p>
+        ${membershipsHtml || '<p class="muted-note">No memberships.</p>'}
+        <div class="inline-actions" style="margin-top:8px;">
+          <select id="addTeamSelect" class="select" style="min-width:220px;">
+            <option value="">Välj team...</option>
+            ${addOptions}
+          </select>
+          <button id="addTeamBtn" class="button">+ Lägg till i team</button>
+        </div>
+      </div>
+
+      <div class="field full card">
+        <p><strong>Organisation:</strong> ${orgById(user.organizationId).title}</p>
+        <p><strong>Registrerad:</strong> ${user.registerDate}</p>
+        <p><strong>Status:</strong> ${statusLabel(user.registerStatus)}</p>
+        <p><strong>Senast aktiv:</strong> ${user.lastActive}</p>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('deactivateBtn').disabled = !canDeactivate(user);
+  openDrawer('userEditDrawerWrap');
+}
+
+function openInviteDrawer() {
+  const checks = document.getElementById('inviteTeamChecks');
+  const teams = visibleTeamsForActor();
+  checks.innerHTML = teams.map(team => `
+    <label style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <input type="checkbox" value="${team.id}"> ${team.title}
+    </label>
+  `).join('') || '<p class="muted-note">No team scope available.</p>';
+  document.getElementById('inviteEmail').value = '';
+  document.getElementById('inviteCsv').value = '';
+  openDrawer('inviteDrawerWrap');
+}
+
+function openTeamDrawer(teamId = null) {
+  state.editingTeamId = teamId;
+  const body = document.getElementById('teamDrawerBody');
+  const titleEl = document.getElementById('teamDrawerTitle');
+  const delBtn = document.getElementById('teamDeleteBtn');
+
+  const isCreate = !teamId;
+  const team = isCreate
+    ? { id: null, title: '', organizationId: state.actorRole === 'super_admin' ? state.selectedOrgId : state.actorOrgId }
+    : teamById(teamId);
+
+  titleEl.textContent = isCreate ? 'Skapa team' : 'Redigera team';
+  delBtn.classList.toggle('hide', isCreate);
+
+  const members = isCreate ? [] : teamMembers(team.id);
+  const memberRows = members.map(user => {
+    const membership = user.memberships.find(m => m.teamId === team.id);
+    return `
+      <div class="member-item">
+        <div class="member-row"><strong>${fullName(user)}</strong><span>${membership.teamRole}</span></div>
+        <div class="inline-actions" style="margin-top:8px;">
+          <button class="pill ${membership.teamRole === 'team_leader' ? 'active' : ''}" data-team-user-role="team_leader" data-user="${user.id}">Leader</button>
+          <button class="pill ${membership.teamRole === 'member' ? 'active' : ''}" data-team-user-role="member" data-user="${user.id}">Member</button>
+          <button class="button button-danger" style="min-height:32px;padding:0 8px;" data-team-remove-user="${user.id}">Remove</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const addCandidates = db.users.filter(u => u.organizationId === team.organizationId && !u.memberships.some(m => m.teamId === team.id));
+
+  body.innerHTML = `
+    <div class="form-grid">
+      <div class="field full">
+        <label class="label">Titel</label>
+        <input id="teamTitleInput" class="input" value="${team.title}">
+      </div>
+      <div class="field full">
+        <label class="label">Organisation</label>
+        <input class="input" value="${orgById(team.organizationId).title}" ${state.actorRole === 'super_admin' && isCreate ? '' : 'disabled'}>
+      </div>
+
+      <div class="field full card">
+        <p class="card-title">Medlemmar (${members.length})</p>
+        ${memberRows || '<p class="muted-note">Inga medlemmar.</p>'}
+        ${isCreate ? '' : `
+          <div class="inline-actions" style="margin-top:8px;">
+            <select id="teamAddUser" class="select" style="min-width:220px;">
+              <option value="">Välj användare...</option>
+              ${addCandidates.map(u => `<option value="${u.id}">${fullName(u)}</option>`).join('')}
+            </select>
+            <button id="teamAddUserBtn" class="button">+ Lägg till medlem</button>
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+
+  openDrawer('teamDrawerWrap');
+}
+
+function openOrgDrawer(orgId) {
+  state.editingOrgId = orgId;
+  const org = orgById(orgId);
+  const teamCount = db.teams.filter(t => t.organizationId === org.id).length;
+  const userCount = db.users.filter(u => u.organizationId === org.id).length;
+
+  document.getElementById('orgDrawerBody').innerHTML = `
+    <div class="form-grid">
+      <div class="field full"><label class="label">Titel</label><input id="orgTitleInput" class="input" value="${org.title}"></div>
+      <div class="field full"><label class="label">Detaljer</label><input id="orgDetailsInput" class="input" value="${org.details}"></div>
+      <div class="field full"><label class="label">Abonnemang</label>
+        <select id="orgTierInput" class="select">
+          <option value="basic" ${org.subscriptionTier === 'basic' ? 'selected' : ''}>Basic</option>
+          <option value="plus" ${org.subscriptionTier === 'plus' ? 'selected' : ''}>Plus</option>
+          <option value="pro" ${org.subscriptionTier === 'pro' ? 'selected' : ''}>Pro</option>
+        </select>
+      </div>
+      <div class="field full card">
+        <p><strong>Team:</strong> ${teamCount}</p>
+        <p><strong>Användare:</strong> ${userCount}</p>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('orgDeleteBtn').disabled = !(teamCount === 0 && userCount === 0);
+  openDrawer('orgDrawerWrap');
+}
+
+function openConfirm(title, text, action, dangerLabel = 'Fortsätt') {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmText').textContent = text;
+  document.getElementById('confirmOk').textContent = dangerLabel;
+  state.confirmAction = action;
+  openOverlay('confirmOverlay');
+}
+
+function toast(message) {
+  const stack = document.getElementById('toastStack');
+  const item = document.createElement('div');
+  item.className = 'toast';
+  item.textContent = message;
+  stack.appendChild(item);
+  setTimeout(() => item.remove(), 3800);
+}
+
+function syncAll() {
+  renderTabVisibility();
+  renderOrgFilter();
+  renderFilters();
+  renderUsersTable();
+  renderTeamStats();
+  renderTeamsTable();
+  renderOrgPanel();
+}
+
+actorRoleEl.addEventListener('change', e => {
+  state.actorRole = e.target.value;
+  if (state.actorRole !== 'super_admin') {
+    state.selectedOrgId = state.actorOrgId;
+  }
+  syncAll();
+});
+
+orgFilterEl.addEventListener('change', e => {
+  state.selectedOrgId = e.target.value;
+  syncAll();
+});
+searchInputEl.addEventListener('input', e => {
+  state.search = e.target.value;
+  syncAll();
+});
+
+document.addEventListener('click', e => {
+  const target = e.target;
+
+  if (target.matches('.tab')) {
+    const nextTab = target.dataset.tab;
+    if (canSeeTab(nextTab)) {
+      state.activeTab = nextTab;
+      syncAll();
+    }
+  }
+
+  if (target.matches('[data-role-filter]')) {
+    state.roleFilter = target.dataset.roleFilter;
+    syncAll();
+  }
+
+  if (target.matches('[data-status-filter]')) {
+    state.statusFilter = target.dataset.statusFilter;
+    syncAll();
+  }
+
+  const sortHeader = target.closest('[data-sort]');
+  if (sortHeader) {
+    const key = sortHeader.dataset.sort;
+    if (state.sort.key === key) {
+      state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.sort.key = key;
+      state.sort.dir = 'asc';
+    }
+    syncAll();
+  }
+
+  if (target.matches('[data-detail-user]')) {
+    openUserDetail(target.dataset.detailUser);
+  }
+  if (target.matches('[data-edit-user]')) {
+    renderUserEditDrawer(target.dataset.editUser);
+  }
+  if (target.matches('#userDetailEdit')) {
+    closeOverlay('userDetailOverlay');
+    if (state.activeUserId) renderUserEditDrawer(state.activeUserId);
+  }
+
+  if (target.matches('#inviteUserBtn')) {
+    openInviteDrawer();
+  }
+
+  if (target.matches('#createTeamBtn')) {
+    openTeamDrawer(null);
+  }
+  if (target.matches('[data-edit-team]')) {
+    openTeamDrawer(target.dataset.editTeam);
+  }
+  if (target.matches('[data-delete-team]')) {
+    const team = teamById(target.dataset.deleteTeam);
+    const members = teamMembers(team.id).length;
+    if (members > 0) {
+      toast(`Teamet kan inte raderas: ${members} medlemmar kvar.`);
+    } else {
+      openConfirm('Radera team', `Radera teamet ${team.title}?`, () => {
+        db.teams = db.teams.filter(t => t.id !== team.id);
+        toast('Team raderat.');
+        syncAll();
+      }, 'Radera ändå');
+    }
+  }
+
+  if (target.matches('[data-edit-org]')) {
+    openOrgDrawer(target.dataset.editOrg);
+  }
+
+  if (target.matches('[data-close]')) {
+    const id = target.dataset.close;
+    closeOverlay(id);
+    closeDrawer(id);
+  }
+
+  if (target.matches('#confirmCancel')) {
+    closeOverlay('confirmOverlay');
+  }
+  if (target.matches('#confirmOk')) {
+    if (typeof state.confirmAction === 'function') state.confirmAction();
+    closeOverlay('confirmOverlay');
+    state.confirmAction = null;
+  }
+
+  if (target.matches('#addTeamBtn')) {
+    const user = userById(state.editingUserId);
+    const select = document.getElementById('addTeamSelect');
+    const teamId = select.value;
+    if (!teamId) return;
+    user.memberships.push({ teamId, teamRole: 'member', joinedDate: '2026-02-08' });
+    renderUserEditDrawer(user.id);
+    renderUsersTable();
+    renderTeamsTable();
+    toast('Användare tillagd i team.');
+  }
+
+  if (target.matches('[data-remove-team]')) {
+    const user = userById(state.editingUserId);
+    const teamId = target.dataset.removeTeam;
+    if (user.memberships.length <= 1) {
+      toast('Användaren måste tillhöra minst ett team.');
+      return;
+    }
+    user.memberships = user.memberships.filter(m => m.teamId !== teamId);
+    renderUserEditDrawer(user.id);
+    renderUsersTable();
+    renderTeamsTable();
+    toast('Team-medlemskap borttaget.');
+  }
+
+  if (target.matches('[data-set-teamrole]')) {
+    const user = userById(state.editingUserId);
+    const teamId = target.dataset.team;
+    const role = target.dataset.setTeamrole;
+    const membership = user.memberships.find(m => m.teamId === teamId);
+    if (membership) {
+      membership.teamRole = role;
+      renderUserEditDrawer(user.id);
+      renderUsersTable();
+      renderTeamsTable();
+      toast(`Teamroll uppdaterad till ${role}.`);
+    }
+  }
+
+  if (target.matches('#deactivateBtn')) {
+    const user = userById(state.editingUserId);
+    openConfirm(
+      'Avaktivera användare',
+      `Anonymisera ${fullName(user)}? Detta kan inte angra.`,
+      () => {
+        user.firstName = '*****';
+        user.lastName = '*****';
+        user.email = '*****@*****.***';
+        user.username = '';
+        user.phone = '';
+        user.description = '';
+        user.registerStatus = 'soft_deleted';
+        closeDrawer('userEditDrawerWrap');
+        syncAll();
+        toast('Användare avaktiverad (soft delete).');
+      },
+      'Avaktivera ändå'
+    );
+  }
+
+  if (target.matches('#saveUserBtn')) {
+    const user = userById(state.editingUserId);
+    user.firstName = document.getElementById('editFirstName').value.trim();
+    user.lastName = document.getElementById('editLastName').value.trim();
+    user.username = document.getElementById('editUsername').value.trim();
+    user.phone = document.getElementById('editPhone').value.trim();
+    user.description = document.getElementById('editDescription').value.trim();
+
+    if (canChangeSystemRole()) {
+      const checked = document.querySelector('input[name="systemRole"]:checked');
+      user.systemRole = checked.value === 'null' ? null : checked.value;
+    }
+
+    closeDrawer('userEditDrawerWrap');
+    syncAll();
+    toast('Användaren har uppdaterats.');
+  }
+
+  if (target.matches('#sendInviteBtn')) {
+    const email = document.getElementById('inviteEmail').value.trim();
+    const checkedTeams = Array.from(document.querySelectorAll('#inviteTeamChecks input:checked')).map(i => i.value);
+
+    if (!email) {
+      toast('E-postadress krävs.');
+      return;
+    }
+    if (!checkedTeams.length) {
+      toast('Välj minst ett team.');
+      return;
+    }
+    if (db.users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+      toast('E-post finns redan i systemet.');
+      return;
+    }
+
+    const local = email.split('@')[0] || 'new.user';
+    const [first = 'New', last = 'User'] = local.split('.');
+    db.users.push({
+      id: `u_${Math.random().toString(16).slice(2, 7)}`,
+      firstName: first[0].toUpperCase() + first.slice(1),
+      lastName: last[0].toUpperCase() + last.slice(1),
+      username: '',
+      email,
+      phone: '',
+      description: '',
+      systemRole: null,
+      organizationId: state.actorRole === 'super_admin' ? state.selectedOrgId : state.actorOrgId,
+      registerDate: '2026-02-08',
+      registerStatus: 'pending',
+      lastActive: '-',
+      memberships: checkedTeams.map(teamId => ({ teamId, teamRole: 'member', joinedDate: '2026-02-08' }))
+    });
+
+    closeDrawer('inviteDrawerWrap');
+    syncAll();
+    toast(`Inbjudan skickad till ${email}.`);
+  }
+
+  if (target.matches('#sendBulkBtn')) {
+    toast('Dummy: CSV-inbjudningar markerade som skickade.');
+  }
+
+  if (target.matches('#teamAddUserBtn')) {
+    const team = teamById(state.editingTeamId);
+    const userId = document.getElementById('teamAddUser').value;
+    if (!userId) return;
+    const user = userById(userId);
+    user.memberships.push({ teamId: team.id, teamRole: 'member', joinedDate: '2026-02-08' });
+    openTeamDrawer(team.id);
+    syncAll();
+    toast('Medlem tillagd i team.');
+  }
+
+  if (target.matches('[data-team-remove-user]')) {
+    const team = teamById(state.editingTeamId);
+    const user = userById(target.dataset.teamRemoveUser);
+    user.memberships = user.memberships.filter(m => m.teamId !== team.id);
+    openTeamDrawer(team.id);
+    syncAll();
+    toast('Medlem borttagen fran team.');
+  }
+
+  if (target.matches('[data-team-user-role]')) {
+    const team = teamById(state.editingTeamId);
+    const user = userById(target.dataset.user);
+    const membership = user.memberships.find(m => m.teamId === team.id);
+    if (membership) {
+      membership.teamRole = target.dataset.teamUserRole;
+      openTeamDrawer(team.id);
+      syncAll();
+      toast('Teamroll uppdaterad.');
+    }
+  }
+
+  if (target.matches('#teamSaveBtn')) {
+    const title = document.getElementById('teamTitleInput').value.trim();
+    if (!title) {
+      toast('Teamtitel krävs.');
+      return;
+    }
+
+    if (state.editingTeamId) {
+      const team = teamById(state.editingTeamId);
+      team.title = title;
+      toast('Team uppdaterat.');
+    } else {
+      db.teams.push({
+        id: `team_${Math.random().toString(16).slice(2, 7)}`,
+        title,
+        organizationId: state.actorRole === 'super_admin' ? state.selectedOrgId : state.actorOrgId
+      });
+      toast('Team skapat (default-agenda antas auto-genererad).');
+    }
+    closeDrawer('teamDrawerWrap');
+    syncAll();
+  }
+
+  if (target.matches('#teamDeleteBtn')) {
+    const team = teamById(state.editingTeamId);
+    const members = teamMembers(team.id);
+    if (members.length) {
+      toast(`Kan inte radera teamet. ${members.length} medlemmar kvar.`);
+      return;
+    }
+    openConfirm('Radera team', `Radera ${team.title} permanent?`, () => {
+      db.teams = db.teams.filter(t => t.id !== team.id);
+      closeDrawer('teamDrawerWrap');
+      syncAll();
+      toast('Team raderat.');
+    }, 'Radera ändå');
+  }
+
+  if (target.matches('#orgSaveBtn')) {
+    const org = orgById(state.editingOrgId);
+    org.title = document.getElementById('orgTitleInput').value.trim();
+    org.details = document.getElementById('orgDetailsInput').value.trim();
+    org.subscriptionTier = document.getElementById('orgTierInput').value;
+    closeDrawer('orgDrawerWrap');
+    syncAll();
+    toast('Organisation uppdaterad.');
+  }
+
+  if (target.matches('#orgDeleteBtn')) {
+    const org = orgById(state.editingOrgId);
+    const teamCount = db.teams.filter(t => t.organizationId === org.id).length;
+    const userCount = db.users.filter(u => u.organizationId === org.id).length;
+    if (teamCount || userCount) {
+      toast(`Kan inte radera. Team: ${teamCount}, Users: ${userCount}`);
+      return;
+    }
+    openConfirm('Radera organisation', `Radera ${org.title}?`, () => {
+      db.organizations = db.organizations.filter(o => o.id !== org.id);
+      closeDrawer('orgDrawerWrap');
+      if (!orgById(state.selectedOrgId)) state.selectedOrgId = db.organizations[0]?.id || '';
+      syncAll();
+      toast('Organisation raderad.');
+    }, 'Radera ändå');
+  }
+});
+
+// clicking outside modal content closes overlays
+['userDetailOverlay', 'confirmOverlay'].forEach(id => {
+  const overlay = document.getElementById(id);
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeOverlay(id);
+  });
+});
+
+// initial
+actorRoleEl.value = state.actorRole;
+syncAll();
+</script>
+</body>
+</html>

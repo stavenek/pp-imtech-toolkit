@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Integral Teamwork Toolkit</title>
+<style>
+/* ============================================================
+   VARIANT C: BOLDNESS — ADMIN PROTOTYPE
+   Full admin UI based on docs/admin-req.md spec
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #ffffff; --bg-secondary: #f0f0f0; --bg-dark: #0a0a0a;
+  --text-primary: #0a0a0a; --text-secondary: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333333; --accent-inverse: #ffffff;
+  --highlight: #ffcc00; --highlight-soft: rgba(255, 204, 0, 0.12);
+  --success: #00a854; --warning: #fa8c16; --error: #e6001a;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px;
+  --radius: 0px;
+}
+[data-theme="dark"] {
+  --bg-primary: #0a0a0a; --bg-secondary: #161616;
+  --text-primary: #f0f0f0; --text-secondary: #888888;
+  --border: #2a2a2a; --border-strong: #f0f0f0;
+  --accent: #ffffff; --accent-hover: #cccccc; --accent-inverse: #0a0a0a;
+}
+body { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 14px; line-height: 1.6; color: var(--text-primary); background: var(--bg-primary); }
+.skip-link { position: absolute; top: -100%; left: var(--space-md); background: var(--highlight); color: var(--bg-dark); padding: var(--space-sm) var(--space-md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--space-md); }
+
+/* ---- TOP NAV ---- */
+.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--highlight); padding: 0 var(--space-lg); }
+.top-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; gap: 0; overflow-x: auto; }
+.top-nav__logo { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-md) var(--space-md) var(--space-md) 0; color: var(--highlight); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; white-space: nowrap; min-height: 48px; border-right: 2px solid #333; padding-right: var(--space-lg); margin-right: var(--space-sm); }
+.top-nav__logo svg { width: 22px; height: 22px; flex-shrink: 0; }
+.top-nav__link { display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-md) var(--space-sm); color: #cccccc; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; min-width: 44px; justify-content: center; transition: color 0.15s, border-color 0.15s; }
+.top-nav__link:hover { color: #ffffff; border-bottom-color: #555; }
+.top-nav__link--active { color: var(--highlight); border-bottom-color: var(--highlight); }
+.top-nav__link svg { width: 16px; height: 16px; flex-shrink: 0; }
+.top-nav__actions { display: flex; align-items: center; margin-left: auto; gap: var(--space-sm); padding-left: var(--space-md); border-left: 2px solid #333; }
+.theme-toggle { background: none; border: 2px solid #555; color: #ccc; padding: var(--space-xs) var(--space-sm); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
+.theme-toggle:hover { background: #333; color: #fff; }
+
+/* ---- BREADCRUMBS ---- */
+.breadcrumbs { max-width: 1400px; margin: 0 auto; padding: var(--space-md) var(--space-lg); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); }
+.breadcrumbs a { color: var(--text-secondary); text-decoration: none; }
+.breadcrumbs a:hover { color: var(--text-primary); text-decoration: underline; }
+.breadcrumbs__sep { margin: 0 var(--space-sm); }
+
+/* ---- MAIN ---- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--space-lg) var(--space-3xl); }
+.page-title { font-size: 42px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--space-2xl) 0 var(--space-xl); border-bottom: 3px solid var(--border-strong); margin-bottom: 0; }
+
+/* ---- ADMIN TABS ---- */
+.admin-tabs { display: flex; gap: 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--space-xl); }
+.admin-tab { padding: var(--space-md) var(--space-lg); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; border: none; background: none; color: var(--text-secondary); border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; font-family: inherit; transition: color 0.15s, border-color 0.15s, background 0.15s; }
+.admin-tab:hover { color: var(--text-primary); background: var(--highlight-soft); }
+.admin-tab--active { color: var(--text-primary); border-bottom-color: var(--highlight); background: var(--highlight-soft); }
+.tab-panel { display: none; }
+.tab-panel--active { display: block; }
+
+/* ---- TOOLBAR ---- */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg); }
+.toolbar__left { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); flex: 1; }
+.toolbar__right { display: flex; gap: var(--space-sm); }
+
+/* ---- BUTTONS ---- */
+.btn { display: inline-flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inverse); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow 0.15s, transform 0.15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--highlight); transform: translate(-2px, -2px); }
+.btn--highlight { background: var(--highlight); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--error); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg-primary); color: var(--text-primary); }
+.btn--sm { min-height: 36px; padding: var(--space-xs) var(--space-md); font-size: 11px; }
+.btn svg { width: 16px; height: 16px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ---- FORM ELEMENTS ---- */
+.form-input, .form-select { width: 100%; padding: var(--space-sm) var(--space-md); border: 2px solid var(--border-strong); background: var(--bg-secondary); color: var(--text-primary); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-input:focus, .form-select:focus { outline: 3px solid var(--highlight); outline-offset: 0; }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%230a0a0a' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--space-xs); display: block; }
+.form-group { margin-bottom: var(--space-md); }
+.form-readonly { padding: var(--space-sm) 0; font-size: 14px; color: var(--text-secondary); }
+.search-input { max-width: 320px; }
+
+/* ---- SEGMENTED CONTROL ---- */
+.segmented { display: inline-flex; gap: 0; }
+.segmented__btn { display: inline-flex; align-items: center; padding: var(--space-xs) var(--space-md); border: 2px solid var(--border-strong); border-right-width: 0; background: var(--bg-primary); color: var(--text-primary); font-family: inherit; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 36px; transition: background 0.15s, color 0.15s; }
+.segmented__btn:last-child { border-right-width: 2px; }
+.segmented__btn:hover { background: var(--bg-secondary); }
+.segmented__btn--active { background: var(--accent); color: var(--accent-inverse); }
+
+/* ---- TABLE ---- */
+.data-table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border: 2px solid var(--border-strong); padding: var(--space-sm) var(--space-md); text-align: left; vertical-align: middle; }
+.data-table thead th { background: var(--accent); color: var(--accent-inverse); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; cursor: pointer; user-select: none; }
+.data-table thead th:hover { background: var(--accent-hover); }
+.data-table thead th .sort-arrow { margin-left: var(--space-xs); opacity: 0.5; }
+.data-table thead th .sort-arrow--active { opacity: 1; }
+.data-table tbody tr { cursor: pointer; transition: background 0.1s; }
+.data-table tbody tr:hover { background: var(--highlight-soft); }
+.data-table caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+/* ---- BADGES ---- */
+.badge { display: inline-block; padding: var(--space-xs) var(--space-sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
+.badge--super { background: var(--highlight); color: var(--bg-dark); border-color: var(--bg-dark); }
+.badge--admin { background: var(--accent); color: var(--accent-inverse); border-color: var(--accent); }
+.badge--leader { background: var(--highlight-soft); color: var(--text-primary); border-color: var(--highlight); }
+.badge--user { background: var(--bg-secondary); color: var(--text-secondary); border-color: var(--border); }
+.badge--active { background: #e6f7ee; color: #006d36; border-color: var(--success); }
+.badge--pending { background: #fff7e6; color: #ad4e00; border-color: var(--warning); }
+.badge--deactivated { background: #fff1f0; color: #a8071a; border-color: var(--error); }
+[data-theme="dark"] .badge--active { background: #06301b; color: #52c41a; }
+[data-theme="dark"] .badge--pending { background: #2b1d00; color: #faad14; }
+[data-theme="dark"] .badge--deactivated { background: #2a0806; color: #ff4d4f; }
+.badge--basic { background: var(--bg-secondary); color: var(--text-secondary); border-color: var(--border); }
+.badge--plus { background: var(--accent); color: var(--accent-inverse); border-color: var(--accent); }
+.badge--pro { background: var(--highlight); color: var(--bg-dark); border-color: var(--bg-dark); }
+.leader-icon { display: inline-block; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
+
+/* ---- PAGINATION ---- */
+.pagination { display: flex; align-items: center; justify-content: space-between; padding: var(--space-md) 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); }
+.pagination__pages { display: flex; gap: 0; }
+.pagination__btn { min-width: 36px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--border-strong); background: var(--bg-primary); color: var(--text-primary); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; margin-left: -2px; transition: background 0.15s; }
+.pagination__btn:first-child { margin-left: 0; }
+.pagination__btn:hover { background: var(--highlight-soft); }
+.pagination__btn--active { background: var(--accent); color: var(--accent-inverse); }
+.pagination__btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ---- SLIDE-OVER ---- */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; }
+.overlay--visible { display: block; }
+.slide-over { position: fixed; top: 0; right: -520px; width: 500px; max-width: 100vw; height: 100vh; background: var(--bg-primary); border-left: 3px solid var(--border-strong); z-index: 2001; overflow-y: auto; transition: right 0.25s ease; padding: var(--space-xl); }
+.slide-over--open { right: 0; }
+.slide-over__header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-xl); padding-bottom: var(--space-md); border-bottom: 3px solid var(--border-strong); }
+.slide-over__title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.slide-over__close { background: none; border: 2px solid var(--border-strong); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: 900; color: var(--text-primary); transition: background 0.15s; }
+.slide-over__close:hover { background: var(--bg-secondary); }
+.slide-over__section { margin-bottom: var(--space-xl); }
+.slide-over__section-title { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--border); margin-bottom: var(--space-md); }
+.slide-over__actions { display: flex; gap: var(--space-md); margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 2px solid var(--border); }
+.slide-over__danger { margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 3px solid var(--error); }
+
+/* ---- MEMBERSHIP TABLE (inline in slide-over) ---- */
+.membership-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.membership-table th, .membership-table td { padding: var(--space-sm) var(--space-md); border: 2px solid var(--border); text-align: left; }
+.membership-table thead th { background: var(--bg-secondary); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+.membership-table .remove-btn { background: none; border: none; color: var(--error); cursor: pointer; font-size: 18px; font-weight: 900; padding: 0 var(--space-sm); min-width: 32px; min-height: 32px; }
+.membership-table .remove-btn:hover { background: #fff1f0; }
+
+/* ---- INVITE TABS ---- */
+.invite-tabs { display: flex; gap: 0; margin-bottom: var(--space-lg); }
+.invite-tab { flex: 1; padding: var(--space-sm) var(--space-md); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; cursor: pointer; border: 2px solid var(--border-strong); background: var(--bg-primary); color: var(--text-secondary); font-family: inherit; transition: background 0.15s, color 0.15s; }
+.invite-tab:first-child { border-right: 0; }
+.invite-tab--active { background: var(--accent); color: var(--accent-inverse); }
+.invite-panel { display: none; }
+.invite-panel--active { display: block; }
+
+/* ---- CHECKBOX LIST ---- */
+.check-list { list-style: none; }
+.check-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.check-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+
+/* ---- RADIO GROUP ---- */
+.radio-group { display: flex; flex-direction: column; gap: var(--space-sm); }
+.radio-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm); cursor: pointer; font-size: 13px; transition: background 0.1s; }
+.radio-item:hover { background: var(--highlight-soft); }
+.radio-item input[type="radio"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+
+/* ---- LEVELS GRID ---- */
+.levels-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md); }
+.level-card { border: 2px solid var(--border-strong); padding: var(--space-lg); transition: box-shadow 0.15s, transform 0.15s; }
+.level-card:hover { box-shadow: 4px 4px 0 var(--border-strong); transform: translate(-2px, -2px); }
+.level-card__title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-sm); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--border); }
+.level-card__desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ---- ORG CARD (Company Admin read-only) ---- */
+.org-card { border: 3px solid var(--border-strong); padding: var(--space-xl); max-width: 600px; }
+.org-card__title { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: var(--space-lg); padding-bottom: var(--space-md); border-bottom: 3px solid var(--border-strong); }
+.org-card__row { display: flex; justify-content: space-between; padding: var(--space-sm) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.org-card__label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; color: var(--text-secondary); }
+
+/* ---- CONFIRM DIALOG ---- */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; }
+.dialog { background: var(--bg-primary); border: 3px solid var(--border-strong); padding: var(--space-xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--space-md); }
+.dialog__text { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--space-xl); }
+.dialog__actions { display: flex; gap: var(--space-md); justify-content: flex-end; }
+
+/* ---- TOAST ---- */
+.toast-container { position: fixed; top: 70px; right: var(--space-lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--space-sm); }
+.toast { padding: var(--space-md) var(--space-lg); background: var(--accent); color: var(--accent-inverse); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--highlight); animation: toast-in 0.3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ---- SKELETON ---- */
+.skeleton { background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border) 50%, var(--bg-secondary) 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.5s infinite; height: 20px; }
+@keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ---- FOOTER ---- */
+.footer { max-width: 1400px; margin: 0 auto; padding: var(--space-lg); border-top: 3px solid var(--border-strong); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 1024px) { .slide-over { width: 100vw; } }
+@media (max-width: 768px) { .col-hide-sm { display: none; } }
+@media (max-width: 480px) { .admin-tabs { display: none; } .admin-tabs-mobile { display: block; } }
+.admin-tabs-mobile { display: none; margin-bottom: var(--space-lg); }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ======== TOP NAV ======== -->
+<nav class="top-nav" aria-label="Huvudnavigering">
+  <div class="top-nav__inner">
+    <a href="index.html" class="top-nav__logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><rect x="3" y="3" width="18" height="18"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>ITT</a>
+    <a href="index.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="agenda.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><rect x="3" y="4" width="2" height="2"/><rect x="3" y="10" width="2" height="2"/><rect x="3" y="16" width="2" height="2"/></svg>Agenda</a>
+    <a href="goals-metrics.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Goals</a>
+    <a href="action-plan.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Actions</a>
+    <a href="admin.html" class="top-nav__link top-nav__link--active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Admin</a>
+    <div class="top-nav__actions">
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Växla mörkt/ljust läge"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumbs" aria-label="Brödsmulor">
+  <a href="index.html">Dashboard</a><span class="breadcrumbs__sep">/</span><span aria-current="page">Admin</span>
+</div>
+
+<!-- ======== MAIN ======== -->
+<main class="main" id="main-content">
+  <h1 class="page-title">Administration</h1>
+
+  <!-- ADMIN TABS -->
+  <div class="admin-tabs" role="tablist" aria-label="Adminsektioner">
+    <button class="admin-tab admin-tab--active" role="tab" aria-selected="true" onclick="switchTab('users')" id="tab-users">Användare</button>
+    <button class="admin-tab" role="tab" aria-selected="false" onclick="switchTab('teams')" id="tab-teams">Team</button>
+    <button class="admin-tab" role="tab" aria-selected="false" onclick="switchTab('orgs')" id="tab-orgs">Organisation</button>
+  </div>
+
+  <!-- Mobile dropdown -->
+  <div class="admin-tabs-mobile">
+    <select class="form-select" onchange="switchTab(this.value)" aria-label="Välj adminsektion">
+      <option value="users">Användare</option>
+      <option value="teams">Team</option>
+      <option value="orgs">Organisation</option>
+    </select>
+  </div>
+
+  <!-- ======== TAB: USERS ======== -->
+  <div class="tab-panel tab-panel--active" id="panel-users" role="tabpanel">
+
+    <!-- Org selector + actions -->
+    <div class="toolbar">
+      <div class="toolbar__left">
+        <div class="form-group" style="margin:0;">
+          <label class="form-label" for="org-select">Organisation</label>
+          <select class="form-select" id="org-select" onchange="filterUsers()" style="width:280px;">
+            <option value="all">Alla organisationer</option>
+            <option value="foretag" selected>Företag AB</option>
+            <option value="bolaget">Bolaget HB</option>
+            <option value="orgtri">Org Tre</option>
+          </select>
+        </div>
+      </div>
+      <div class="toolbar__right">
+        <button class="btn btn--highlight" onclick="openInvite()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          Bjud In
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="toolbar" style="gap: var(--space-lg);">
+      <input type="search" class="form-input search-input" placeholder="Sök namn eller e-post..." oninput="filterUsers()" id="user-search">
+      <div>
+        <span class="form-label" style="margin-bottom:var(--space-xs);">Systemroll</span>
+        <div class="segmented" role="group" aria-label="Filtrera systemroll">
+          <button class="segmented__btn segmented__btn--active" onclick="setFilter('role',this,'all')">Alla</button>
+          <button class="segmented__btn" onclick="setFilter('role',this,'super')">Super Admin</button>
+          <button class="segmented__btn" onclick="setFilter('role',this,'admin')">Company Admin</button>
+          <button class="segmented__btn" onclick="setFilter('role',this,'user')">User</button>
+        </div>
+      </div>
+      <div>
+        <span class="form-label" style="margin-bottom:var(--space-xs);">Status</span>
+        <div class="segmented" role="group" aria-label="Filtrera status">
+          <button class="segmented__btn segmented__btn--active" onclick="setFilter('status',this,'all')">Alla</button>
+          <button class="segmented__btn" onclick="setFilter('status',this,'active')">Aktiv</button>
+          <button class="segmented__btn" onclick="setFilter('status',this,'pending')">Väntande</button>
+          <button class="segmented__btn" onclick="setFilter('status',this,'deactivated')">Avaktiverad</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users table -->
+    <div class="data-table-wrap">
+      <table class="data-table" aria-label="Användarlista">
+        <caption class="sr-only" id="user-table-caption">Användarlista</caption>
+        <thead>
+          <tr>
+            <th aria-sort="ascending" onclick="sortUsers('name')">Namn <span class="sort-arrow sort-arrow--active">&darr;</span></th>
+            <th class="col-hide-sm" onclick="sortUsers('username')">Username <span class="sort-arrow">&darr;</span></th>
+            <th onclick="sortUsers('email')">E-post <span class="sort-arrow">&darr;</span></th>
+            <th onclick="sortUsers('status')">Status <span class="sort-arrow">&darr;</span></th>
+            <th onclick="sortUsers('role')">Systemroll <span class="sort-arrow">&darr;</span></th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="users-pagination"></div>
+  </div>
+
+  <!-- ======== TAB: TEAMS ======== -->
+  <div class="tab-panel" id="panel-teams" role="tabpanel">
+    <div class="toolbar">
+      <div class="toolbar__left"></div>
+      <div class="toolbar__right">
+        <button class="btn btn--highlight" onclick="openCreateTeam()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Skapa Team
+        </button>
+      </div>
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table" aria-label="Teamlista">
+        <thead>
+          <tr>
+            <th>Titel</th>
+            <th>Medlemmar</th>
+            <th>Team Leader</th>
+            <th style="width:120px;">Åtgärder</th>
+          </tr>
+        </thead>
+        <tbody id="teams-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ======== TAB: ORGANIZATIONS ======== -->
+  <div class="tab-panel" id="panel-orgs" role="tabpanel">
+    <div class="toolbar">
+      <div class="toolbar__left"></div>
+      <div class="toolbar__right">
+        <button class="btn btn--highlight" onclick="showToast('Skapa organisation...')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Skapa Organisation
+        </button>
+      </div>
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table" aria-label="Organisationslista">
+        <thead>
+          <tr>
+            <th>Organisation</th>
+            <th>Abonnemang</th>
+            <th>Team</th>
+            <th>Användare</th>
+            <th style="width:120px;">Åtgärder</th>
+          </tr>
+        </thead>
+        <tbody id="orgs-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ======== OVERLAY ======== -->
+<div class="overlay" id="overlay" onclick="closeSlideOver()"></div>
+
+<!-- ======== SLIDE-OVER: USER ======== -->
+<div class="slide-over" id="user-slideover" role="dialog" aria-modal="true" aria-label="Användardetalj">
+  <div class="slide-over__header">
+    <div class="slide-over__title" id="so-user-title">Användare</div>
+    <button class="slide-over__close" onclick="closeSlideOver()" aria-label="Stäng">&times;</button>
+  </div>
+
+  <div class="slide-over__section">
+    <div class="slide-over__section-title">Personuppgifter</div>
+    <div class="form-group">
+      <label class="form-label">Förnamn</label>
+      <input type="text" class="form-input" id="so-firstname">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Efternamn</label>
+      <input type="text" class="form-input" id="so-lastname">
+    </div>
+    <div class="form-group">
+      <label class="form-label">E-post</label>
+      <div class="form-readonly" id="so-email"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" class="form-input" id="so-username">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Telefon</label>
+      <input type="text" class="form-input" id="so-phone">
+    </div>
+  </div>
+
+  <div class="slide-over__section">
+    <div class="slide-over__section-title">Systemroll</div>
+    <div class="radio-group" id="so-role-group">
+      <label class="radio-item"><input type="radio" name="so-sysrole" value="null"> Ingen systemroll</label>
+      <label class="radio-item"><input type="radio" name="so-sysrole" value="company_admin"> Company Admin</label>
+      <label class="radio-item"><input type="radio" name="so-sysrole" value="super_admin"> Super Admin</label>
+    </div>
+  </div>
+
+  <div class="slide-over__section">
+    <div class="slide-over__section-title">Team-medlemskap (<span id="so-team-count">0</span>)</div>
+    <table class="membership-table">
+      <thead><tr><th>Team</th><th>Roll</th><th></th></tr></thead>
+      <tbody id="so-teams-tbody"></tbody>
+    </table>
+    <div style="margin-top: var(--space-md);">
+      <button class="btn btn--outline btn--sm" onclick="showToast('Lägg till i team...')">+ Lägg Till I Team</button>
+    </div>
+  </div>
+
+  <div class="slide-over__section">
+    <div class="slide-over__section-title">Information</div>
+    <div class="form-group">
+      <label class="form-label">Organisation</label>
+      <div class="form-readonly" id="so-org"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Registrerad</label>
+      <div class="form-readonly" id="so-regdate"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <div id="so-status"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Senast aktiv</label>
+      <div class="form-readonly" id="so-lastactive"></div>
+    </div>
+  </div>
+
+  <div class="slide-over__actions">
+    <button class="btn btn--highlight" onclick="saveUser()">Spara Ändringar</button>
+    <button class="btn btn--outline" onclick="closeSlideOver()">Avbryt</button>
+  </div>
+
+  <div class="slide-over__danger">
+    <button class="btn btn--danger" onclick="confirmDeactivate()">Avaktivera Konto</button>
+  </div>
+</div>
+
+<!-- ======== SLIDE-OVER: INVITE ======== -->
+<div class="slide-over" id="invite-slideover" role="dialog" aria-modal="true" aria-label="Bjud in användare">
+  <div class="slide-over__header">
+    <div class="slide-over__title">Bjud In Användare</div>
+    <button class="slide-over__close" onclick="closeSlideOver()" aria-label="Stäng">&times;</button>
+  </div>
+
+  <div class="invite-tabs">
+    <button class="invite-tab invite-tab--active" onclick="switchInviteTab('single',this)">Enskild</button>
+    <button class="invite-tab" onclick="switchInviteTab('bulk',this)">Bulk-Import</button>
+  </div>
+
+  <div class="invite-panel invite-panel--active" id="invite-single">
+    <div class="form-group">
+      <label class="form-label" for="invite-email">E-postadress</label>
+      <input type="email" class="form-input" id="invite-email" placeholder="namn@foretag.se">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Välj team</label>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="inv-t1" checked><label for="inv-t1">Team Alpha</label></li>
+        <li class="check-item"><input type="checkbox" id="inv-t2"><label for="inv-t2">Team Beta</label></li>
+        <li class="check-item"><input type="checkbox" id="inv-t3"><label for="inv-t3">Stödgrupp</label></li>
+      </ul>
+    </div>
+    <p style="font-size:12px;color:var(--text-secondary);margin-bottom:var(--space-lg);">Användaren får rollen "Medlem" i alla valda team. Befordran görs efter registrering.</p>
+    <button class="btn btn--highlight" onclick="sendInvite()">Skicka Inbjudan</button>
+  </div>
+
+  <div class="invite-panel" id="invite-bulk">
+    <div class="form-group">
+      <label class="form-label">Steg 1: Ladda upp CSV</label>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:var(--space-sm);">En e-postadress per rad.</p>
+      <input type="file" accept=".csv" style="margin-bottom: var(--space-md);">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Välj team för alla</label>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="inv-b1" checked><label for="inv-b1">Team Alpha</label></li>
+        <li class="check-item"><input type="checkbox" id="inv-b2"><label for="inv-b2">Team Beta</label></li>
+        <li class="check-item"><input type="checkbox" id="inv-b3"><label for="inv-b3">Stödgrupp</label></li>
+      </ul>
+    </div>
+    <button class="btn btn--highlight" onclick="showToast('Validerar CSV...')">Granska &amp; Skicka</button>
+  </div>
+</div>
+
+<!-- ======== SLIDE-OVER: TEAM EDIT ======== -->
+<div class="slide-over" id="team-slideover" role="dialog" aria-modal="true" aria-label="Redigera team">
+  <div class="slide-over__header">
+    <div class="slide-over__title" id="so-team-title">Redigera Team</div>
+    <button class="slide-over__close" onclick="closeSlideOver()" aria-label="Stäng">&times;</button>
+  </div>
+  <div class="slide-over__section">
+    <div class="form-group">
+      <label class="form-label">Titel</label>
+      <input type="text" class="form-input" id="so-team-name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Organisation</label>
+      <div class="form-readonly">Företag AB</div>
+    </div>
+  </div>
+  <div class="slide-over__section">
+    <div class="slide-over__section-title">Medlemmar (<span id="so-team-member-count">0</span>)</div>
+    <table class="membership-table">
+      <thead><tr><th>Namn</th><th>Roll</th><th></th></tr></thead>
+      <tbody id="so-team-members-tbody"></tbody>
+    </table>
+    <div style="margin-top: var(--space-md);">
+      <button class="btn btn--outline btn--sm" onclick="showToast('Lägg till medlem...')">+ Lägg Till Medlem</button>
+    </div>
+  </div>
+  <div class="slide-over__actions">
+    <button class="btn btn--highlight" onclick="saveTeam()">Spara</button>
+    <button class="btn btn--outline" onclick="closeSlideOver()">Avbryt</button>
+  </div>
+  <div class="slide-over__danger">
+    <button class="btn btn--danger" onclick="confirmDeleteTeam()">Radera Team</button>
+  </div>
+</div>
+
+<!-- ======== SLIDE-OVER: ORG EDIT ======== -->
+<div class="slide-over" id="org-slideover" role="dialog" aria-modal="true" aria-label="Redigera organisation">
+  <div class="slide-over__header">
+    <div class="slide-over__title" id="so-org-title">Redigera Organisation</div>
+    <button class="slide-over__close" onclick="closeSlideOver()" aria-label="Stäng">&times;</button>
+  </div>
+  <div class="slide-over__section">
+    <div class="slide-over__section-title">Organisationsuppgifter</div>
+    <div class="form-group">
+      <label class="form-label">Namn</label>
+      <input type="text" class="form-input" id="so-org-name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Abonnemang</label>
+      <select class="form-select" id="so-org-tier">
+        <option value="basic">Basic</option>
+        <option value="plus">Plus</option>
+        <option value="pro">Pro</option>
+      </select>
+    </div>
+  </div>
+  <div class="slide-over__section">
+    <div class="slide-over__section-title">Statistik</div>
+    <div class="form-group">
+      <label class="form-label">Antal team</label>
+      <div class="form-readonly" id="so-org-teams">0</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Antal användare</label>
+      <div class="form-readonly" id="so-org-users">0</div>
+    </div>
+  </div>
+  <div class="slide-over__actions">
+    <button class="btn btn--highlight" onclick="saveOrg()">Spara</button>
+    <button class="btn btn--outline" onclick="closeSlideOver()">Avbryt</button>
+  </div>
+  <div class="slide-over__danger">
+    <button class="btn btn--danger" id="org-delete-btn" onclick="confirmDeleteOrg()">Radera Organisation</button>
+  </div>
+</div>
+
+<!-- ======== CONFIRM DIALOG ======== -->
+<div class="dialog-overlay" id="confirm-dialog">
+  <div class="dialog">
+    <div class="dialog__title" id="dialog-title">Bekräfta</div>
+    <div class="dialog__text" id="dialog-text">Är du säker?</div>
+    <div class="dialog__actions">
+      <button class="btn btn--outline" onclick="closeDialog()">Avbryt</button>
+      <button class="btn btn--danger" id="dialog-confirm-btn" onclick="closeDialog()">Bekräfta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== TOAST CONTAINER ======== -->
+<div class="toast-container" id="toast-container"></div>
+
+<footer class="footer">
+  <span>&copy; 2026 Integral Teamwork Toolkit</span>
+  <span>Variant C: Boldness — Admin Prototype</span>
+</footer>
+
+<script>
+// ============================================================
+// DUMMY DATA
+// ============================================================
+const USERS = [
+  { id:1, firstName:'Håkan', lastName:'Farnlöf', email:'hakan.farnlof@integpartner.com', username:'hakan.f', phone:'070-111 22 33', org:'foretag', systemRole:'super_admin', status:'active', regDate:'2024-01-15', lastActive:'2026-02-07', teams:[{name:'Team Alpha',role:'team_leader'},{name:'Stödgrupp',role:'member'}] },
+  { id:2, firstName:'Anna', lastName:'Andersson', email:'anna.andersson@foretag.se', username:'anna.a', phone:'070-222 33 44', org:'foretag', systemRole:'company_admin', status:'active', regDate:'2025-03-10', lastActive:'2026-02-06', teams:[{name:'Team Alpha',role:'team_leader'},{name:'Team Beta',role:'member'}] },
+  { id:3, firstName:'Erik', lastName:'Svensson', email:'erik.svensson@foretag.se', username:'erik.s', phone:'070-333 44 55', org:'foretag', systemRole:null, status:'active', regDate:'2025-04-20', lastActive:'2026-02-05', teams:[{name:'Team Beta',role:'team_leader'}] },
+  { id:4, firstName:'Maria', lastName:'Johansson', email:'maria.johansson@foretag.se', username:'', phone:'070-444 55 66', org:'foretag', systemRole:null, status:'active', regDate:'2025-05-01', lastActive:'2026-02-07', teams:[{name:'Team Alpha',role:'member'}] },
+  { id:5, firstName:'Lars', lastName:'Nilsson', email:'lars.nilsson@foretag.se', username:'lars.n', phone:'', org:'foretag', systemRole:null, status:'deactivated', regDate:'2025-05-15', lastActive:'2025-11-14', teams:[{name:'Team Alpha',role:'member'}] },
+  { id:6, firstName:'Sofia', lastName:'Berg', email:'sofia.berg@foretag.se', username:'', phone:'070-555 66 77', org:'foretag', systemRole:null, status:'active', regDate:'2025-06-01', lastActive:'2026-01-30', teams:[{name:'Team Beta',role:'member'}] },
+  { id:7, firstName:'Karl', lastName:'Lindqvist', email:'karl.lindqvist@foretag.se', username:'karl.l', phone:'', org:'foretag', systemRole:null, status:'active', regDate:'2025-06-15', lastActive:'2026-02-01', teams:[{name:'Team Alpha',role:'member'},{name:'Stödgrupp',role:'member'}] },
+  { id:8, firstName:'Karin', lastName:'Holm', email:'karin.holm@foretag.se', username:'', phone:'070-666 77 88', org:'foretag', systemRole:null, status:'active', regDate:'2025-07-01', lastActive:'2026-02-07', teams:[{name:'Team Alpha',role:'member'}] },
+  { id:9, firstName:'Peter', lastName:'Ek', email:'peter.ek@foretag.se', username:'peter.e', phone:'', org:'foretag', systemRole:null, status:'pending', regDate:'2026-01-20', lastActive:'', teams:[{name:'Team Beta',role:'member'}] },
+  { id:10, firstName:'Eva', lastName:'Strand', email:'eva.strand@foretag.se', username:'', phone:'', org:'foretag', systemRole:null, status:'active', regDate:'2025-08-10', lastActive:'2026-01-28', teams:[{name:'Stödgrupp',role:'member'}] },
+  { id:11, firstName:'Johan', lastName:'Lund', email:'johan.lund@foretag.se', username:'johan.l', phone:'070-777 88 99', org:'foretag', systemRole:null, status:'active', regDate:'2025-09-01', lastActive:'2026-02-04', teams:[{name:'Team Beta',role:'member'}] },
+  { id:12, firstName:'Lisa', lastName:'Dahl', email:'lisa.dahl@foretag.se', username:'', phone:'', org:'foretag', systemRole:null, status:'active', regDate:'2025-09-15', lastActive:'2026-02-03', teams:[{name:'Team Alpha',role:'member'}] },
+  { id:13, firstName:'Magnus', lastName:'Borg', email:'magnus.borg@bolaget.se', username:'magnus.b', phone:'', org:'bolaget', systemRole:'company_admin', status:'active', regDate:'2025-04-01', lastActive:'2026-02-06', teams:[{name:'Team Gamma',role:'team_leader'}] },
+  { id:14, firstName:'Helena', lastName:'Falk', email:'helena.falk@bolaget.se', username:'', phone:'', org:'bolaget', systemRole:null, status:'active', regDate:'2025-05-01', lastActive:'2026-01-29', teams:[{name:'Team Gamma',role:'member'}] },
+  { id:15, firstName:'Oscar', lastName:'Gren', email:'oscar.gren@bolaget.se', username:'', phone:'', org:'bolaget', systemRole:null, status:'pending', regDate:'2026-02-01', lastActive:'', teams:[{name:'Team Gamma',role:'member'}] },
+];
+
+const TEAMS = [
+  { id:1, name:'Team Alpha', org:'foretag', memberCount:8, leaders:['Anna A.','Håkan F.'] },
+  { id:2, name:'Team Beta', org:'foretag', memberCount:5, leaders:['Erik S.'] },
+  { id:3, name:'Stödgrupp', org:'foretag', memberCount:3, leaders:[] },
+  { id:4, name:'Team Gamma', org:'bolaget', memberCount:3, leaders:['Magnus B.'] },
+];
+
+const ORGS = [
+  { id:1, name:'Företag AB', tier:'pro', teamCount:3, userCount:12 },
+  { id:2, name:'Bolaget HB', tier:'basic', teamCount:1, userCount:3 },
+  { id:3, name:'Org Tre', tier:'plus', teamCount:2, userCount:8 },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentTab = 'users';
+let roleFilter = 'all';
+let statusFilter = 'all';
+let currentPage = 1;
+const PAGE_SIZE = 8;
+let sortCol = 'name';
+let sortDir = 'asc';
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.admin-tab').forEach(t => { t.classList.remove('admin-tab--active'); t.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-panel--active'));
+  const tabBtn = document.getElementById('tab-'+tab);
+  if (tabBtn) { tabBtn.classList.add('admin-tab--active'); tabBtn.setAttribute('aria-selected','true'); }
+  document.getElementById('panel-'+tab).classList.add('tab-panel--active');
+  if (tab === 'teams') renderTeams();
+  if (tab === 'orgs') renderOrgs();
+}
+
+// ============================================================
+// FILTER & RENDER USERS
+// ============================================================
+function setFilter(type, btn, value) {
+  if (type === 'role') roleFilter = value;
+  if (type === 'status') statusFilter = value;
+  btn.parentElement.querySelectorAll('.segmented__btn').forEach(b => b.classList.remove('segmented__btn--active'));
+  btn.classList.add('segmented__btn--active');
+  currentPage = 1;
+  filterUsers();
+}
+
+function getFilteredUsers() {
+  const orgVal = document.getElementById('org-select').value;
+  const search = (document.getElementById('user-search').value || '').toLowerCase();
+  return USERS.filter(u => {
+    if (orgVal !== 'all' && u.org !== orgVal) return false;
+    if (roleFilter === 'super' && u.systemRole !== 'super_admin') return false;
+    if (roleFilter === 'admin' && u.systemRole !== 'company_admin') return false;
+    if (roleFilter === 'user' && u.systemRole !== null) return false;
+    if (statusFilter !== 'all' && u.status !== statusFilter) return false;
+    if (search) {
+      const full = (u.firstName+' '+u.lastName+' '+u.email).toLowerCase();
+      if (!full.includes(search)) return false;
+    }
+    return true;
+  });
+}
+
+function sortUsers(col) {
+  if (sortCol === col) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { sortCol = col; sortDir = 'asc'; }
+  filterUsers();
+}
+
+function filterUsers() {
+  let users = getFilteredUsers();
+  // Sort
+  users.sort((a,b) => {
+    let va, vb;
+    switch(sortCol) {
+      case 'name': va = a.firstName+' '+a.lastName; vb = b.firstName+' '+b.lastName; break;
+      case 'username': va = a.username||''; vb = b.username||''; break;
+      case 'email': va = a.email; vb = b.email; break;
+      case 'status': va = a.status; vb = b.status; break;
+      case 'role': va = a.systemRole||'zzz'; vb = b.systemRole||'zzz'; break;
+      default: va=''; vb='';
+    }
+    const cmp = va.localeCompare(vb, 'sv');
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
+  // Paginate
+  const total = users.length;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page = users.slice(start, start + PAGE_SIZE);
+
+  // Render table
+  const tbody = document.getElementById('users-tbody');
+  if (total === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--space-xl);color:var(--text-secondary);">Inga användare matchar din sökning. <button class="btn btn--outline btn--sm" style="margin-left:var(--space-md);" onclick="resetFilters()">Rensa filter</button></td></tr>';
+  } else {
+    tbody.innerHTML = page.map(u => {
+      const isLeader = u.teams.some(t => t.role === 'team_leader');
+      const leaderIcon = isLeader ? '<svg class="leader-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>' : '';
+      const roleBadge = u.systemRole === 'super_admin' ? '<span class="badge badge--super">Super Admin</span>' : u.systemRole === 'company_admin' ? '<span class="badge badge--admin">Company Admin</span>' : '<span class="badge badge--user">User</span>';
+      const statusBadge = u.status === 'active' ? '<span class="badge badge--active">Aktiv</span>' : u.status === 'pending' ? '<span class="badge badge--pending">Väntande</span>' : '<span class="badge badge--deactivated">Avaktiverad</span>';
+      return `<tr onclick="openUser(${u.id})"><td><strong>${leaderIcon}${u.firstName} ${u.lastName}</strong></td><td class="col-hide-sm">${u.username||'—'}</td><td>${u.email}</td><td>${statusBadge}</td><td>${roleBadge}</td></tr>`;
+    }).join('');
+  }
+
+  // Render pagination
+  const pag = document.getElementById('users-pagination');
+  if (total <= PAGE_SIZE) { pag.innerHTML = `<span>Visar ${total} av ${total} användare</span><span></span>`; return; }
+  let pagesHtml = '';
+  for (let i = 1; i <= totalPages; i++) {
+    pagesHtml += `<button class="pagination__btn ${i===currentPage?'pagination__btn--active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  pag.innerHTML = `<span>Visar ${start+1}–${Math.min(start+PAGE_SIZE,total)} av ${total} användare</span><div class="pagination__pages"><button class="pagination__btn" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>&laquo;</button>${pagesHtml}<button class="pagination__btn" onclick="goPage(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>&raquo;</button></div>`;
+}
+
+function goPage(p) { currentPage = p; filterUsers(); }
+function resetFilters() {
+  document.getElementById('user-search').value = '';
+  roleFilter = 'all'; statusFilter = 'all';
+  document.querySelectorAll('.segmented__btn').forEach(b => b.classList.remove('segmented__btn--active'));
+  document.querySelectorAll('.segmented__btn:first-child').forEach(b => b.classList.add('segmented__btn--active'));
+  currentPage = 1;
+  filterUsers();
+}
+
+// ============================================================
+// RENDER TEAMS
+// ============================================================
+function renderTeams() {
+  const orgVal = document.getElementById('org-select').value;
+  const filtered = orgVal === 'all' ? TEAMS : TEAMS.filter(t => t.org === orgVal || orgVal === 'foretag' && t.org === 'foretag');
+  const tbody = document.getElementById('teams-tbody');
+  tbody.innerHTML = filtered.map(t => {
+    const leaderStr = t.leaders.length ? t.leaders.join(', ') : '<span style="color:var(--text-secondary);">(ingen)</span>';
+    return `<tr>
+      <td><strong>${t.name}</strong></td>
+      <td>${t.memberCount}</td>
+      <td>${leaderStr}</td>
+      <td>
+        <button class="btn btn--outline btn--sm" onclick="openTeam(${t.id})" style="margin-right:var(--space-xs);" aria-label="Redigera ${t.name}">&#9998;</button>
+        <button class="btn btn--outline btn--sm" onclick="confirmDeleteTeam()" aria-label="Radera ${t.name}" style="color:var(--error);">&#10005;</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// RENDER ORGS
+// ============================================================
+function renderOrgs() {
+  const tbody = document.getElementById('orgs-tbody');
+  tbody.innerHTML = ORGS.map(o => {
+    const tierBadge = o.tier === 'pro' ? '<span class="badge badge--pro">Pro</span>' : o.tier === 'plus' ? '<span class="badge badge--plus">Plus</span>' : '<span class="badge badge--basic">Basic</span>';
+    return `<tr>
+      <td><strong style="cursor:pointer;text-decoration:underline;" onclick="openOrg(${o.id})">${o.name}</strong></td>
+      <td>${tierBadge}</td>
+      <td><a href="#" onclick="switchTab('teams');return false;" style="color:var(--text-primary);font-weight:700;">${o.teamCount}</a></td>
+      <td><a href="#" onclick="switchTab('users');return false;" style="color:var(--text-primary);font-weight:700;">${o.userCount}</a></td>
+      <td>
+        <button class="btn btn--outline btn--sm" onclick="openOrg(${o.id})" style="margin-right:var(--space-xs);" aria-label="Redigera ${o.name}">&#9998;</button>
+        <button class="btn btn--outline btn--sm" onclick="confirmDeleteOrg(${o.id})" aria-label="Radera ${o.name}" style="color:var(--error);">&#10005;</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// SLIDE-OVER: ORG
+// ============================================================
+function openOrg(id) {
+  const o = ORGS.find(x => x.id === id);
+  if (!o) return;
+  document.getElementById('so-org-title').textContent = 'Redigera: ' + o.name;
+  document.getElementById('so-org-name').value = o.name;
+  document.getElementById('so-org-tier').value = o.tier;
+  document.getElementById('so-org-teams').textContent = o.teamCount;
+  document.getElementById('so-org-users').textContent = o.userCount;
+  const delBtn = document.getElementById('org-delete-btn');
+  if (o.teamCount > 0 || o.userCount > 0) {
+    delBtn.disabled = true;
+    delBtn.title = 'Kan inte raderas — har team/användare';
+  } else {
+    delBtn.disabled = false;
+    delBtn.title = '';
+  }
+  openSlideOver('org-slideover');
+}
+
+function saveOrg() {
+  closeSlideOver();
+  showToast('Organisationen har uppdaterats');
+}
+
+function confirmDeleteOrg(id) {
+  const o = id ? ORGS.find(x => x.id === id) : null;
+  if (o && (o.teamCount > 0 || o.userCount > 0)) {
+    showDialog('Kan inte radera', 'Organisationen kan inte raderas eftersom den har ' + o.teamCount + ' team och ' + o.userCount + ' användare. Ta bort alla team och användare först.', null);
+    return;
+  }
+  showDialog('Radera Organisation', 'Är du säker på att du vill radera denna organisation? Åtgärden kan inte ångras.', () => {
+    closeSlideOver();
+    showToast('Organisationen har raderats');
+  });
+}
+
+// ============================================================
+// SLIDE-OVER: USER
+// ============================================================
+function openUser(id) {
+  const u = USERS.find(x => x.id === id);
+  if (!u) return;
+  document.getElementById('so-user-title').textContent = 'Användare: ' + u.firstName + ' ' + u.lastName;
+  document.getElementById('so-firstname').value = u.firstName;
+  document.getElementById('so-lastname').value = u.lastName;
+  document.getElementById('so-email').textContent = u.email;
+  document.getElementById('so-username').value = u.username || '';
+  document.getElementById('so-phone').value = u.phone || '';
+  // System role
+  const roleVal = u.systemRole || 'null';
+  document.querySelectorAll('input[name="so-sysrole"]').forEach(r => { r.checked = r.value === roleVal; });
+  // Teams
+  document.getElementById('so-team-count').textContent = u.teams.length;
+  const ttbody = document.getElementById('so-teams-tbody');
+  ttbody.innerHTML = u.teams.map(t => {
+    return `<tr><td>${t.name}</td><td><select class="form-select" style="min-height:32px;padding:2px 8px;font-size:12px;width:auto;"><option ${t.role==='team_leader'?'selected':''}>Team Leader</option><option ${t.role==='member'?'selected':''}>Medlem</option></select></td><td><button class="remove-btn" onclick="confirmRemoveFromTeam('${u.firstName} ${u.lastName}','${t.name}')" aria-label="Ta bort från ${t.name}">&times;</button></td></tr>`;
+  }).join('');
+  // Info
+  document.getElementById('so-org').textContent = u.org === 'foretag' ? 'Företag AB' : u.org === 'bolaget' ? 'Bolaget HB' : 'Org Tre';
+  document.getElementById('so-regdate').textContent = u.regDate;
+  const statusBadge = u.status === 'active' ? '<span class="badge badge--active">Aktiv</span>' : u.status === 'pending' ? '<span class="badge badge--pending">Väntande</span>' : '<span class="badge badge--deactivated">Avaktiverad</span>';
+  document.getElementById('so-status').innerHTML = statusBadge;
+  document.getElementById('so-lastactive').textContent = u.lastActive || '—';
+  openSlideOver('user-slideover');
+}
+
+function saveUser() {
+  closeSlideOver();
+  showToast('Användaren har uppdaterats');
+}
+
+// ============================================================
+// SLIDE-OVER: TEAM
+// ============================================================
+function openTeam(id) {
+  const t = TEAMS.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('so-team-title').textContent = 'Redigera Team: ' + t.name;
+  document.getElementById('so-team-name').value = t.name;
+  document.getElementById('so-team-member-count').textContent = t.memberCount;
+  // Find members
+  const members = USERS.filter(u => u.teams.some(tm => tm.name === t.name));
+  const mtbody = document.getElementById('so-team-members-tbody');
+  mtbody.innerHTML = members.map(u => {
+    const tm = u.teams.find(x => x.name === t.name);
+    return `<tr onclick="openUser(${u.id})" style="cursor:pointer;"><td><strong>${u.firstName} ${u.lastName}</strong></td><td><select class="form-select" style="min-height:32px;padding:2px 8px;font-size:12px;width:auto;" onclick="event.stopPropagation()"><option ${tm.role==='team_leader'?'selected':''}>Team Leader</option><option ${tm.role==='member'?'selected':''}>Medlem</option></select></td><td><button class="remove-btn" onclick="event.stopPropagation();showToast('Medlem borttagen')" aria-label="Ta bort ${u.firstName}">&times;</button></td></tr>`;
+  }).join('');
+  openSlideOver('team-slideover');
+}
+
+function openCreateTeam() {
+  document.getElementById('so-team-title').textContent = 'Skapa Nytt Team';
+  document.getElementById('so-team-name').value = '';
+  document.getElementById('so-team-member-count').textContent = '0';
+  document.getElementById('so-team-members-tbody').innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-secondary);padding:var(--space-lg);">Inga medlemmar ännu</td></tr>';
+  openSlideOver('team-slideover');
+}
+
+function saveTeam() {
+  closeSlideOver();
+  showToast('Teamet har sparats');
+}
+
+// ============================================================
+// SLIDE-OVER: INVITE
+// ============================================================
+function openInvite() { openSlideOver('invite-slideover'); }
+
+function switchInviteTab(tab, btn) {
+  document.querySelectorAll('.invite-tab').forEach(t => t.classList.remove('invite-tab--active'));
+  document.querySelectorAll('.invite-panel').forEach(p => p.classList.remove('invite-panel--active'));
+  btn.classList.add('invite-tab--active');
+  document.getElementById('invite-'+tab).classList.add('invite-panel--active');
+}
+
+function sendInvite() {
+  const email = document.getElementById('invite-email').value;
+  if (!email) { document.getElementById('invite-email').focus(); return; }
+  closeSlideOver();
+  showToast('Inbjudan har skickats till ' + email);
+  document.getElementById('invite-email').value = '';
+}
+
+// ============================================================
+// SLIDE-OVER GENERIC
+// ============================================================
+function openSlideOver(id) {
+  closeSlideOver(); // close any open
+  document.getElementById('overlay').classList.add('overlay--visible');
+  document.getElementById(id).classList.add('slide-over--open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSlideOver() {
+  document.getElementById('overlay').classList.remove('overlay--visible');
+  document.querySelectorAll('.slide-over').forEach(s => s.classList.remove('slide-over--open'));
+  document.body.style.overflow = '';
+}
+
+// ESC to close
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDialog(); closeSlideOver(); } });
+
+// ============================================================
+// CONFIRM DIALOGS
+// ============================================================
+function showDialog(title, text, onConfirm) {
+  document.getElementById('dialog-title').textContent = title;
+  document.getElementById('dialog-text').textContent = text;
+  document.getElementById('confirm-dialog').classList.add('dialog-overlay--visible');
+  const btn = document.getElementById('dialog-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'Vänta...';
+  setTimeout(() => { btn.disabled = false; btn.textContent = title; }, 1000);
+  btn.onclick = () => { closeDialog(); if (onConfirm) onConfirm(); };
+}
+
+function closeDialog() {
+  document.getElementById('confirm-dialog').classList.remove('dialog-overlay--visible');
+}
+
+function confirmDeactivate() {
+  const name = document.getElementById('so-firstname').value + ' ' + document.getElementById('so-lastname').value;
+  showDialog('Avaktivera Konto', 'Är du säker på att du vill avaktivera ' + name + '? Användarens personuppgifter anonymiseras. Denna åtgärd kan inte ångras.', () => {
+    closeSlideOver();
+    showToast(name + ' har avaktiverats');
+  });
+}
+
+function confirmRemoveFromTeam(userName, teamName) {
+  showDialog('Ta Bort Från Team', userName + ' förlorar tillgång till ' + teamName + ' och dess data (åtgärder, idéer, mätningar). Vill du fortsätta?', () => {
+    showToast(userName + ' borttagen från ' + teamName);
+  });
+}
+
+function confirmDeleteTeam() {
+  showDialog('Radera Team', 'Teamet kan inte raderas eftersom det har aktiva medlemmar. Ta bort alla medlemmar först.', null);
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+filterUsers();
+</script>
+</body>
+</html>

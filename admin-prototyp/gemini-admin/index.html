@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Prototype - Clean Design</title>
+<style>
+/* --- THEME: C-BOLDNESS --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #ffffff; --bg-secondary: #f0f0f0; --bg-dark: #0a0a0a;
+  --text-primary: #0a0a0a; --text-secondary: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333333; --accent-inverse: #ffffff;
+  --highlight: #ffcc00; --highlight-soft: rgba(255, 204, 0, 0.12);
+  --success: #00a854; --warning: #fa8c16; --error: #e6001a;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px;
+}
+[data-theme="dark"] {
+  --bg-primary: #0a0a0a; --bg-secondary: #161616;
+  --text-primary: #f0f0f0; --text-secondary: #888888;
+  --border: #2a2a2a; --border-strong: #f0f0f0;
+  --accent: #ffffff; --accent-hover: #cccccc; --accent-inverse: #0a0a0a;
+}
+body { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; color: var(--text-primary); background: var(--bg-primary); overflow-x: hidden; }
+
+/* --- COMPONENTS --- */
+.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--highlight); padding: 0 var(--space-lg); color: #fff; display: flex; align-items: stretch; justify-content: space-between; }
+.top-nav__logo { display: flex; align-items: center; gap: var(--space-sm); color: var(--highlight); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; padding: var(--space-md) 0; border-right: 2px solid #333; padding-right: var(--space-lg); margin-right: var(--space-md); }
+.top-nav__link { display: flex; align-items: center; padding: 0 var(--space-md); color: #ccc; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.06em; border-bottom: 3px solid transparent; margin-bottom: -3px; transition: 0.2s; }
+.top-nav__link:hover { color: #fff; }
+.top-nav__link--active { color: var(--highlight); border-bottom-color: var(--highlight); }
+
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--space-lg) var(--space-3xl); }
+.page-header { display: flex; align-items: flex-end; justify-content: space-between; padding: var(--space-xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--space-lg); }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; }
+
+/* Tabs */
+.tabs { display: flex; gap: var(--space-sm); }
+.tab-btn { background: none; border: 2px solid transparent; border-bottom: none; font-family: inherit; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: var(--space-sm) var(--space-lg); cursor: pointer; color: var(--text-secondary); transition: 0.2s; }
+.tab-btn:hover { color: var(--text-primary); background: var(--bg-secondary); }
+.tab-btn.active { border-color: var(--border-strong); border-bottom-color: var(--bg-primary); color: var(--text-primary); margin-bottom: -3px; background: var(--bg-primary); padding-bottom: calc(var(--space-sm) + 3px); z-index: 1; }
+
+/* Tables */
+.data-table { width: 100%; border-collapse: collapse; margin-bottom: var(--space-lg); }
+.data-table th { background: var(--accent); color: var(--accent-inverse); text-align: left; padding: var(--space-md); font-weight: 900; text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; }
+.data-table td { border: 2px solid var(--border-strong); padding: var(--space-md); vertical-align: middle; }
+.data-table tr:hover td { background: var(--highlight-soft); }
+
+/* Badges & Buttons */
+.badge { display: inline-block; padding: 4px 8px; font-size: 10px; font-weight: 900; text-transform: uppercase; border: 2px solid; letter-spacing: 0.05em; }
+.badge--success { background: #e6f7e9; color: var(--success); border-color: var(--success); }
+.badge--warning { background: #fff7e6; color: var(--warning); border-color: var(--warning); }
+.badge--role { background: var(--bg-secondary); border-color: var(--text-secondary); color: var(--text-secondary); }
+.badge--role.admin { background: var(--accent); color: var(--accent-inverse); border-color: var(--accent); }
+.badge--role.leader { background: var(--highlight); color: var(--bg-dark); border-color: var(--bg-dark); }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 2px solid var(--border-strong); background: var(--bg-primary); color: var(--text-primary); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; cursor: pointer; transition: 0.2s; text-decoration: none; }
+.btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--border-strong); }
+.btn--primary { background: var(--accent); color: var(--accent-inverse); border-color: var(--accent); }
+.btn--primary:hover { box-shadow: 4px 4px 0 var(--highlight); }
+.btn--danger { color: var(--error); border-color: var(--error); }
+.btn--danger:hover { background: var(--error); color: white; box-shadow: 4px 4px 0 #990000; }
+
+/* Slide-over */
+.slide-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s; }
+.slide-overlay.open { opacity: 1; pointer-events: auto; }
+.slide-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 500px; max-width: 90%; background: var(--bg-primary); border-left: 4px solid var(--highlight); transform: translateX(100%); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); padding: var(--space-xl); display: flex; flex-direction: column; z-index: 2001; box-shadow: -10px 0 30px rgba(0,0,0,0.2); }
+.slide-overlay.open .slide-panel { transform: translateX(0); }
+.slide-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg); padding-bottom: var(--space-md); border-bottom: 2px solid var(--border-strong); }
+.slide-title { font-size: 18px; font-weight: 900; text-transform: uppercase; }
+.close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary); }
+.close-btn:hover { color: var(--error); }
+
+/* Forms in Slide-over */
+.form-group { margin-bottom: var(--space-lg); }
+.form-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: var(--space-xs); }
+.form-input, .form-select { width: 100%; padding: 12px; border: 2px solid var(--border-strong); background: var(--bg-secondary); font-family: inherit; font-size: 14px; }
+.form-input:focus, .form-select:focus { outline: none; border-color: var(--highlight); background: var(--bg-primary); }
+
+/* Toast */
+.toast-container { position: fixed; top: 80px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--bg-dark); color: white; padding: 16px; border-left: 4px solid var(--highlight); box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 13px; font-weight: 600; min-width: 300px; transform: translateX(100%); transition: 0.3s; opacity: 0; }
+.toast.show { transform: translateX(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="top-nav">
+  <a href="#" class="top-nav__logo">INTEGRAL TOOLKIT | ADMIN</a>
+  <div style="display: flex;">
+    <a href="#" class="top-nav__link">Tillbaka till App</a>
+    <a href="#" class="top-nav__link top-nav__link--active">Admin</a>
+  </div>
+</nav>
+
+<main class="main">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">Administration</h1>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('users')">Användare</button>
+      <button class="tab-btn" onclick="switchTab('teams')">Team</button>
+      <button class="tab-btn" onclick="switchTab('org')">Organisation</button>
+    </div>
+  </div>
+
+  <!-- Content Views -->
+  <div id="view-users" class="view-section">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+      <div style="font-weight: 700; text-transform: uppercase;">Organisation: <span style="color: var(--text-secondary);">Acme Corp</span></div>
+      <button class="btn btn--primary" onclick="openInviteModal()">+ Bjud in användare</button>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Namn</th><th>E-post</th><th>Team</th><th>Roll</th><th>Status</th><th>Åtgärd</th></tr></thead>
+      <tbody id="user-table-body"><!-- Populated by JS --></tbody>
+    </table>
+  </div>
+
+  <div id="view-teams" class="view-section" style="display:none;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+      <div></div>
+      <button class="btn btn--primary" onclick="alert('Demo: Skapa team')">+ Skapa Team</button>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Teamnamn</th><th>Medlemmar</th><th>Team Leader</th><th>Åtgärd</th></tr></thead>
+      <tbody id="team-table-body"><!-- Populated by JS --></tbody>
+    </table>
+  </div>
+
+  <div id="view-org" class="view-section" style="display:none;">
+    <div class="form-group" style="max-width: 600px;">
+      <label class="form-label">Organisationens Namn</label>
+      <input type="text" class="form-input" value="Acme Corp" readonly>
+    </div>
+    <div class="form-group" style="max-width: 600px;">
+      <label class="form-label">Abonnemang</label>
+      <div class="badge badge--role admin" style="font-size: 14px;">PRO</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Slide-over: Invite User -->
+<div class="slide-overlay" id="invite-overlay" onclick="closeInviteModal(event)">
+  <div class="slide-panel">
+    <div class="slide-header">
+      <div class="slide-title">Bjud In Användare</div>
+      <button class="close-btn" onclick="closeInviteModal()">×</button>
+    </div>
+    <div class="slide-body">
+      <div class="form-group">
+        <label class="form-label">E-postadress</label>
+        <input type="email" id="invite-email" class="form-input" placeholder="exempel@acme.se">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Förnamn</label>
+        <input type="text" id="invite-fname" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Efternamn</label>
+        <input type="text" id="invite-lname" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Team</label>
+        <select id="invite-team" class="form-select">
+          <option value="">Välj team...</option>
+          <!-- Populated by JS -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Roll i Teamet</label>
+        <div style="display: flex; gap: 10px; margin-top: 8px;">
+          <label><input type="radio" name="role" value="member" checked> Medlem</label>
+          <label><input type="radio" name="role" value="leader"> Team Leader</label>
+        </div>
+      </div>
+      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border);">
+        <button class="btn btn--primary" style="width: 100%; justify-content: center;" onclick="submitInvite()">Skicka Inbjudan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide-over: Edit User -->
+<div class="slide-overlay" id="edit-user-overlay" onclick="closeEditUserModal(event)">
+  <div class="slide-panel">
+    <div class="slide-header">
+      <div class="slide-title">Redigera Användare</div>
+      <button class="close-btn" onclick="closeEditUserModal()">×</button>
+    </div>
+    <div class="slide-body">
+      <input type="hidden" id="edit-user-id">
+      <div class="form-group">
+        <label class="form-label">Förnamn</label>
+        <input type="text" id="edit-user-fname" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Efternamn</label>
+        <input type="text" id="edit-user-lname" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-post (Read-only)</label>
+        <input type="email" id="edit-user-email" class="form-input" readonly style="background: #e9e9e9; cursor: not-allowed;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Team</label>
+        <select id="edit-user-team" class="form-select">
+          <!-- Populated by JS -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Roll i Teamet</label>
+        <div style="display: flex; gap: 10px; margin-top: 8px;">
+          <label><input type="radio" name="edit-role" id="role-member" value="member"> Medlem</label>
+          <label><input type="radio" name="edit-role" id="role-leader" value="leader"> Team Leader</label>
+        </div>
+      </div>
+      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); display: flex; gap: 10px;">
+        <button class="btn btn--primary" style="flex: 1; justify-content: center;" onclick="saveUser()">Spara ändringar</button>
+        <button class="btn btn--danger" onclick="deleteUser()">Inaktivera</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide-over: Edit Team -->
+<div class="slide-overlay" id="edit-team-overlay" onclick="closeEditTeamModal(event)">
+  <div class="slide-panel">
+    <div class="slide-header">
+      <div class="slide-title">Redigera Team</div>
+      <button class="close-btn" onclick="closeEditTeamModal()">×</button>
+    </div>
+    <div class="slide-body">
+      <input type="hidden" id="edit-team-id">
+      <div class="form-group">
+        <label class="form-label">Teamnamn</label>
+        <input type="text" id="edit-team-name" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Organisation</label>
+        <input type="text" value="Acme Corp" class="form-input" readonly style="background: #e9e9e9; cursor: not-allowed;">
+      </div>
+      <div style="margin-top: var(--space-lg);">
+        <h4 class="form-label">Medlemmar i teamet</h4>
+        <ul id="team-members-list" style="list-style: none; margin-top: var(--space-sm);">
+          <!-- Populated by JS -->
+        </ul>
+      </div>
+      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border);">
+        <button class="btn btn--primary" style="width: 100%; justify-content: center;" onclick="saveTeam()">Spara Team</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// --- MOCK DATA ---
+let teams = [
+  { id: 't1', name: 'Team Alpha', members: 4, leader: 'Anna Andersson' },
+  { id: 't2', name: 'Team Beta', members: 3, leader: 'Erik Svensson' },
+  { id: 't3', name: 'Management', members: 5, leader: 'Maria Chef' }
+];
+
+let users = [
+  { id: 'u1', fname: 'Anna', lname: 'Andersson', email: 'anna.a@acme.se', role: 'leader', team: 'Team Alpha', status: 'active' },
+  { id: 'u2', fname: 'Erik', lname: 'Svensson', email: 'erik.s@acme.se', role: 'leader', team: 'Team Beta', status: 'active' },
+  { id: 'u3', fname: 'Johan', lname: 'Falk', email: 'johan.f@acme.se', role: 'member', team: 'Team Alpha', status: 'pending' },
+  { id: 'u4', fname: 'Lisa', lname: 'Nilsson', email: 'lisa.n@acme.se', role: 'member', team: 'Team Beta', status: 'active' }
+];
+
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+  renderUsers();
+  renderTeams();
+  populateTeamSelects();
+});
+
+// --- RENDER FUNCTIONS ---
+function renderUsers() {
+  const tbody = document.getElementById('user-table-body');
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td><strong>${u.fname} ${u.lname}</strong></td>
+      <td><a href="mailto:${u.email}" style="color:inherit;">${u.email}</a></td>
+      <td>${u.team}</td>
+      <td><span class="badge badge--role ${u.role}">${u.role === 'leader' ? 'Team Leader' : 'Medlem'}</span></td>
+      <td><span class="badge ${u.status === 'active' ? 'badge--success' : 'badge--warning'}">${u.status.toUpperCase()}</span></td>
+      <td><button class="btn" onclick="openEditUserModal('${u.id}')" style="padding:4px 8px; font-size:10px;">Redigera</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderTeams() {
+  const tbody = document.getElementById('team-table-body');
+  tbody.innerHTML = teams.map(t => `
+    <tr>
+      <td><strong>${t.name}</strong></td>
+      <td>${t.members} st</td>
+      <td>${t.leader || '-'}</td>
+      <td><button class="btn" onclick="openEditTeamModal('${t.id}')" style="padding:4px 8px; font-size:10px;">Inställningar</button></td>
+    </tr>
+  `).join('');
+}
+
+function populateTeamSelects() {
+  const inviteSelect = document.getElementById('invite-team');
+  const editSelect = document.getElementById('edit-user-team');
+  
+  const options = '<option value="">Välj team...</option>' + 
+    teams.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+    
+  if (inviteSelect) inviteSelect.innerHTML = options;
+  if (editSelect) editSelect.innerHTML = options;
+}
+
+// --- TAB SWITCHING ---
+function switchTab(tabName) {
+  document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
+  document.getElementById(`view-${tabName}`).style.display = 'block';
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+// --- SLIDE OVER: INVITE ---
+function openInviteModal() {
+  document.getElementById('invite-overlay').classList.add('open');
+}
+
+function closeInviteModal(e) {
+  if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+  document.getElementById('invite-overlay').classList.remove('open');
+  ['invite-email', 'invite-fname', 'invite-lname', 'invite-team'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function submitInvite() {
+  const email = document.getElementById('invite-email').value;
+  const team = document.getElementById('invite-team').value;
+  if(!email || !team) {
+    showToast('Fyll i alla fält!', 'error');
+    return;
+  }
+  showToast(`Inbjudan skickad till ${email} för ${team}!`);
+  closeInviteModal();
+}
+
+// --- SLIDE OVER: EDIT USER ---
+function openEditUserModal(userId) {
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+  
+  document.getElementById('edit-user-id').value = user.id;
+  document.getElementById('edit-user-fname').value = user.fname;
+  document.getElementById('edit-user-lname').value = user.lname;
+  document.getElementById('edit-user-email').value = user.email;
+  document.getElementById('edit-user-team').value = user.team;
+  
+  if (user.role === 'leader') {
+    document.getElementById('role-leader').checked = true;
+  } else {
+    document.getElementById('role-member').checked = true;
+  }
+  
+  document.getElementById('edit-user-overlay').classList.add('open');
+}
+
+function closeEditUserModal(e) {
+  if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+  document.getElementById('edit-user-overlay').classList.remove('open');
+}
+
+function saveUser() {
+  const id = document.getElementById('edit-user-id').value;
+  const userIdx = users.findIndex(u => u.id === id);
+  
+  if (userIdx !== -1) {
+    users[userIdx].fname = document.getElementById('edit-user-fname').value;
+    users[userIdx].lname = document.getElementById('edit-user-lname').value;
+    users[userIdx].team = document.getElementById('edit-user-team').value;
+    users[userIdx].role = document.querySelector('input[name="edit-role"]:checked').value;
+    
+    renderUsers();
+    showToast('Användaren har sparats!');
+    closeEditUserModal();
+  }
+}
+
+function deleteUser() {
+  if (confirm('Är du säker på att du vill inaktivera denna användare?')) {
+    const id = document.getElementById('edit-user-id').value;
+    users = users.filter(u => u.id !== id);
+    renderUsers();
+    showToast('Användaren har inaktiverats.', 'warning');
+    closeEditUserModal();
+  }
+}
+
+// --- SLIDE OVER: EDIT TEAM ---
+function openEditTeamModal(teamId) {
+  const team = teams.find(t => t.id === teamId);
+  if (!team) return;
+  
+  document.getElementById('edit-team-id').value = team.id;
+  document.getElementById('edit-team-name').value = team.name;
+  
+  const members = users.filter(u => u.team === team.name);
+  const list = document.getElementById('team-members-list');
+  list.innerHTML = members.map(m => `
+    <li style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+      <span>${m.fname} ${m.lname}</span>
+      <span class="badge badge--role ${m.role}">${m.role === 'leader' ? 'Leader' : 'Member'}</span>
+    </li>
+  `).join('') || '<li style="color: var(--text-secondary); padding: 8px 0;">Inga medlemmar hittades</li>';
+  
+  document.getElementById('edit-team-overlay').classList.add('open');
+}
+
+function closeEditTeamModal(e) {
+  if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+  document.getElementById('edit-team-overlay').classList.remove('open');
+}
+
+function saveTeam() {
+  const id = document.getElementById('edit-team-id').value;
+  const teamIdx = teams.findIndex(t => t.id === id);
+  
+  if (teamIdx !== -1) {
+    const oldName = teams[teamIdx].name;
+    const newName = document.getElementById('edit-team-name').value;
+    
+    teams[teamIdx].name = newName;
+    
+    // Update users in this team
+    users.forEach(u => {
+      if (u.team === oldName) u.team = newName;
+    });
+    
+    renderTeams();
+    renderUsers();
+    populateTeamSelects();
+    showToast('Teamet har uppdaterats!');
+    closeEditTeamModal();
+  }
+}
+
+// --- UTILS ---
+function showToast(msg, type='success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  if(type === 'error') toast.style.borderLeftColor = 'var(--error)';
+  if(type === 'warning') toast.style.borderLeftColor = 'var(--warning)';
+  toast.innerText = msg;
+  container.appendChild(toast);
+  
+  requestAnimationFrame(() => toast.classList.add('show'));
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+</script>
+</body>
+</html>
