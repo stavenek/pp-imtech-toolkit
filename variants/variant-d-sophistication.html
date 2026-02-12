@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Users - Variant D: Sophistication</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f7f8fa;
+      --bg-tertiary: #eef1f5;
+      --bg-sidebar: #1e2a3a;
+      --text-primary: #1a2332;
+      --text-secondary: #627088;
+      --text-sidebar: #ffffff;
+      --border: #dfe3ea;
+      --border-light: #eef1f5;
+      --accent: #3366cc;
+      --accent-hover: #2952a3;
+      --accent-light: rgba(51, 102, 204, 0.06);
+      --accent-muted: #8faad9;
+      --success: #2e7d5b;
+      --success-bg: rgba(46, 125, 91, 0.06);
+      --warning: #b8860b;
+      --warning-bg: rgba(184, 134, 11, 0.06);
+      --error: #c0392b;
+      --error-bg: rgba(192, 57, 43, 0.06);
+
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+
+      --shadow-xs: 0 1px 2px rgba(26, 35, 50, 0.04);
+      --shadow-sm: 0 1px 4px rgba(26, 35, 50, 0.06), 0 1px 2px rgba(26, 35, 50, 0.04);
+      --shadow-md: 0 4px 8px rgba(26, 35, 50, 0.06), 0 2px 4px rgba(26, 35, 50, 0.04);
+      --shadow-lg: 0 8px 20px rgba(26, 35, 50, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #141a24;
+      --bg-secondary: #1a2230;
+      --bg-tertiary: #202a3a;
+      --bg-sidebar: #0d1218;
+      --text-primary: #dce2ea;
+      --text-secondary: #8090a8;
+      --border: #2a3648;
+      --border-light: #1f2a3a;
+      --accent: #5588dd;
+      --accent-hover: #6699ee;
+      --accent-light: rgba(85, 136, 221, 0.1);
+      --shadow-xs: 0 1px 2px rgba(0,0,0,0.2);
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.25);
+      --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
+      --shadow-lg: 0 8px 20px rgba(0,0,0,0.35);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-primary: #141a24;
+        --bg-secondary: #1a2230;
+        --bg-tertiary: #202a3a;
+        --bg-sidebar: #0d1218;
+        --text-primary: #dce2ea;
+        --text-secondary: #8090a8;
+        --border: #2a3648;
+        --border-light: #1f2a3a;
+        --accent: #5588dd;
+        --accent-hover: #6699ee;
+        --accent-light: rgba(85, 136, 221, 0.1);
+        --shadow-xs: 0 1px 2px rgba(0,0,0,0.2);
+        --shadow-sm: 0 1px 4px rgba(0,0,0,0.25);
+        --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
+        --shadow-lg: 0 8px 20px rgba(0,0,0,0.35);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      z-index: 100;
+    }
+    .skip-link:focus { top: 0; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--bg-sidebar);
+      color: var(--text-sidebar);
+      padding: var(--space-lg) 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 0 var(--space-lg) var(--space-lg);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .sidebar-logo {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-header h1 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .sidebar nav { flex: 1; }
+    .sidebar nav ul { list-style: none; padding: 0; margin: 0; }
+
+    .sidebar-section-label {
+      padding: var(--space-md) var(--space-lg) var(--space-sm);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-lg);
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      font-size: 0.875rem;
+      min-height: 40px;
+      border-radius: 0;
+      transition: all 0.15s;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a:focus {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .sidebar nav a[aria-current="page"] {
+      color: white;
+      background: rgba(255,255,255,0.1);
+      border-right: 3px solid var(--accent);
+    }
+
+    .sidebar nav a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+    }
+
+    .sidebar-footer {
+      padding: var(--space-md) var(--space-lg);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .sidebar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top bar */
+    .topbar {
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-md) var(--space-xl);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .breadcrumb a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    /* Content area */
+    .content {
+      flex: 1;
+      padding: var(--space-xl);
+      overflow-y: auto;
+    }
+
+    .content-inner {
+      max-width: 820px;
+    }
+
+    /* Page header */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    .page-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-muted));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .page-header-info {
+      flex: 1;
+    }
+
+    .page-header-info h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .page-header-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-top: var(--space-xs);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* Badges */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .chip::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .chip-active { color: var(--success); background: var(--success-bg); }
+    .chip-inactive { color: var(--text-secondary); background: var(--bg-tertiary); }
+    .chip-pending { color: var(--warning); background: var(--warning-bg); }
+
+    .chip-role {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+    .chip-role::before { display: none; }
+
+    /* Card */
+    .card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-lg);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .card-subtitle {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .card-body {
+      padding: var(--space-lg);
+    }
+
+    /* Form grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .form-grid .span-2 { grid-column: 1 / -1; }
+
+    /* Form group */
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .fg-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .fg-label .req { color: var(--error); }
+
+    .fg-input {
+      padding: 10px var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 44px;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .fg-input:hover { border-color: var(--accent-muted); }
+
+    .fg-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .fg-input[aria-invalid="true"] { border-color: var(--error); }
+    .fg-input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px var(--error-bg); }
+
+    textarea.fg-input { min-height: 80px; resize: vertical; }
+    select.fg-input { cursor: pointer; }
+
+    .fg-hint {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .fg-error {
+      font-size: 0.75rem;
+      color: var(--error);
+    }
+
+    /* Role selector - segmented control */
+    .segmented-control {
+      display: inline-flex;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .seg-option {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .seg-option input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .seg-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--radius-sm);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      min-height: 36px;
+    }
+
+    .seg-option:hover .seg-label {
+      color: var(--text-primary);
+    }
+
+    .seg-option input:checked + .seg-label {
+      background: var(--bg-primary);
+      color: var(--accent);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+
+    .seg-option input:focus-visible + .seg-label {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    /* Permission rows */
+    .perm-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .perm-table td {
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    .perm-table tr:last-child td { border-bottom: none; }
+
+    .perm-name {
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .perm-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .perm-toggle {
+      text-align: right;
+    }
+
+    /* Pill toggle */
+    .pill-toggle {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+
+    .pill-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .pill-track {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--border);
+      border-radius: 11px;
+      transition: background 0.2s;
+    }
+
+    .pill-track::before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .pill-toggle input:checked + .pill-track {
+      background: var(--accent);
+    }
+
+    .pill-toggle input:checked + .pill-track::before {
+      transform: translateX(18px);
+    }
+
+    .pill-toggle input:focus-visible + .pill-track {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Status select card */
+    .status-select {
+      display: flex;
+      gap: var(--space-md);
+    }
+
+    .status-card {
+      flex: 1;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .status-card input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .status-card-inner {
+      padding: var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+      transition: all 0.2s;
+      min-height: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .status-card:hover .status-card-inner {
+      border-color: var(--accent-muted);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .status-card input:checked + .status-card-inner {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .status-card input:focus-visible + .status-card-inner {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .status-card-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .dot-active { background: var(--success); }
+    .dot-inactive { background: var(--text-secondary); }
+    .dot-pending { background: var(--warning); }
+
+    .status-card-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: 10px var(--space-lg);
+      border-radius: var(--radius-sm);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      min-height: 40px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-secondary);
+      border-color: var(--accent-muted);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+    .btn-ghost:hover {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+
+    .btn-danger-ghost {
+      background: transparent;
+      color: var(--error);
+    }
+    .btn-danger-ghost:hover {
+      background: var(--error-bg);
+    }
+
+    .btn-sm {
+      padding: 6px var(--space-md);
+      font-size: 0.75rem;
+      min-height: 32px;
+    }
+
+    /* Card footer */
+    .card-footer {
+      padding: var(--space-md) var(--space-lg);
+      border-top: 1px solid var(--border-light);
+      background: var(--bg-secondary);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    /* Info block */
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-lg);
+    }
+
+    .info-row svg {
+      flex-shrink: 0;
+    }
+
+    /* Danger card */
+    .card-danger {
+      border-color: var(--error);
+      border-style: dashed;
+    }
+
+    .card-danger .card-header {
+      border-bottom-color: var(--error-bg);
+    }
+
+    .card-danger .card-title {
+      color: var(--error);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .content { padding: var(--space-md); }
+      .form-grid { grid-template-columns: 1fr; }
+      .segmented-control { flex-direction: column; width: 100%; }
+      .seg-label { justify-content: center; }
+      .status-select { flex-direction: column; }
+      .card-footer { flex-direction: column; }
+      .card-footer .btn { width: 100%; }
+      .topbar { padding: var(--space-md); }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Hoppa till huvudinnehall</a>
+
+  <div class="layout">
+    <aside class="sidebar" role="complementary" aria-label="Sidomeny">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/></svg>
+        </div>
+        <h1>Platform</h1>
+      </div>
+      <nav aria-label="Huvudnavigation">
+        <div class="sidebar-section-label">Oversikt</div>
+        <ul>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="7" height="7" rx="2"/><rect x="10" y="1" width="7" height="7" rx="2"/><rect x="1" y="10" width="7" height="7" rx="2"/><rect x="10" y="10" width="7" height="7" rx="2"/></svg>
+            Dashboard
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h14M2 9h14M2 14h7"/></svg>
+            Rapporter
+          </a></li>
+        </ul>
+        <div class="sidebar-section-label">Hantera</div>
+        <ul>
+          <li><a href="#" aria-current="page">
+            <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="6" r="3.5"/><path d="M2.5 16.5c0-3.5 2.5-6 6.5-6s6.5 2.5 6.5 6"/></svg>
+            Anvandare
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="14" height="11" rx="2"/><path d="M2 7h14"/></svg>
+            Produkter
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 3h10v13l-5-2.5L4 16V3z"/></svg>
+            Ordrar
+          </a></li>
+        </ul>
+        <div class="sidebar-section-label">System</div>
+        <ul>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="7"/><circle cx="9" cy="9" r="2.5"/><path d="M9 2v1.5M9 14.5v1.5M2 9h1.5M14.5 9h1.5"/></svg>
+            Installningar
+          </a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-avatar">TB</div>
+        <span>Tobbe B.</span>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <nav class="breadcrumb" aria-label="Brodsmuler">
+            <a href="#">Anvandare</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Anna Andersson</span>
+          </nav>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm">Visa profil</button>
+          <button class="btn btn-ghost btn-sm">Skicka meddelande</button>
+        </div>
+      </div>
+
+      <div class="content" id="main-content" role="main">
+        <div class="content-inner">
+          <!-- Page header -->
+          <header class="page-header">
+            <div class="page-avatar">AA</div>
+            <div class="page-header-info">
+              <h2>Anna Andersson</h2>
+              <div class="page-header-meta">
+                <span class="chip chip-active">Aktiv</span>
+                <span class="chip chip-role">Admin</span>
+                <span>Skapad 15 jan 2024</span>
+              </div>
+            </div>
+          </header>
+
+          <form novalidate>
+            <!-- Personal info card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Personlig information</h3>
+                  <span class="card-subtitle">Namn, kontakt och organisationstillhorighet</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="fg">
+                    <label class="fg-label" for="fname">Fornamn <span class="req">*</span></label>
+                    <input type="text" id="fname" class="fg-input" value="Anna" required autocomplete="given-name" />
+                  </div>
+                  <div class="fg">
+                    <label class="fg-label" for="lname">Efternamn <span class="req">*</span></label>
+                    <input type="text" id="lname" class="fg-input" value="Andersson" required autocomplete="family-name" />
+                  </div>
+                  <div class="fg span-2">
+                    <label class="fg-label" for="email">E-postadress <span class="req">*</span></label>
+                    <input type="email" id="email" class="fg-input" value="anna.andersson@example.com" required autocomplete="email" aria-describedby="email-hint" />
+                    <span id="email-hint" class="fg-hint">Anvands for inloggning och systemmeddelanden.</span>
+                  </div>
+                  <div class="fg">
+                    <label class="fg-label" for="phone">Telefonnummer</label>
+                    <input type="tel" id="phone" class="fg-input" value="+46 70 123 45 67" autocomplete="tel" />
+                  </div>
+                  <div class="fg">
+                    <label class="fg-label" for="dept">Avdelning</label>
+                    <select id="dept" class="fg-input">
+                      <option value="">Valj avdelning</option>
+                      <option value="sales" selected>Forsaljning</option>
+                      <option value="marketing">Marknadsforing</option>
+                      <option value="support">Support</option>
+                      <option value="dev">Utveckling</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button type="button" class="btn btn-ghost btn-sm">Avbryt</button>
+                <button type="button" class="btn btn-primary btn-sm">Spara</button>
+              </div>
+            </div>
+
+            <!-- Role card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Roll</h3>
+                  <span class="card-subtitle">Bestammer anvandarniva och grundbehorigheter</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <fieldset style="border:none;padding:0;margin:0;">
+                  <legend class="fg-label" style="margin-bottom:var(--space-md);">Valj roll</legend>
+                  <div class="segmented-control">
+                    <label class="seg-option">
+                      <input type="radio" name="role" value="admin" checked />
+                      <span class="seg-label">Admin</span>
+                    </label>
+                    <label class="seg-option">
+                      <input type="radio" name="role" value="editor" />
+                      <span class="seg-label">Editor</span>
+                    </label>
+                    <label class="seg-option">
+                      <input type="radio" name="role" value="viewer" />
+                      <span class="seg-label">Viewer</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <div class="info-row" style="margin-top:var(--space-lg);margin-bottom:0;">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><path d="M8 5v3M8 10v1"/></svg>
+                  <span>Admin-rollen ger full tillgang till alla sektioner, installningar och anvandarhantering.</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button type="button" class="btn btn-ghost btn-sm">Avbryt</button>
+                <button type="button" class="btn btn-primary btn-sm">Uppdatera roll</button>
+              </div>
+            </div>
+
+            <!-- Permissions card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Behorigheter</h3>
+                  <span class="card-subtitle">Specifika funktioner utover rollens standardbehorigheter</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <table class="perm-table" aria-label="Behorigheter">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="perm-name">Exportera data</div>
+                        <div class="perm-desc">Exportera rapporter till CSV, Excel eller PDF</div>
+                      </td>
+                      <td class="perm-toggle">
+                        <label class="pill-toggle">
+                          <input type="checkbox" checked aria-label="Exportera data" />
+                          <span class="pill-track"></span>
+                        </label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="perm-name">Bjuda in anvandare</div>
+                        <div class="perm-desc">Skicka inbjudningar till nya teammedlemmar</div>
+                      </td>
+                      <td class="perm-toggle">
+                        <label class="pill-toggle">
+                          <input type="checkbox" aria-label="Bjuda in anvandare" />
+                          <span class="pill-track"></span>
+                        </label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="perm-name">Hantera fakturering</div>
+                        <div class="perm-desc">Tillgang till fakturor och betalningsmetoder</div>
+                      </td>
+                      <td class="perm-toggle">
+                        <label class="pill-toggle">
+                          <input type="checkbox" aria-label="Hantera fakturering" />
+                          <span class="pill-track"></span>
+                        </label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="perm-name">API-access</div>
+                        <div class="perm-desc">Anvand API-nycklar for extern integration</div>
+                      </td>
+                      <td class="perm-toggle">
+                        <label class="pill-toggle">
+                          <input type="checkbox" checked aria-label="API-access" />
+                          <span class="pill-track"></span>
+                        </label>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="card-footer">
+                <button type="button" class="btn btn-ghost btn-sm">Avbryt</button>
+                <button type="button" class="btn btn-primary btn-sm">Uppdatera</button>
+              </div>
+            </div>
+
+            <!-- Status card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Kontostatus</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <fieldset style="border:none;padding:0;margin:0;">
+                  <legend class="fg-label" style="margin-bottom:var(--space-md);">Valj status</legend>
+                  <div class="status-select">
+                    <label class="status-card">
+                      <input type="radio" name="status" value="active" checked />
+                      <div class="status-card-inner">
+                        <span class="status-card-dot dot-active"></span>
+                        <span class="status-card-label">Aktiv</span>
+                      </div>
+                    </label>
+                    <label class="status-card">
+                      <input type="radio" name="status" value="inactive" />
+                      <div class="status-card-inner">
+                        <span class="status-card-dot dot-inactive"></span>
+                        <span class="status-card-label">Inaktiv</span>
+                      </div>
+                    </label>
+                    <label class="status-card">
+                      <input type="radio" name="status" value="pending" />
+                      <div class="status-card-inner">
+                        <span class="status-card-dot dot-pending"></span>
+                        <span class="status-card-label">Vantande</span>
+                      </div>
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+              <div class="card-footer">
+                <button type="button" class="btn btn-ghost btn-sm">Avbryt</button>
+                <button type="button" class="btn btn-primary btn-sm">Uppdatera</button>
+              </div>
+            </div>
+
+            <!-- Danger zone -->
+            <div class="card card-danger">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Farozon</h3>
+                  <span class="card-subtitle">Permanenta atgarder som inte kan angras</span>
+                </div>
+              </div>
+              <div class="card-body" style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <div style="font-weight:500;font-size:0.875rem;">Ta bort anvandare</div>
+                  <div style="font-size:0.8125rem;color:var(--text-secondary);">Kontot och all tillhorande data raderas permanent.</div>
+                </div>
+                <button type="button" class="btn btn-danger-ghost btn-sm" style="border:1px solid var(--error);">Ta bort</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.querySelector('form');
+    document.querySelectorAll('.card-footer .btn-primary').forEach(btn => {
+      btn.addEventListener('click', function() {
+        alert('Sparad!');
+      });
+    });
+  </script>
+</body>
+</html>

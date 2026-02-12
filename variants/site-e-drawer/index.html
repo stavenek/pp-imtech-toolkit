@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Integral Teamwork Toolkit</title>
+<style>
+/* ===== CSS RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-tertiary: #ebebed;
+  --bg-sidebar: #1d1d1f;
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-sidebar: #f5f5f7;
+  --border: #d2d2d7;
+  --border-light: #e8e8ed;
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-light: rgba(0, 113, 227, 0.08);
+  --success: #34c759;
+  --warning: #ff9f0a;
+  --error: #ff3b30;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-drawer: -4px 0 24px rgba(0,0,0,0.1);
+  --sidebar-width: 68px;
+  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+}
+[data-theme="dark"] {
+  --bg-primary: #1c1c1e;
+  --bg-secondary: #2c2c2e;
+  --bg-tertiary: #3a3a3c;
+  --bg-sidebar: #000000;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+  --border: #48484a;
+  --border-light: #38383a;
+  --accent: #0a84ff;
+  --accent-hover: #409cff;
+}
+body {
+  font-family: var(--font-family);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  display: flex;
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ===== SKIP LINK ===== */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-md);
+  background: var(--accent);
+  color: #fff;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  z-index: 1000;
+  font-size: 14px;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: var(--space-md);
+}
+
+/* ===== ICON SIDEBAR ===== */
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background: var(--bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md) 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+}
+.sidebar-logo svg { width: 20px; height: 20px; fill: #fff; }
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+  width: 100%;
+  padding: 0 var(--space-sm);
+}
+.sidebar-nav a {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease, opacity 0.2s ease;
+  opacity: 0.4;
+  position: relative;
+  margin: 0 auto;
+}
+.sidebar-nav a:hover,
+.sidebar-nav a:focus-visible {
+  opacity: 0.7;
+  background: rgba(255,255,255,0.08);
+}
+.sidebar-nav a.active {
+  opacity: 1;
+  background: rgba(255,255,255,0.12);
+}
+.sidebar-nav a svg {
+  width: 22px;
+  height: 22px;
+  fill: var(--text-sidebar);
+}
+.sidebar-nav a .tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 200;
+}
+.sidebar-nav a:hover .tooltip,
+.sidebar-nav a:focus-visible .tooltip {
+  opacity: 1;
+}
+.sidebar-bottom {
+  padding: var(--space-sm);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.theme-toggle:hover { background: rgba(255,255,255,0.15); }
+.theme-toggle svg { width: 20px; height: 20px; fill: var(--text-sidebar); }
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  padding: var(--space-xl) var(--space-2xl);
+  max-width: 1200px;
+}
+.page-header {
+  margin-bottom: var(--space-xl);
+}
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: var(--space-xs);
+}
+.page-header p {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* ===== DASHBOARD CARDS ===== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+.card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-icon svg { width: 20px; height: 20px; }
+.card-icon.blue { background: var(--accent-light); }
+.card-icon.blue svg { fill: var(--accent); }
+.card-icon.green { background: rgba(52,199,89,0.1); }
+.card-icon.green svg { fill: var(--success); }
+.card-icon.orange { background: rgba(255,159,10,0.1); }
+.card-icon.orange svg { fill: var(--warning); }
+.card-icon.red { background: rgba(255,59,48,0.1); }
+.card-icon.red svg { fill: var(--error); }
+.card-badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.card-badge.upcoming { background: var(--accent-light); color: var(--accent); }
+.card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+}
+.card .card-value {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: var(--space-xs);
+}
+.card .card-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  font-family: var(--font-family);
+  min-height: 44px;
+}
+.pill-btn:hover { background: var(--accent-hover); }
+.pill-btn:active { transform: scale(0.98); }
+.pill-btn.secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.pill-btn.secondary:hover { background: var(--bg-secondary); }
+.pill-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: var(--space-sm);
+}
+.progress-bar .fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+.progress-bar .fill.blue { background: var(--accent); }
+.progress-bar .fill.green { background: var(--success); }
+.progress-bar .fill.orange { background: var(--warning); }
+
+/* ===== ACTIVITY LIST ===== */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+.activity-list {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.15s ease;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-item:hover { background: var(--bg-secondary); }
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.activity-dot.blue { background: var(--accent); }
+.activity-dot.green { background: var(--success); }
+.activity-dot.orange { background: var(--warning); }
+.activity-info { flex: 1; }
+.activity-info strong { font-size: 14px; font-weight: 500; }
+.activity-info p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.activity-time {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ===== MEETING CARD ===== */
+.meeting-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+.meeting-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.meeting-row svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+/* ===== TEAM PROGRESS ===== */
+.team-members {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+.team-member {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+.team-member-info { flex: 1; }
+.team-member-info .name { font-size: 14px; font-weight: 500; }
+.team-member-info .role { font-size: 12px; color: var(--text-secondary); }
+.team-member .progress-bar { flex: 0 0 80px; }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Hoppa till huvudinneh&aring;ll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar-logo" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  </div>
+  <div class="sidebar-nav" role="list">
+    <a href="index.html" class="active" role="listitem" aria-label="Dashboard" aria-current="page">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      <span class="tooltip">Dashboard</span>
+    </a>
+    <a href="agenda.html" role="listitem" aria-label="Agenda">
+      <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+      <span class="tooltip">Agenda</span>
+    </a>
+    <a href="strategic.html" role="listitem" aria-label="Strategiskt resonemang">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      <span class="tooltip">Strategiskt resonemang</span>
+    </a>
+    <a href="desired-state.html" role="listitem" aria-label="&Ouml;nskat l&auml;ge">
+      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span class="tooltip">&Ouml;nskat l&auml;ge</span>
+    </a>
+    <a href="goals-metrics.html" role="listitem" aria-label="M&aring;l &amp; M&auml;tetal">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      <span class="tooltip">M&aring;l &amp; M&auml;tetal</span>
+    </a>
+    <a href="action-plan.html" role="listitem" aria-label="Handlingsplan">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM7 13h10v2H7v-2zm0 4h7v2H7v-2z"/></svg>
+      <span class="tooltip">Handlingsplan</span>
+    </a>
+    <a href="documents.html" role="listitem" aria-label="Dokument">
+      <svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+      <span class="tooltip">Dokument</span>
+    </a>
+    <a href="attendance.html" role="listitem" aria-label="N&auml;rvaro">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      <span class="tooltip">N&auml;rvaro</span>
+    </a>
+    <a href="reflections.html" role="listitem" aria-label="Reflektioner">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+      <span class="tooltip">Reflektioner</span>
+    </a>
+    <a href="newsflash.html" role="listitem" aria-label="Nyheter">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>
+      <span class="tooltip">Nyheter</span>
+    </a>
+    <a href="admin.html" role="listitem" aria-label="Admin">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      <span class="tooltip">Admin</span>
+    </a>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="V&auml;xla tema">
+      <svg class="sun-icon" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main-content" id="main">
+  <header class="page-header">
+    <h1>Dashboard</h1>
+    <p>V&auml;lkommen tillbaka! H&auml;r &auml;r en &ouml;versikt &ouml;ver teamets arbete.</p>
+  </header>
+
+  <!-- Stats Cards -->
+  <div class="card-grid">
+    <!-- Upcoming Meeting -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+        </div>
+        <span class="card-badge upcoming">N&auml;sta m&ouml;te</span>
+      </div>
+      <h3>Teammöte #24</h3>
+      <div class="meeting-details">
+        <div class="meeting-row">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          <span>Torsdag 6 feb, 09:00</span>
+        </div>
+        <div class="meeting-row">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <span>Konferensrum A, v&aring;ning 3</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Stats -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon green">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <span class="card-badge">&Aring;tg&auml;rder</span>
+      </div>
+      <div class="card-value">12<span style="font-size:18px;color:var(--text-secondary);font-weight:400"> / 18</span></div>
+      <p class="card-description">Slutf&ouml;rda &aring;tg&auml;rder denna period</p>
+      <div class="progress-bar"><div class="fill green" style="width:67%"></div></div>
+    </div>
+
+    <!-- Team Progress -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon orange">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
+        <span class="card-badge">Teamet</span>
+      </div>
+      <div class="card-value">8</div>
+      <p class="card-description">Aktiva teammedlemmar</p>
+      <div class="team-members">
+        <div class="team-member">
+          <div class="avatar" style="background:#0071e3">AK</div>
+          <div class="team-member-info">
+            <div class="name">Anna Karlsson</div>
+            <div class="role">Teamledare</div>
+          </div>
+        </div>
+        <div class="team-member">
+          <div class="avatar" style="background:#34c759">EL</div>
+          <div class="team-member-info">
+            <div class="name">Erik Lindqvist</div>
+            <div class="role">Medlem</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goals Progress -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon blue">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        </div>
+        <span class="card-badge">M&aring;l</span>
+      </div>
+      <h3>M&aring;luppfyllnad</h3>
+      <div style="margin-top:var(--space-md)">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+          <span>B&auml;sta Bidrag 1</span><span style="color:var(--text-secondary)">55%</span>
+        </div>
+        <div class="progress-bar"><div class="fill blue" style="width:55%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;margin-top:12px">
+          <span>B&auml;sta Bidrag 2</span><span style="color:var(--text-secondary)">35%</span>
+        </div>
+        <div class="progress-bar"><div class="fill orange" style="width:35%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;margin-top:12px">
+          <span>B&auml;sta Bidrag 3</span><span style="color:var(--text-secondary)">75%</span>
+        </div>
+        <div class="progress-bar"><div class="fill green" style="width:75%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <h2 class="section-title">Senaste aktivitet</h2>
+  <div class="activity-list">
+    <div class="activity-item">
+      <div class="activity-dot blue"></div>
+      <div class="activity-info">
+        <strong>Anna Karlsson uppdaterade strategiskt resonemang</strong>
+        <p>Nytt strategiskt resonemang tillagt f&ouml;r Q1 2026</p>
+      </div>
+      <span class="activity-time">2 tim sedan</span>
+    </div>
+    <div class="activity-item">
+      <div class="activity-dot green"></div>
+      <div class="activity-info">
+        <strong>&Aring;tg&auml;rd &quot;F&ouml;rb&auml;ttra kundkommunikation&quot; slutf&ouml;rd</strong>
+        <p>Markerad som klar av Erik Lindqvist</p>
+      </div>
+      <span class="activity-time">5 tim sedan</span>
+    </div>
+    <div class="activity-item">
+      <div class="activity-dot orange"></div>
+      <div class="activity-info">
+        <strong>Nytt dokument uppladdat</strong>
+        <p>&quot;Kvartalsrapport Q4 2025.pdf&quot; lades till av Maria Svensson</p>
+      </div>
+      <span class="activity-time">Ig&aring;r</span>
+    </div>
+    <div class="activity-item">
+      <div class="activity-dot blue"></div>
+      <div class="activity-info">
+        <strong>Ny reflektion tillagd</strong>
+        <p>Teamreflektion fr&aring;n m&ouml;te #23 publicerad</p>
+      </div>
+      <span class="activity-time">Ig&aring;r</span>
+    </div>
+    <div class="activity-item">
+      <div class="activity-dot green"></div>
+      <div class="activity-info">
+        <strong>M&auml;tetal uppdaterat</strong>
+        <p>B&auml;sta Bidrag 3 &ouml;kade fr&aring;n 70 till 75</p>
+      </div>
+      <span class="activity-time">2 dagar sedan</span>
+    </div>
+  </div>
+
+  <div style="margin-top:var(--space-xl);display:flex;gap:var(--space-md)">
+    <a href="agenda.html" class="pill-btn">
+      <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+      &Ouml;ppna agenda
+    </a>
+    <a href="action-plan.html" class="pill-btn secondary">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg>
+      Handlingsplan
+    </a>
+  </div>
+</main>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script>
+</body>
+</html>

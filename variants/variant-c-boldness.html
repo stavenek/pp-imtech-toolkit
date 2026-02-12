@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Users - Variant C: Boldness</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f0f0f0;
+      --bg-dark: #0a0a0a;
+      --bg-sidebar: #0a0a0a;
+      --text-primary: #0a0a0a;
+      --text-secondary: #666666;
+      --text-sidebar: #ffffff;
+      --border: #e0e0e0;
+      --border-strong: #0a0a0a;
+      --accent: #0a0a0a;
+      --accent-hover: #333333;
+      --accent-inverse: #ffffff;
+      --highlight: #ffcc00;
+      --highlight-soft: rgba(255, 204, 0, 0.12);
+      --success: #00a854;
+      --success-bg: rgba(0, 168, 84, 0.1);
+      --warning: #fa8c16;
+      --warning-bg: rgba(250, 140, 22, 0.1);
+      --error: #e6001a;
+      --error-bg: rgba(230, 0, 26, 0.08);
+
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --space-3xl: 64px;
+
+      --radius: 0px;
+      --radius-sm: 2px;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #161616;
+      --bg-sidebar: #000000;
+      --text-primary: #f0f0f0;
+      --text-secondary: #888888;
+      --border: #2a2a2a;
+      --border-strong: #f0f0f0;
+      --accent: #ffffff;
+      --accent-hover: #cccccc;
+      --accent-inverse: #0a0a0a;
+      --highlight: #ffcc00;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #161616;
+        --bg-sidebar: #000000;
+        --text-primary: #f0f0f0;
+        --text-secondary: #888888;
+        --border: #2a2a2a;
+        --border-strong: #f0f0f0;
+        --accent: #ffffff;
+        --accent-hover: #cccccc;
+        --accent-inverse: #0a0a0a;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--highlight);
+      color: var(--bg-dark);
+      text-decoration: none;
+      z-index: 100;
+      font-weight: 700;
+    }
+    .skip-link:focus { top: 0; }
+
+    /* Top navigation */
+    .topnav {
+      background: var(--bg-dark);
+      color: var(--text-sidebar);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-xl);
+      height: 56px;
+      border-bottom: 3px solid var(--highlight);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topnav-brand {
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-right: var(--space-2xl);
+    }
+
+    .topnav-links {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 0;
+      height: 100%;
+    }
+
+    .topnav-links a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 0 var(--space-lg);
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      height: 100%;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -3px;
+      transition: color 0.15s;
+      min-height: 44px;
+    }
+
+    .topnav-links a:hover {
+      color: rgba(255,255,255,0.85);
+    }
+
+    .topnav-links a[aria-current="page"] {
+      color: white;
+      border-bottom-color: var(--highlight);
+    }
+
+    .topnav-links a:focus-visible {
+      outline: 2px solid var(--highlight);
+      outline-offset: -2px;
+    }
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Main */
+    .main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--space-3xl) var(--space-xl);
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+    }
+
+    .breadcrumb a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .breadcrumb a:hover { color: var(--text-primary); }
+    .breadcrumb a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Page header */
+    .page-header {
+      margin-bottom: var(--space-3xl);
+      border-bottom: 3px solid var(--border-strong);
+      padding-bottom: var(--space-xl);
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .page-header-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    /* Status tag */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 2px solid;
+    }
+
+    .tag-active { color: var(--success); border-color: var(--success); background: var(--success-bg); }
+    .tag-inactive { color: var(--text-secondary); border-color: var(--border); background: var(--bg-secondary); }
+    .tag-pending { color: var(--warning); border-color: var(--warning); background: var(--warning-bg); }
+    .tag-role { color: var(--text-primary); border-color: var(--border-strong); background: transparent; }
+
+    /* Two-column form layout */
+    .form-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+    }
+
+    /* Section */
+    .form-section {
+      display: contents;
+    }
+
+    .section-sidebar {
+      padding: var(--space-xl) 0;
+      border-top: 1px solid var(--border);
+      position: sticky;
+      top: 80px;
+      align-self: start;
+    }
+
+    .section-sidebar h2 {
+      margin: 0;
+      font-size: 0.6875rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+    }
+
+    .section-sidebar p {
+      margin: var(--space-xs) 0 0;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .section-content {
+      padding: var(--space-xl) 0 var(--space-xl) var(--space-2xl);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Form fields */
+    .field {
+      margin-bottom: var(--space-lg);
+    }
+
+    .field:last-child { margin-bottom: 0; }
+
+    .field-label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .field-label .req { color: var(--error); }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .field-input {
+      padding: var(--space-md);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.9375rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 48px;
+      width: 100%;
+      transition: border-color 0.15s;
+      font-weight: 500;
+    }
+
+    .field-input:hover {
+      border-color: var(--border-strong);
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: var(--border-strong);
+      box-shadow: 4px 4px 0 var(--bg-secondary);
+    }
+
+    .field-input[aria-invalid="true"] {
+      border-color: var(--error);
+    }
+    .field-input[aria-invalid="true"]:focus {
+      box-shadow: 4px 4px 0 var(--error-bg);
+    }
+
+    textarea.field-input {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    select.field-input { cursor: pointer; }
+
+    .field-hint {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    .field-error {
+      font-size: 0.75rem;
+      color: var(--error);
+      font-weight: 600;
+      margin-top: var(--space-xs);
+    }
+
+    /* Role selector - horizontal pills */
+    .role-pills {
+      display: flex;
+      gap: 0;
+      border: 2px solid var(--border-strong);
+    }
+
+    .role-pill {
+      flex: 1;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .role-pill input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .role-pill-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: var(--space-lg) var(--space-md);
+      text-align: center;
+      transition: all 0.15s;
+      border-right: 2px solid var(--border-strong);
+      min-height: 44px;
+    }
+
+    .role-pill:last-child .role-pill-content {
+      border-right: none;
+    }
+
+    .role-pill:hover .role-pill-content {
+      background: var(--bg-secondary);
+    }
+
+    .role-pill input:checked + .role-pill-content {
+      background: var(--bg-dark);
+      color: var(--accent-inverse);
+    }
+
+    .role-pill input:focus-visible + .role-pill-content {
+      outline: 2px solid var(--highlight);
+      outline-offset: -2px;
+    }
+
+    .role-pill-title {
+      font-weight: 800;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .role-pill-desc {
+      font-size: 0.6875rem;
+      opacity: 0.6;
+    }
+
+    /* Permissions - checklist */
+    .perm-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 2px solid var(--border);
+    }
+
+    .perm-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s;
+      min-height: 44px;
+    }
+
+    .perm-item:last-child { border-bottom: none; }
+
+    .perm-item:hover { background: var(--bg-secondary); }
+
+    .perm-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .perm-item-info {
+      flex: 1;
+    }
+
+    .perm-item-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .perm-item-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .perm-item-badge {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      background: var(--highlight-soft);
+      color: #997a00;
+    }
+
+    /* Status selector */
+    .status-options {
+      display: flex;
+      gap: var(--space-md);
+    }
+
+    .status-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .status-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: var(--space-md) var(--space-xl);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      min-height: 48px;
+      text-decoration: none;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--highlight);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-inverse);
+      border-color: var(--accent);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 4px 4px 0 var(--bg-secondary);
+      transform: translate(-2px, -2px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-secondary);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--error);
+      border-color: var(--error);
+    }
+    .btn-danger:hover {
+      background: var(--error);
+      color: white;
+    }
+
+    /* Form footer */
+    .form-footer {
+      margin-top: var(--space-3xl);
+      padding-top: var(--space-xl);
+      border-top: 3px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-footer-actions {
+      display: flex;
+      gap: var(--space-md);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .topnav { padding: 0 var(--space-md); }
+      .topnav-links a { padding: 0 var(--space-md); font-size: 0.75rem; }
+      .main { padding: var(--space-xl) var(--space-md); }
+      .page-header h1 { font-size: 1.75rem; }
+      .form-layout { grid-template-columns: 1fr; }
+      .section-sidebar {
+        position: static;
+        padding: var(--space-md) 0 0;
+      }
+      .section-content { padding: var(--space-md) 0 var(--space-xl); }
+      .field-row { grid-template-columns: 1fr; }
+      .role-pills { flex-direction: column; }
+      .role-pill-content { border-right: none; border-bottom: 2px solid var(--border-strong); }
+      .role-pill:last-child .role-pill-content { border-bottom: none; }
+      .status-options { flex-direction: column; }
+      .form-footer { flex-direction: column; gap: var(--space-md); }
+      .form-footer-actions { width: 100%; }
+      .form-footer-actions .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Hoppa till huvudinnehall</a>
+
+  <!-- Top navigation -->
+  <nav class="topnav" aria-label="Huvudnavigation">
+    <span class="topnav-brand">Admin</span>
+    <ul class="topnav-links">
+      <li><a href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/></svg>
+        Dashboard
+      </a></li>
+      <li><a href="#" aria-current="page">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.5-5 6-5s6 2 6 5"/></svg>
+        Anvandare
+      </a></li>
+      <li><a href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M5 7h6M5 10h4"/></svg>
+        Produkter
+      </a></li>
+      <li><a href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h10v12l-5-2.5L3 15V3z"/></svg>
+        Ordrar
+      </a></li>
+      <li><a href="#">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2"/></svg>
+        Installningar
+      </a></li>
+    </ul>
+  </nav>
+
+  <main class="main" id="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Brodsmuler">
+      <a href="#">Anvandare</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Redigera</span>
+    </nav>
+
+    <header class="page-header">
+      <h1>Anna<br>Andersson</h1>
+      <div class="page-header-meta">
+        <span class="tag tag-active">Aktiv</span>
+        <span class="tag tag-role">Admin</span>
+        <span style="font-size:0.8125rem;color:var(--text-secondary);">Senast aktiv: Idag 14:32</span>
+      </div>
+    </header>
+
+    <form novalidate>
+      <div class="form-layout">
+
+        <!-- Grunduppgifter -->
+        <div class="form-section">
+          <div class="section-sidebar">
+            <h2>Grunduppgifter</h2>
+            <p>Namn och kontaktinfo for anvandaren.</p>
+          </div>
+          <div class="section-content">
+            <div class="field">
+              <div class="field-row">
+                <div>
+                  <label class="field-label" for="firstname">Fornamn <span class="req">*</span></label>
+                  <input type="text" id="firstname" class="field-input" value="Anna" required autocomplete="given-name" />
+                </div>
+                <div>
+                  <label class="field-label" for="lastname">Efternamn <span class="req">*</span></label>
+                  <input type="text" id="lastname" class="field-input" value="Andersson" required autocomplete="family-name" />
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="email">E-post <span class="req">*</span></label>
+              <input type="email" id="email" class="field-input" value="anna.andersson@example.com" required autocomplete="email" aria-describedby="email-hint" />
+              <span id="email-hint" class="field-hint">Anvands for inloggning och notifieringar.</span>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="phone">Telefon</label>
+              <input type="tel" id="phone" class="field-input" value="+46 70 123 45 67" autocomplete="tel" />
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="dept">Avdelning</label>
+              <select id="dept" class="field-input">
+                <option value="">Valj avdelning</option>
+                <option value="sales" selected>Forsaljning</option>
+                <option value="marketing">Marknadsforing</option>
+                <option value="support">Support</option>
+                <option value="dev">Utveckling</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Roll -->
+        <div class="form-section">
+          <div class="section-sidebar">
+            <h2>Roll</h2>
+            <p>Bestammer vilken niva av atkomst anvandaren har.</p>
+          </div>
+          <div class="section-content">
+            <div class="field">
+              <fieldset style="border:none;padding:0;margin:0;">
+                <legend class="field-label">Anvandarroll <span class="req">*</span></legend>
+                <div class="role-pills">
+                  <label class="role-pill">
+                    <input type="radio" name="role" value="admin" checked />
+                    <div class="role-pill-content">
+                      <span class="role-pill-title">Admin</span>
+                      <span class="role-pill-desc">Full atkomst</span>
+                    </div>
+                  </label>
+                  <label class="role-pill">
+                    <input type="radio" name="role" value="editor" />
+                    <div class="role-pill-content">
+                      <span class="role-pill-title">Editor</span>
+                      <span class="role-pill-desc">Redigera innehall</span>
+                    </div>
+                  </label>
+                  <label class="role-pill">
+                    <input type="radio" name="role" value="viewer" />
+                    <div class="role-pill-content">
+                      <span class="role-pill-title">Viewer</span>
+                      <span class="role-pill-desc">Endast lasa</span>
+                    </div>
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+
+        <!-- Behorigheter -->
+        <div class="form-section">
+          <div class="section-sidebar">
+            <h2>Behorigheter</h2>
+            <p>Extra funktioner utover rollens standardbehorigheter.</p>
+          </div>
+          <div class="section-content">
+            <div class="field">
+              <div class="perm-list">
+                <label class="perm-item">
+                  <input type="checkbox" checked />
+                  <div class="perm-item-info">
+                    <div class="perm-item-title">Exportera data</div>
+                    <div class="perm-item-desc">Exportera rapporter och data till CSV/Excel</div>
+                  </div>
+                </label>
+                <label class="perm-item">
+                  <input type="checkbox" />
+                  <div class="perm-item-info">
+                    <div class="perm-item-title">Bjuda in anvandare</div>
+                    <div class="perm-item-desc">Skicka inbjudningar till nya teammedlemmar</div>
+                  </div>
+                  <span class="perm-item-badge">Ny</span>
+                </label>
+                <label class="perm-item">
+                  <input type="checkbox" />
+                  <div class="perm-item-info">
+                    <div class="perm-item-title">Hantera fakturering</div>
+                    <div class="perm-item-desc">Tillgang till fakturor och betalningsuppgifter</div>
+                  </div>
+                </label>
+                <label class="perm-item">
+                  <input type="checkbox" checked />
+                  <div class="perm-item-info">
+                    <div class="perm-item-title">API-access</div>
+                    <div class="perm-item-desc">Anvand API-nycklar och extern integration</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="form-section">
+          <div class="section-sidebar">
+            <h2>Kontostatus</h2>
+            <p>Aktivera eller inaktivera anvandarens konto.</p>
+          </div>
+          <div class="section-content">
+            <div class="field">
+              <fieldset style="border:none;padding:0;margin:0;">
+                <legend class="field-label">Status</legend>
+                <div class="status-options">
+                  <label class="status-option">
+                    <input type="radio" name="status" value="active" checked />
+                    <span>Aktiv</span>
+                  </label>
+                  <label class="status-option">
+                    <input type="radio" name="status" value="inactive" />
+                    <span>Inaktiv</span>
+                  </label>
+                  <label class="status-option">
+                    <input type="radio" name="status" value="pending" />
+                    <span>Vantande</span>
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="form-footer">
+        <button type="button" class="btn btn-danger">Ta bort</button>
+        <div class="form-footer-actions">
+          <button type="button" class="btn btn-secondary">Avbryt</button>
+          <button type="submit" class="btn btn-primary">Spara andringar</button>
+        </div>
+      </footer>
+    </form>
+  </main>
+
+  <script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
+      document.querySelectorAll('.field-error').forEach(el => el.remove());
+      let isValid = true;
+      form.querySelectorAll('[required]').forEach(input => {
+        if (!input.value.trim()) {
+          showError(input, 'Obligatoriskt falt');
+          isValid = false;
+        }
+      });
+      const email = document.getElementById('email');
+      if (email.value && !email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        showError(email, 'Ogiltig e-postadress');
+        isValid = false;
+      }
+      if (isValid) { alert('Sparad!'); }
+      else { document.querySelector('[aria-invalid="true"]')?.focus(); }
+    });
+    function showError(input, message) {
+      input.setAttribute('aria-invalid', 'true');
+      const error = document.createElement('span');
+      error.className = 'field-error';
+      error.setAttribute('role', 'alert');
+      error.textContent = message;
+      input.parentNode.appendChild(error);
+    }
+  </script>
+</body>
+</html>

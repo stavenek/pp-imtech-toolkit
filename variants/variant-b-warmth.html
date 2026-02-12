@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Users - Variant B: Warmth</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #faf8f6;
+      --bg-tertiary: #f3efe9;
+      --bg-sidebar: #2c2520;
+      --text-primary: #2c2520;
+      --text-secondary: #7a706a;
+      --text-sidebar: #faf8f6;
+      --border: #e8e0d8;
+      --border-light: #f0ebe5;
+      --accent: #c06830;
+      --accent-hover: #a85828;
+      --accent-light: rgba(192, 104, 48, 0.08);
+      --accent-soft: #f5ece5;
+      --success: #2d8a4e;
+      --success-bg: rgba(45, 138, 78, 0.08);
+      --warning: #c07830;
+      --warning-bg: rgba(192, 120, 48, 0.08);
+      --error: #c03030;
+      --error-bg: rgba(192, 48, 48, 0.08);
+
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(44, 37, 32, 0.06);
+      --shadow-md: 0 4px 12px rgba(44, 37, 32, 0.08);
+      --shadow-lg: 0 8px 24px rgba(44, 37, 32, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1c1917;
+      --bg-secondary: #231f1c;
+      --bg-tertiary: #2a2522;
+      --bg-sidebar: #0f0d0b;
+      --text-primary: #e8e0d8;
+      --text-secondary: #a89a90;
+      --border: #3d352e;
+      --border-light: #332d28;
+      --accent: #e08040;
+      --accent-hover: #f09050;
+      --accent-light: rgba(224, 128, 64, 0.12);
+      --accent-soft: #2a2018;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.25);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-primary: #1c1917;
+        --bg-secondary: #231f1c;
+        --bg-tertiary: #2a2522;
+        --bg-sidebar: #0f0d0b;
+        --text-primary: #e8e0d8;
+        --text-secondary: #a89a90;
+        --border: #3d352e;
+        --border-light: #332d28;
+        --accent: #e08040;
+        --accent-hover: #f09050;
+        --accent-light: rgba(224, 128, 64, 0.12);
+        --accent-soft: #2a2018;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.25);
+        --shadow-lg: 0 8px 24px rgba(0,0,0,0.3);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      z-index: 100;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    }
+    .skip-link:focus { top: 0; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar - warm dark */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      color: var(--text-sidebar);
+      padding: var(--space-xl) 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 0 var(--space-xl) var(--space-xl);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: var(--space-md);
+    }
+
+    .sidebar-header h1 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar nav ul { list-style: none; padding: 0; margin: 0; }
+
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-xl);
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 0.9375rem;
+      min-height: 48px;
+      border-radius: 0;
+      transition: all 0.2s;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a:focus {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.85);
+    }
+
+    .sidebar nav a[aria-current="page"] {
+      color: white;
+      background: rgba(255,255,255,0.1);
+      border-left: 3px solid var(--accent);
+    }
+
+    .sidebar nav a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      opacity: 0.7;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      padding: var(--space-2xl);
+      max-width: 960px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .breadcrumb a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .breadcrumb-sep { color: var(--border); }
+
+    /* Page header */
+    .page-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .page-header p {
+      margin: var(--space-xs) 0 0;
+      color: var(--text-secondary);
+    }
+
+    /* User profile card */
+    .profile-card {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      margin-bottom: var(--space-xl);
+    }
+
+    .profile-hero {
+      background: linear-gradient(135deg, var(--accent-soft) 0%, var(--bg-tertiary) 100%);
+      padding: var(--space-2xl) var(--space-xl) var(--space-lg);
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-lg);
+    }
+
+    .profile-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: var(--radius-lg);
+      background: var(--bg-primary);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+      border: 3px solid var(--bg-primary);
+    }
+
+    .profile-hero-info {
+      flex: 1;
+      padding-bottom: var(--space-xs);
+    }
+
+    .profile-hero-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .profile-hero-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-top: var(--space-xs);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .profile-hero-actions {
+      display: flex;
+      gap: var(--space-sm);
+      align-self: flex-start;
+      margin-top: var(--space-sm);
+    }
+
+    /* Status badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    .badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .badge-active {
+      color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .badge-inactive {
+      color: var(--text-secondary);
+      background: var(--bg-tertiary);
+    }
+
+    .badge-pending {
+      color: var(--warning);
+      background: var(--warning-bg);
+    }
+
+    .badge-role {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .badge-role::before { display: none; }
+
+    /* Form sections */
+    .form-section {
+      padding: var(--space-xl);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .form-section:last-of-type {
+      border-bottom: none;
+    }
+
+    .form-section-header {
+      margin-bottom: var(--space-lg);
+    }
+
+    .form-section-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .form-section-desc {
+      margin: var(--space-xs) 0 0;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* Form grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .form-grid .full-width {
+      grid-column: 1 / -1;
+    }
+
+    /* Form group */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label,
+    .form-group .group-label {
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .form-group .required::after {
+      content: " *";
+      color: var(--error);
+    }
+
+    /* Inputs */
+    .form-input {
+      padding: var(--space-md);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.9375rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 48px;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:hover {
+      border-color: var(--text-secondary);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .form-input[aria-invalid="true"] {
+      border-color: var(--error);
+    }
+    .form-input[aria-invalid="true"]:focus {
+      box-shadow: 0 0 0 3px var(--error-bg);
+    }
+
+    textarea.form-input {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    select.form-input {
+      cursor: pointer;
+    }
+
+    .form-hint {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .form-error {
+      font-size: 0.8125rem;
+      color: var(--error);
+    }
+
+    /* Avatar upload area */
+    .avatar-upload-area {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+    }
+
+    .avatar-large {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-md);
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .avatar-upload-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .avatar-upload-hint {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* Role cards */
+    .role-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+    }
+
+    .role-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-lg);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      text-align: center;
+      min-height: 44px;
+    }
+
+    .role-card:hover {
+      border-color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .role-card:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .role-card:focus-within {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .role-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .role-card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-xs);
+      font-size: 1rem;
+    }
+
+    .role-card:has(input:checked) .role-card-icon {
+      background: var(--accent);
+      color: white;
+    }
+
+    .role-card-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .role-card-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Toggle switch */
+    .toggle-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .toggle-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      transition: background 0.15s;
+    }
+
+    .toggle-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--border);
+      border-radius: var(--radius-full);
+      transition: background 0.2s;
+    }
+
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--accent);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(20px);
+    }
+
+    .toggle-switch input:focus-visible + .toggle-slider {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .toggle-info {
+      flex: 1;
+    }
+
+    .toggle-label {
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .toggle-desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      text-decoration: none;
+      border: 1.5px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-secondary);
+      border-color: var(--text-secondary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      padding: var(--space-sm) var(--space-md);
+    }
+    .btn-ghost:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--error);
+      border-color: transparent;
+    }
+    .btn-danger:hover {
+      background: var(--error-bg);
+    }
+
+    /* Form footer */
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-lg) var(--space-xl);
+      background: var(--bg-secondary);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      border-top: 1px solid var(--border-light);
+    }
+
+    .form-footer-actions {
+      display: flex;
+      gap: var(--space-md);
+    }
+
+    /* Notification banner */
+    .notification {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .notification-info {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-light);
+      color: var(--text-primary);
+    }
+
+    .notification-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .notification-text {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+
+    .notification-dismiss {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: var(--space-xs);
+      min-width: 28px;
+      min-height: 28px;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s;
+    }
+    .notification-dismiss:hover { background: rgba(0,0,0,0.06); }
+
+    /* Danger zone */
+    .danger-zone {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      padding: var(--space-xl);
+      margin-top: var(--space-xl);
+    }
+
+    .danger-zone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .danger-zone h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--error);
+    }
+
+    .danger-zone p {
+      margin: var(--space-xs) 0 0;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; padding: var(--space-md); }
+      .main { padding: var(--space-lg); }
+      .form-grid { grid-template-columns: 1fr; }
+      .role-cards { grid-template-columns: 1fr; }
+      .profile-hero { flex-direction: column; align-items: center; text-align: center; }
+      .profile-hero-meta { justify-content: center; }
+      .form-footer { flex-direction: column; gap: var(--space-md); }
+      .form-footer-actions { width: 100%; }
+      .form-footer-actions .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Hoppa till huvudinnehall</a>
+
+  <div class="layout">
+    <aside class="sidebar" role="complementary" aria-label="Sidomeny">
+      <div class="sidebar-header">
+        <h1>AdminHub</h1>
+      </div>
+      <nav aria-label="Huvudnavigation">
+        <ul>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="7" height="7" rx="2"/><rect x="11" y="2" width="7" height="7" rx="2"/><rect x="2" y="11" width="7" height="7" rx="2"/><rect x="11" y="11" width="7" height="7" rx="2"/></svg>
+            Dashboard
+          </a></li>
+          <li><a href="#" aria-current="page">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="7" r="4"/><path d="M3 18c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>
+            Anvandare
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M6 8h8M6 12h5"/></svg>
+            Produkter
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h12v14l-6-3-6 3V4z"/></svg>
+            Ordrar
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3"/><path d="M10 3v1M10 16v1M3 10h1M16 10h1"/></svg>
+            Installningar
+          </a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main" id="main-content" role="main">
+      <nav class="breadcrumb" aria-label="Brodsmuler">
+        <a href="#">Anvandare</a>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+        <span aria-current="page">Anna Andersson</span>
+      </nav>
+
+      <header class="page-header">
+        <h2>Redigera anvandare</h2>
+        <p>Uppdatera profilinformation, roll och behorigheter.</p>
+      </header>
+
+      <!-- Notification -->
+      <div class="notification notification-info" role="status">
+        <svg class="notification-icon" viewBox="0 0 20 20" fill="var(--accent)"><circle cx="10" cy="10" r="9" fill="none" stroke="var(--accent)" stroke-width="1.5"/><path d="M10 6v5M10 13v1" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="notification-text">Anvandaren loggade in senast idag kl 14:32 fran Stockholm, Sverige.</span>
+        <button class="notification-dismiss" aria-label="Stang notifikation">x</button>
+      </div>
+
+      <form novalidate>
+        <!-- Profile card with hero -->
+        <div class="profile-card">
+          <div class="profile-hero">
+            <div class="profile-avatar">AA</div>
+            <div class="profile-hero-info">
+              <h3 class="profile-hero-name">Anna Andersson</h3>
+              <div class="profile-hero-meta">
+                <span class="badge badge-active">Aktiv</span>
+                <span class="badge badge-role">Admin</span>
+                <span>Medlem sedan jan 2024</span>
+              </div>
+            </div>
+            <div class="profile-hero-actions">
+              <button type="button" class="btn btn-secondary">Byt bild</button>
+            </div>
+          </div>
+
+          <!-- Personal info section -->
+          <section class="form-section" aria-labelledby="section-profile">
+            <div class="form-section-header">
+              <h3 id="section-profile" class="form-section-title">Personlig information</h3>
+              <p class="form-section-desc">Grundlaggande uppgifter om anvandaren.</p>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="first-name" class="required">Fornamn</label>
+                <input type="text" id="first-name" class="form-input" value="Anna" required autocomplete="given-name" />
+              </div>
+
+              <div class="form-group">
+                <label for="last-name" class="required">Efternamn</label>
+                <input type="text" id="last-name" class="form-input" value="Andersson" required autocomplete="family-name" />
+              </div>
+
+              <div class="form-group full-width">
+                <label for="email" class="required">E-postadress</label>
+                <input type="email" id="email" class="form-input" value="anna.andersson@example.com" required autocomplete="email" aria-describedby="email-hint" />
+                <span id="email-hint" class="form-hint">Anvands for inloggning och notifieringar.</span>
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Telefonnummer</label>
+                <input type="tel" id="phone" class="form-input" value="+46 70 123 45 67" autocomplete="tel" />
+              </div>
+
+              <div class="form-group">
+                <label for="department">Avdelning</label>
+                <select id="department" class="form-input">
+                  <option value="">Valj avdelning</option>
+                  <option value="sales" selected>Forsaljning</option>
+                  <option value="marketing">Marknadsforing</option>
+                  <option value="support">Support</option>
+                  <option value="dev">Utveckling</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Role section -->
+          <section class="form-section" aria-labelledby="section-role">
+            <div class="form-section-header">
+              <h3 id="section-role" class="form-section-title">Anvandarroll</h3>
+              <p class="form-section-desc">Valj vilken behorighetniva anvandaren ska ha.</p>
+            </div>
+
+            <fieldset style="border:none;padding:0;margin:0;">
+              <legend class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Valj roll</legend>
+              <div class="role-cards">
+                <label class="role-card">
+                  <input type="radio" name="role" value="admin" checked />
+                  <div class="role-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l2 4 4.5.5-3.25 3.25L14 14.5 10 12.5 6 14.5l.75-4.75L3.5 6.5 8 6z"/></svg>
+                  </div>
+                  <span class="role-card-title">Admin</span>
+                  <span class="role-card-desc">Full tillgang till alla funktioner och installningar</span>
+                </label>
+
+                <label class="role-card">
+                  <input type="radio" name="role" value="editor" />
+                  <div class="role-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 3.5l3 3L6 17H3v-3z"/></svg>
+                  </div>
+                  <span class="role-card-title">Editor</span>
+                  <span class="role-card-desc">Kan redigera innehall och hantera data</span>
+                </label>
+
+                <label class="role-card">
+                  <input type="radio" name="role" value="viewer" />
+                  <div class="role-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s4-6 9-6 9 6 9 6-4 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="3"/></svg>
+                  </div>
+                  <span class="role-card-title">Viewer</span>
+                  <span class="role-card-desc">Kan se innehall men inte andra nagot</span>
+                </label>
+              </div>
+            </fieldset>
+          </section>
+
+          <!-- Permissions section -->
+          <section class="form-section" aria-labelledby="section-perms">
+            <div class="form-section-header">
+              <h3 id="section-perms" class="form-section-title">Extra behorigheter</h3>
+              <p class="form-section-desc">Aktivera eller inaktivera specifika funktioner for denna anvandare.</p>
+            </div>
+
+            <div class="toggle-list">
+              <div class="toggle-item">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+                <div class="toggle-info">
+                  <span class="toggle-label">Exportera data</span>
+                  <p class="toggle-desc">Kan exportera rapporter och data till CSV/Excel.</p>
+                </div>
+              </div>
+
+              <div class="toggle-item">
+                <label class="toggle-switch">
+                  <input type="checkbox" />
+                  <span class="toggle-slider"></span>
+                </label>
+                <div class="toggle-info">
+                  <span class="toggle-label">Bjuda in anvandare</span>
+                  <p class="toggle-desc">Kan skicka inbjudningar till nya teammedlemmar.</p>
+                </div>
+              </div>
+
+              <div class="toggle-item">
+                <label class="toggle-switch">
+                  <input type="checkbox" />
+                  <span class="toggle-slider"></span>
+                </label>
+                <div class="toggle-info">
+                  <span class="toggle-label">Hantera fakturering</span>
+                  <p class="toggle-desc">Tillgang till fakturor, betalningsmetoder och prenumerationer.</p>
+                </div>
+              </div>
+
+              <div class="toggle-item">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+                <div class="toggle-info">
+                  <span class="toggle-label">E-postnotifieringar</span>
+                  <p class="toggle-desc">Skicka e-post vid andringar av konto eller systemhandelser.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Account status -->
+          <section class="form-section" aria-labelledby="section-status">
+            <div class="form-section-header">
+              <h3 id="section-status" class="form-section-title">Kontostatus</h3>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" class="form-input">
+                  <option value="active" selected>Aktiv</option>
+                  <option value="inactive">Inaktiv</option>
+                  <option value="pending">Vantande pa verifiering</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Form footer -->
+          <footer class="form-footer">
+            <button type="button" class="btn btn-danger">Ta bort anvandare</button>
+            <div class="form-footer-actions">
+              <button type="button" class="btn btn-ghost">Avbryt</button>
+              <button type="submit" class="btn btn-primary">Spara andringar</button>
+            </div>
+          </footer>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      document.querySelectorAll('[aria-invalid]').forEach(el => {
+        el.removeAttribute('aria-invalid');
+      });
+      document.querySelectorAll('.form-error').forEach(el => el.remove());
+
+      let isValid = true;
+
+      form.querySelectorAll('[required]').forEach(input => {
+        if (!input.value.trim()) {
+          showError(input, 'Detta falt ar obligatoriskt');
+          isValid = false;
+        }
+      });
+
+      const email = document.getElementById('email');
+      if (email.value && !email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        showError(email, 'Ange en giltig e-postadress');
+        isValid = false;
+      }
+
+      if (isValid) {
+        alert('Anvandaren har sparats!');
+      } else {
+        document.querySelector('[aria-invalid="true"]')?.focus();
+      }
+    });
+
+    function showError(input, message) {
+      input.setAttribute('aria-invalid', 'true');
+      const errorId = input.id + '-error';
+      input.setAttribute('aria-describedby',
+        (input.getAttribute('aria-describedby') || '') + ' ' + errorId
+      );
+      const error = document.createElement('span');
+      error.id = errorId;
+      error.className = 'form-error';
+      error.setAttribute('role', 'alert');
+      error.textContent = message;
+      input.parentNode.appendChild(error);
+    }
+
+    // Dismiss notification
+    document.querySelector('.notification-dismiss')?.addEventListener('click', function() {
+      this.closest('.notification').remove();
+    });
+  </script>
+</body>
+</html>

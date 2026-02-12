@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Users - Variant A: Precision</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --bg-sidebar: #111318;
+      --text-primary: #111318;
+      --text-secondary: #5f6368;
+      --text-sidebar: #ffffff;
+      --border: #dadce0;
+      --border-strong: #c4c7cc;
+      --accent: #1a73e8;
+      --accent-hover: #1557b0;
+      --accent-light: rgba(26, 115, 232, 0.08);
+      --success: #188038;
+      --success-bg: rgba(24, 128, 56, 0.08);
+      --warning: #e37400;
+      --warning-bg: rgba(227, 116, 0, 0.08);
+      --error: #d93025;
+      --error-bg: rgba(217, 48, 37, 0.08);
+
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --space-xl: 24px;
+      --space-2xl: 32px;
+
+      --radius: 4px;
+      --font-mono: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1e1e1e;
+      --bg-secondary: #252526;
+      --bg-sidebar: #0d0d0d;
+      --text-primary: #e0e0e0;
+      --text-secondary: #9e9e9e;
+      --border: #3c3c3c;
+      --border-strong: #555;
+      --accent: #4da3ff;
+      --accent-hover: #79b8ff;
+      --accent-light: rgba(77, 163, 255, 0.12);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-primary: #1e1e1e;
+        --bg-secondary: #252526;
+        --bg-sidebar: #0d0d0d;
+        --text-primary: #e0e0e0;
+        --text-secondary: #9e9e9e;
+        --border: #3c3c3c;
+        --border-strong: #555;
+        --accent: #4da3ff;
+        --accent-hover: #79b8ff;
+        --accent-light: rgba(77, 163, 255, 0.12);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.4;
+      font-size: 13px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      z-index: 100;
+    }
+    .skip-link:focus { top: 0; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar - mork, tight */
+    .sidebar {
+      width: 200px;
+      background: var(--bg-sidebar);
+      color: var(--text-sidebar);
+      padding: var(--space-lg) 0;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .sidebar-header {
+      padding: 0 var(--space-lg) var(--space-lg);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: var(--space-sm);
+    }
+
+    .sidebar-header h1 {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .sidebar nav ul { list-style: none; padding: 0; margin: 0; }
+
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 6px var(--space-lg);
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      font-size: 0.8125rem;
+      min-height: 36px;
+      transition: color 0.1s, background 0.1s;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a:focus {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .sidebar nav a[aria-current="page"] {
+      color: white;
+      background: rgba(255,255,255,0.08);
+      border-left: 2px solid var(--accent);
+      font-weight: 500;
+    }
+
+    .sidebar nav a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      padding: var(--space-xl);
+      max-width: 1200px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .breadcrumb a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .breadcrumb-sep { color: var(--border-strong); }
+
+    /* Page header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xl);
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .header-meta {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Two-column layout: list + detail */
+    .content-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      min-height: 600px;
+    }
+
+    /* User list panel */
+    .user-list-panel {
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .list-toolbar {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .list-search {
+      flex: 1;
+      padding: 5px var(--space-sm);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 32px;
+    }
+
+    .list-search:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+      border-color: var(--accent);
+    }
+
+    .list-filter {
+      padding: 5px var(--space-sm);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 32px;
+    }
+
+    .list-filter:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .user-list {
+      flex: 1;
+      overflow-y: auto;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .user-list-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s;
+      min-height: 44px;
+    }
+
+    .user-list-item:hover { background: var(--bg-secondary); }
+    .user-list-item:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .user-list-item[aria-selected="true"] {
+      background: var(--accent-light);
+      border-left: 2px solid var(--accent);
+    }
+
+    .user-avatar-sm {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .user-list-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-list-name {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-list-email {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-list-status {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-dot-active { background: var(--success); }
+    .status-dot-inactive { background: var(--border-strong); }
+    .status-dot-pending { background: var(--warning); }
+
+    .list-footer {
+      padding: var(--space-sm) var(--space-md);
+      border-top: 1px solid var(--border);
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Detail panel */
+    .detail-panel {
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-header {
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .detail-header h3 {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .detail-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      padding: 0 var(--space-lg);
+    }
+
+    .detail-tab {
+      padding: var(--space-sm) var(--space-md);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      min-height: 36px;
+      transition: color 0.1s;
+    }
+
+    .detail-tab:hover { color: var(--text-primary); }
+    .detail-tab[aria-selected="true"] {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 500;
+    }
+    .detail-tab:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .detail-body {
+      flex: 1;
+      padding: var(--space-lg);
+      overflow-y: auto;
+    }
+
+    /* Form */
+    .form-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: var(--space-sm);
+      align-items: start;
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-row:last-child { border-bottom: none; }
+
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-top: 6px;
+    }
+
+    .form-label .required-mark { color: var(--error); }
+
+    .form-input {
+      padding: 5px var(--space-sm);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 32px;
+      width: 100%;
+      transition: border-color 0.1s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .form-input[aria-invalid="true"] {
+      border-color: var(--error);
+    }
+    .form-input[aria-invalid="true"]:focus {
+      box-shadow: 0 0 0 1px var(--error);
+    }
+
+    textarea.form-input {
+      min-height: 64px;
+      resize: vertical;
+    }
+
+    select.form-input {
+      cursor: pointer;
+    }
+
+    .form-hint {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .form-error {
+      font-size: 0.6875rem;
+      color: var(--error);
+      margin-top: 2px;
+    }
+
+    .form-value-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* Inline two-col inside detail */
+    .form-row-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 2px var(--space-sm);
+      border-radius: var(--radius);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      border: 1px solid;
+    }
+
+    .badge-active {
+      color: var(--success);
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .badge-inactive {
+      color: var(--text-secondary);
+      border-color: var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .badge-pending {
+      color: var(--warning);
+      border-color: var(--warning);
+      background: var(--warning-bg);
+    }
+
+    .badge-role {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    /* Radio / Checkbox in detail */
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      cursor: pointer;
+      font-size: 0.8125rem;
+    }
+
+    .option-item input[type="radio"],
+    .option-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin-top: 1px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .option-desc {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Permissions grid */
+    .permissions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-sm);
+    }
+
+    .permission-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .permission-item:hover { background: var(--bg-secondary); }
+
+    .permission-item input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      padding: 5px var(--space-md);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      min-height: 32px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: background 0.1s, border-color 0.1s;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-secondary {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover { background: var(--bg-secondary); }
+
+    .btn-danger-text {
+      background: transparent;
+      color: var(--error);
+      border: none;
+      padding: 5px var(--space-sm);
+    }
+    .btn-danger-text:hover { background: var(--error-bg); }
+
+    .btn-sm {
+      padding: 3px var(--space-sm);
+      font-size: 0.75rem;
+      min-height: 26px;
+    }
+
+    /* Detail footer */
+    .detail-footer {
+      padding: var(--space-md) var(--space-lg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-secondary);
+    }
+
+    .detail-footer-actions {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    /* Section divider in form */
+    .section-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      padding: var(--space-sm) 0;
+      margin-top: var(--space-sm);
+      margin-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Activity log */
+    .activity-log {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .activity-item {
+      display: flex;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-time {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--border-strong);
+      white-space: nowrap;
+      min-width: 80px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .content-layout {
+        grid-template-columns: 1fr;
+      }
+      .user-list-panel { max-height: 300px; }
+    }
+
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; padding: var(--space-md); }
+      .main { padding: var(--space-md); }
+      .form-row { grid-template-columns: 1fr; }
+      .form-row-pair { grid-template-columns: 1fr; }
+      .permissions-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Hoppa till huvudinnehall</a>
+
+  <div class="layout">
+    <aside class="sidebar" role="complementary" aria-label="Sidomeny">
+      <div class="sidebar-header">
+        <h1>Admin</h1>
+      </div>
+      <nav aria-label="Huvudnavigation">
+        <ul>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+            Dashboard
+          </a></li>
+          <li><a href="#" aria-current="page">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.5-5 6-5s6 2 6 5"/></svg>
+            Anvandare
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+            Produkter
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="1"/><path d="M1 6h14"/></svg>
+            Ordrar
+          </a></li>
+          <li><a href="#">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1"/></svg>
+            Installningar
+          </a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main" id="main-content" role="main">
+      <nav class="breadcrumb" aria-label="Brodsmuler">
+        <a href="#">Anvandare</a>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+        <span aria-current="page">Redigera</span>
+      </nav>
+
+      <header class="page-header">
+        <div>
+          <h2>Anvandare</h2>
+          <p class="header-meta">24 anvandare totalt &middot; 18 aktiva</p>
+        </div>
+        <button class="btn btn-primary">+ Ny anvandare</button>
+      </header>
+
+      <div class="content-layout">
+        <!-- Left: User list -->
+        <div class="user-list-panel">
+          <div class="list-toolbar">
+            <label for="user-search" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Sok anvandare</label>
+            <input type="search" id="user-search" class="list-search" placeholder="Sok..." />
+            <label for="list-role-filter" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Filtrera roll</label>
+            <select id="list-role-filter" class="list-filter">
+              <option value="">Alla</option>
+              <option value="admin">Admin</option>
+              <option value="editor">Editor</option>
+              <option value="viewer">Viewer</option>
+            </select>
+          </div>
+
+          <ul class="user-list" role="listbox" aria-label="Anvandarlista">
+            <li class="user-list-item" role="option" aria-selected="true" tabindex="0">
+              <div class="user-avatar-sm">AA</div>
+              <div class="user-list-info">
+                <div class="user-list-name">Anna Andersson</div>
+                <div class="user-list-email">anna.andersson@example.com</div>
+              </div>
+              <span class="user-list-status status-dot-active" title="Aktiv"></span>
+            </li>
+            <li class="user-list-item" role="option" aria-selected="false" tabindex="0">
+              <div class="user-avatar-sm">EE</div>
+              <div class="user-list-info">
+                <div class="user-list-name">Erik Eriksson</div>
+                <div class="user-list-email">erik.e@example.com</div>
+              </div>
+              <span class="user-list-status status-dot-active" title="Aktiv"></span>
+            </li>
+            <li class="user-list-item" role="option" aria-selected="false" tabindex="0">
+              <div class="user-avatar-sm">MS</div>
+              <div class="user-list-info">
+                <div class="user-list-name">Maria Svensson</div>
+                <div class="user-list-email">maria.s@example.com</div>
+              </div>
+              <span class="user-list-status status-dot-inactive" title="Inaktiv"></span>
+            </li>
+            <li class="user-list-item" role="option" aria-selected="false" tabindex="0">
+              <div class="user-avatar-sm">JP</div>
+              <div class="user-list-info">
+                <div class="user-list-name">Johan Persson</div>
+                <div class="user-list-email">johan.p@example.com</div>
+              </div>
+              <span class="user-list-status status-dot-pending" title="Vantande"></span>
+            </li>
+            <li class="user-list-item" role="option" aria-selected="false" tabindex="0">
+              <div class="user-avatar-sm">KL</div>
+              <div class="user-list-info">
+                <div class="user-list-name">Karin Lindqvist</div>
+                <div class="user-list-email">karin.l@example.com</div>
+              </div>
+              <span class="user-list-status status-dot-active" title="Aktiv"></span>
+            </li>
+            <li class="user-list-item" role="option" aria-selected="false" tabindex="0">
+              <div class="user-avatar-sm">ON</div>
+              <div class="user-list-info">
+                <div class="user-list-name">Oscar Nilsson</div>
+                <div class="user-list-email">oscar.n@example.com</div>
+              </div>
+              <span class="user-list-status status-dot-active" title="Aktiv"></span>
+            </li>
+            <li class="user-list-item" role="option" aria-selected="false" tabindex="0">
+              <div class="user-avatar-sm">LB</div>
+              <div class="user-list-info">
+                <div class="user-list-name">Lisa Bergstrom</div>
+                <div class="user-list-email">lisa.b@example.com</div>
+              </div>
+              <span class="user-list-status status-dot-active" title="Aktiv"></span>
+            </li>
+          </ul>
+
+          <div class="list-footer">
+            <span>7 av 24 anvandare</span>
+            <span>Sida 1/4</span>
+          </div>
+        </div>
+
+        <!-- Right: Detail/Edit panel -->
+        <div class="detail-panel">
+          <div class="detail-header">
+            <h3>Anna Andersson</h3>
+            <div style="display:flex;gap:var(--space-sm);align-items:center;">
+              <span class="badge badge-active">Aktiv</span>
+              <span class="badge badge-role">Admin</span>
+            </div>
+          </div>
+
+          <div class="detail-tabs" role="tablist" aria-label="Anvandarsektioner">
+            <button class="detail-tab" role="tab" aria-selected="true" id="tab-profile">Profil</button>
+            <button class="detail-tab" role="tab" aria-selected="false" id="tab-perms">Behorigheter</button>
+            <button class="detail-tab" role="tab" aria-selected="false" id="tab-activity">Aktivitet</button>
+          </div>
+
+          <div class="detail-body" role="tabpanel" aria-labelledby="tab-profile">
+            <form novalidate>
+              <div class="section-label">Grunduppgifter</div>
+
+              <div class="form-row">
+                <label class="form-label" for="det-firstname">
+                  Fornamn <span class="required-mark">*</span>
+                </label>
+                <div class="form-value-group">
+                  <input type="text" id="det-firstname" class="form-input" value="Anna" required autocomplete="given-name" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label" for="det-lastname">
+                  Efternamn <span class="required-mark">*</span>
+                </label>
+                <div class="form-value-group">
+                  <input type="text" id="det-lastname" class="form-input" value="Andersson" required autocomplete="family-name" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label" for="det-email">
+                  E-post <span class="required-mark">*</span>
+                </label>
+                <div class="form-value-group">
+                  <input type="email" id="det-email" class="form-input" value="anna.andersson@example.com" required autocomplete="email" aria-describedby="email-hint" />
+                  <span id="email-hint" class="form-hint">Anvands for inloggning</span>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label" for="det-phone">Telefon</label>
+                <div class="form-value-group">
+                  <input type="tel" id="det-phone" class="form-input" value="+46 70 123 45 67" autocomplete="tel" />
+                </div>
+              </div>
+
+              <div class="section-label">Organisation</div>
+
+              <div class="form-row">
+                <label class="form-label" for="det-dept">Avdelning</label>
+                <div class="form-value-group">
+                  <select id="det-dept" class="form-input">
+                    <option value="">Valj avdelning</option>
+                    <option value="sales" selected>Forsaljning</option>
+                    <option value="marketing">Marknadsforing</option>
+                    <option value="support">Support</option>
+                    <option value="dev">Utveckling</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label" for="det-role">Roll</label>
+                <div class="form-value-group">
+                  <div class="option-group">
+                    <label class="option-item">
+                      <input type="radio" name="role" value="admin" checked />
+                      <span>Admin</span>
+                    </label>
+                    <label class="option-item">
+                      <input type="radio" name="role" value="editor" />
+                      <span>Editor</span>
+                    </label>
+                    <label class="option-item">
+                      <input type="radio" name="role" value="viewer" />
+                      <span>Viewer</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label" for="det-status">Status</label>
+                <div class="form-value-group">
+                  <select id="det-status" class="form-input">
+                    <option value="active" selected>Aktiv</option>
+                    <option value="inactive">Inaktiv</option>
+                    <option value="pending">Vantande</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="section-label">Behorigheter</div>
+
+              <div class="form-row" style="border-bottom:none;">
+                <label class="form-label">Tillgang</label>
+                <div class="permissions-grid">
+                  <label class="permission-item">
+                    <input type="checkbox" checked /> Exportera data
+                  </label>
+                  <label class="permission-item">
+                    <input type="checkbox" /> Bjuda in anvandare
+                  </label>
+                  <label class="permission-item">
+                    <input type="checkbox" /> Hantera fakturering
+                  </label>
+                  <label class="permission-item">
+                    <input type="checkbox" checked /> API-access
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="detail-footer">
+            <button class="btn-danger-text btn btn-sm" type="button">Ta bort anvandare</button>
+            <div class="detail-footer-actions">
+              <button class="btn btn-secondary btn-sm" type="button">Avbryt</button>
+              <button class="btn btn-primary btn-sm" type="submit">Spara</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Users - Variant E: Inline Drawer</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --bg-tertiary: #ebebed;
+      --bg-sidebar: #1d1d1f;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-sidebar: #f5f5f7;
+      --border: #d2d2d7;
+      --border-light: #e8e8ed;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --accent-light: rgba(0, 113, 227, 0.08);
+      --success: #34c759;
+      --success-bg: rgba(52, 199, 89, 0.1);
+      --warning: #ff9f0a;
+      --warning-bg: rgba(255, 159, 10, 0.1);
+      --error: #ff3b30;
+      --error-bg: rgba(255, 59, 48, 0.08);
+
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+      --shadow-drawer: -4px 0 24px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1c1c1e;
+      --bg-secondary: #2c2c2e;
+      --bg-tertiary: #3a3a3c;
+      --bg-sidebar: #000000;
+      --text-primary: #f5f5f7;
+      --text-secondary: #98989d;
+      --border: #48484a;
+      --border-light: #38383a;
+      --accent: #0a84ff;
+      --accent-hover: #409cff;
+      --accent-light: rgba(10, 132, 255, 0.15);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.35);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+      --shadow-drawer: -4px 0 24px rgba(0,0,0,0.4);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-primary: #1c1c1e;
+        --bg-secondary: #2c2c2e;
+        --bg-tertiary: #3a3a3c;
+        --bg-sidebar: #000000;
+        --text-primary: #f5f5f7;
+        --text-secondary: #98989d;
+        --border: #48484a;
+        --border-light: #38383a;
+        --accent: #0a84ff;
+        --accent-hover: #409cff;
+        --accent-light: rgba(10, 132, 255, 0.15);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.35);
+        --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+        --shadow-drawer: -4px 0 24px rgba(0,0,0,0.4);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      z-index: 100;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    }
+    .skip-link:focus { top: 0; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar - minimal icon sidebar */
+    .sidebar {
+      width: 68px;
+      background: var(--bg-sidebar);
+      color: var(--text-sidebar);
+      padding: var(--space-md) 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .sidebar-brand {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    .sidebar nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-xs);
+      flex: 1;
+    }
+
+    .sidebar nav a {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .sidebar nav a:hover {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.8);
+    }
+
+    .sidebar nav a[aria-current="page"] {
+      background: rgba(255,255,255,0.12);
+      color: white;
+    }
+
+    .sidebar nav a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .nav-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Main area with table and drawer */
+    .main-area {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Table panel */
+    .table-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      transition: margin-right 0.3s ease;
+    }
+
+    .table-panel.drawer-open {
+      margin-right: 0;
+    }
+
+    /* Table header */
+    .table-header {
+      padding: var(--space-lg) var(--space-xl);
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .table-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-md);
+    }
+
+    .table-header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .table-header-count {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-left: var(--space-sm);
+    }
+
+    /* Filter row */
+    .filter-row {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    .filter-search {
+      flex: 1;
+      max-width: 320px;
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      min-height: 36px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .filter-search:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+      background: var(--bg-primary);
+    }
+
+    .filter-pill {
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      min-height: 36px;
+      transition: all 0.15s;
+    }
+
+    .filter-pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .filter-pill:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    /* Table */
+    .table-scroll {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead { position: sticky; top: 0; z-index: 5; background: var(--bg-primary); }
+
+    th {
+      text-align: left;
+      padding: var(--space-sm) var(--space-md);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th:first-child { padding-left: var(--space-xl); }
+    th:last-child { padding-right: var(--space-xl); }
+
+    td {
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--border-light);
+      font-size: 0.875rem;
+    }
+
+    td:first-child { padding-left: var(--space-xl); }
+    td:last-child { padding-right: var(--space-xl); }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    tbody tr:hover { background: var(--bg-secondary); }
+
+    tbody tr.selected {
+      background: var(--accent-light);
+    }
+
+    tbody tr:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--border) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .user-name { font-weight: 500; }
+    .user-email { font-size: 0.8125rem; color: var(--text-secondary); }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .chip::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .chip-active { color: var(--success); background: var(--success-bg); }
+    .chip-inactive { color: var(--text-secondary); background: var(--bg-tertiary); }
+    .chip-pending { color: var(--warning); background: var(--warning-bg); }
+
+    .role-text {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* Drawer */
+    .drawer {
+      width: 480px;
+      background: var(--bg-primary);
+      border-left: 1px solid var(--border);
+      box-shadow: var(--shadow-drawer);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: width 0.3s ease, opacity 0.3s ease;
+    }
+
+    .drawer.closed {
+      width: 0;
+      border: none;
+      box-shadow: none;
+      opacity: 0;
+    }
+
+    .drawer-header {
+      padding: var(--space-lg) var(--space-xl);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .drawer-header h2 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: var(--bg-secondary);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: background 0.15s;
+    }
+
+    .drawer-close:hover { background: var(--bg-tertiary); }
+    .drawer-close:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Drawer profile */
+    .drawer-profile {
+      padding: var(--space-lg) var(--space-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      border-bottom: 1px solid var(--border-light);
+      flex-shrink: 0;
+    }
+
+    .drawer-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .drawer-profile-info h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .drawer-profile-meta {
+      display: flex;
+      gap: var(--space-sm);
+      margin-top: var(--space-xs);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* Drawer body */
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-lg) var(--space-xl);
+    }
+
+    /* Drawer sections */
+    .drawer-section {
+      margin-bottom: var(--space-xl);
+    }
+
+    .drawer-section:last-child { margin-bottom: 0; }
+
+    .drawer-section-title {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    /* Compact form fields */
+    .compact-field {
+      margin-bottom: var(--space-md);
+    }
+
+    .compact-field:last-child { margin-bottom: 0; }
+
+    .compact-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .compact-label .req { color: var(--error); }
+
+    .compact-input {
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 40px;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .compact-input:hover { border-color: var(--text-secondary); }
+
+    .compact-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .compact-input[aria-invalid="true"] { border-color: var(--error); }
+
+    select.compact-input { cursor: pointer; }
+
+    .compact-hint {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .compact-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    /* Role chips selector */
+    .role-chips {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .role-chip {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .role-chip input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .role-chip-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      min-height: 36px;
+    }
+
+    .role-chip:hover .role-chip-label {
+      border-color: var(--text-secondary);
+    }
+
+    .role-chip input:checked + .role-chip-label {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .role-chip input:focus-visible + .role-chip-label {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Permission toggles in drawer */
+    .perm-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .perm-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) 0;
+    }
+
+    .perm-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .perm-sublabel {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* iOS-style toggle */
+    .ios-toggle {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .ios-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .ios-track {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--bg-tertiary);
+      border-radius: 13px;
+      transition: background 0.25s;
+    }
+
+    .ios-track::before {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 2px;
+      top: 2px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .ios-toggle input:checked + .ios-track {
+      background: var(--accent);
+    }
+
+    .ios-toggle input:checked + .ios-track::before {
+      transform: translateX(18px);
+    }
+
+    .ios-toggle input:focus-visible + .ios-track {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Drawer footer */
+    .drawer-footer {
+      padding: var(--space-md) var(--space-xl);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      gap: var(--space-sm);
+      flex-shrink: 0;
+      background: var(--bg-secondary);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      min-height: 36px;
+      text-decoration: none;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      flex: 1;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover { background: var(--border); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: var(--bg-secondary); }
+
+    .btn-danger-text {
+      background: transparent;
+      color: var(--error);
+      font-size: 0.75rem;
+    }
+    .btn-danger-text:hover { background: var(--error-bg); }
+
+    .btn-add {
+      background: var(--accent);
+      color: white;
+      border-radius: var(--radius-full);
+    }
+    .btn-add:hover { background: var(--accent-hover); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .drawer { position: fixed; right: 0; top: 0; bottom: 0; z-index: 100; }
+      .drawer.closed { width: 0; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 0; display: none; }
+      .table-header { padding: var(--space-md); }
+      .filter-row { flex-wrap: wrap; }
+      .drawer { width: 100%; }
+      td:first-child, th:first-child { padding-left: var(--space-md); }
+      td:last-child, th:last-child { padding-right: var(--space-md); }
+      .compact-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Hoppa till huvudinnehall</a>
+
+  <div class="layout">
+    <!-- Icon sidebar -->
+    <aside class="sidebar" role="complementary" aria-label="Sidomeny">
+      <div class="sidebar-brand" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="white"><rect x="1" y="1" width="6" height="6" rx="2"/><rect x="9" y="1" width="6" height="6" rx="2"/><rect x="1" y="9" width="6" height="6" rx="2"/></svg>
+      </div>
+      <nav aria-label="Huvudnavigation">
+        <a href="#" aria-label="Dashboard">
+          <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="8" height="8" rx="2"/><rect x="12" y="2" width="8" height="8" rx="2"/><rect x="2" y="12" width="8" height="8" rx="2"/><rect x="12" y="12" width="8" height="8" rx="2"/></svg>
+        </a>
+        <a href="#" aria-current="page" aria-label="Anvandare">
+          <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="8" r="4"/><path d="M3 20c0-4 3-7 8-7s8 3 8 7"/></svg>
+        </a>
+        <a href="#" aria-label="Produkter">
+          <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="16" height="13" rx="2"/><path d="M7 9h8M7 13h5"/></svg>
+        </a>
+        <a href="#" aria-label="Ordrar">
+          <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4h12v15l-6-3-6 3V4z"/></svg>
+        </a>
+        <a href="#" aria-label="Installningar">
+          <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><circle cx="11" cy="11" r="3"/><path d="M11 3v2M11 17v2M3 11h2M17 11h2"/></svg>
+        </a>
+      </nav>
+    </aside>
+
+    <div class="main-area" id="main-content" role="main">
+      <!-- Table panel -->
+      <div class="table-panel drawer-open">
+        <div class="table-header">
+          <div class="table-header-top">
+            <h1>Anvandare <span class="table-header-count">24</span></h1>
+            <button class="btn btn-add">+ Ny anvandare</button>
+          </div>
+          <div class="filter-row">
+            <label for="search-users" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Sok anvandare</label>
+            <input type="search" id="search-users" class="filter-search" placeholder="Sok anvandare..." />
+            <label for="filter-role" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Filtrera roll</label>
+            <select id="filter-role" class="filter-pill">
+              <option value="">Alla roller</option>
+              <option value="admin">Admin</option>
+              <option value="editor">Editor</option>
+              <option value="viewer">Viewer</option>
+            </select>
+            <label for="filter-status" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Filtrera status</label>
+            <select id="filter-status" class="filter-pill">
+              <option value="">Alla statusar</option>
+              <option value="active">Aktiv</option>
+              <option value="inactive">Inaktiv</option>
+              <option value="pending">Vantande</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-scroll">
+          <table aria-label="Anvandarlista">
+            <thead>
+              <tr>
+                <th scope="col">Anvandare</th>
+                <th scope="col">Roll</th>
+                <th scope="col">Status</th>
+                <th scope="col">Senast aktiv</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="selected" tabindex="0" aria-label="Anna Andersson - vald" onclick="selectUser(this)">
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">AA</div>
+                    <div>
+                      <div class="user-name">Anna Andersson</div>
+                      <div class="user-email">anna.andersson@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-text">Admin</span></td>
+                <td><span class="chip chip-active">Aktiv</span></td>
+                <td style="color:var(--text-secondary);font-size:0.8125rem;">Idag 14:32</td>
+              </tr>
+              <tr tabindex="0" aria-label="Erik Eriksson" onclick="selectUser(this)">
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">EE</div>
+                    <div>
+                      <div class="user-name">Erik Eriksson</div>
+                      <div class="user-email">erik.e@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-text">Editor</span></td>
+                <td><span class="chip chip-active">Aktiv</span></td>
+                <td style="color:var(--text-secondary);font-size:0.8125rem;">Idag 12:15</td>
+              </tr>
+              <tr tabindex="0" aria-label="Maria Svensson" onclick="selectUser(this)">
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">MS</div>
+                    <div>
+                      <div class="user-name">Maria Svensson</div>
+                      <div class="user-email">maria.s@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-text">Viewer</span></td>
+                <td><span class="chip chip-inactive">Inaktiv</span></td>
+                <td style="color:var(--text-secondary);font-size:0.8125rem;">2025-01-20</td>
+              </tr>
+              <tr tabindex="0" aria-label="Johan Persson" onclick="selectUser(this)">
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">JP</div>
+                    <div>
+                      <div class="user-name">Johan Persson</div>
+                      <div class="user-email">johan.p@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-text">Editor</span></td>
+                <td><span class="chip chip-pending">Vantande</span></td>
+                <td style="color:var(--text-secondary);font-size:0.8125rem;">-</td>
+              </tr>
+              <tr tabindex="0" aria-label="Karin Lindqvist" onclick="selectUser(this)">
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">KL</div>
+                    <div>
+                      <div class="user-name">Karin Lindqvist</div>
+                      <div class="user-email">karin.l@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-text">Admin</span></td>
+                <td><span class="chip chip-active">Aktiv</span></td>
+                <td style="color:var(--text-secondary);font-size:0.8125rem;">Igar 16:45</td>
+              </tr>
+              <tr tabindex="0" aria-label="Oscar Nilsson" onclick="selectUser(this)">
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">ON</div>
+                    <div>
+                      <div class="user-name">Oscar Nilsson</div>
+                      <div class="user-email">oscar.n@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-text">Viewer</span></td>
+                <td><span class="chip chip-active">Aktiv</span></td>
+                <td style="color:var(--text-secondary);font-size:0.8125rem;">Igar 09:20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Edit drawer -->
+      <aside class="drawer" id="edit-drawer" role="complementary" aria-label="Redigera anvandare">
+        <div class="drawer-header">
+          <h2>Redigera</h2>
+          <button class="drawer-close" aria-label="Stang panel" onclick="toggleDrawer()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>
+          </button>
+        </div>
+
+        <div class="drawer-profile">
+          <div class="drawer-avatar">AA</div>
+          <div class="drawer-profile-info">
+            <h3>Anna Andersson</h3>
+            <div class="drawer-profile-meta">
+              <span class="chip chip-active">Aktiv</span>
+              <span>Medlem sedan jan 2024</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-body">
+          <form novalidate>
+            <div class="drawer-section">
+              <div class="drawer-section-title">Personuppgifter</div>
+              <div class="compact-row">
+                <div class="compact-field">
+                  <label class="compact-label" for="d-fname">Fornamn <span class="req">*</span></label>
+                  <input type="text" id="d-fname" class="compact-input" value="Anna" required autocomplete="given-name" />
+                </div>
+                <div class="compact-field">
+                  <label class="compact-label" for="d-lname">Efternamn <span class="req">*</span></label>
+                  <input type="text" id="d-lname" class="compact-input" value="Andersson" required autocomplete="family-name" />
+                </div>
+              </div>
+              <div class="compact-field" style="margin-top:var(--space-md);">
+                <label class="compact-label" for="d-email">E-post <span class="req">*</span></label>
+                <input type="email" id="d-email" class="compact-input" value="anna.andersson@example.com" required autocomplete="email" />
+                <span class="compact-hint">Anvands for inloggning</span>
+              </div>
+              <div class="compact-row" style="margin-top:var(--space-md);">
+                <div class="compact-field">
+                  <label class="compact-label" for="d-phone">Telefon</label>
+                  <input type="tel" id="d-phone" class="compact-input" value="+46 70 123 45 67" autocomplete="tel" />
+                </div>
+                <div class="compact-field">
+                  <label class="compact-label" for="d-dept">Avdelning</label>
+                  <select id="d-dept" class="compact-input">
+                    <option value="">Valj</option>
+                    <option value="sales" selected>Forsaljning</option>
+                    <option value="marketing">Marknadsforing</option>
+                    <option value="support">Support</option>
+                    <option value="dev">Utveckling</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="drawer-section">
+              <div class="drawer-section-title">Roll</div>
+              <fieldset style="border:none;padding:0;margin:0;">
+                <legend class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Valj roll</legend>
+                <div class="role-chips">
+                  <label class="role-chip">
+                    <input type="radio" name="role" value="admin" checked />
+                    <span class="role-chip-label">Admin</span>
+                  </label>
+                  <label class="role-chip">
+                    <input type="radio" name="role" value="editor" />
+                    <span class="role-chip-label">Editor</span>
+                  </label>
+                  <label class="role-chip">
+                    <input type="radio" name="role" value="viewer" />
+                    <span class="role-chip-label">Viewer</span>
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="drawer-section">
+              <div class="drawer-section-title">Behorigheter</div>
+              <div class="perm-list">
+                <div class="perm-row">
+                  <div>
+                    <div class="perm-label">Exportera data</div>
+                    <div class="perm-sublabel">Rapporter och CSV</div>
+                  </div>
+                  <label class="ios-toggle">
+                    <input type="checkbox" checked aria-label="Exportera data" />
+                    <span class="ios-track"></span>
+                  </label>
+                </div>
+                <div class="perm-row">
+                  <div>
+                    <div class="perm-label">Bjuda in anvandare</div>
+                    <div class="perm-sublabel">Skicka inbjudningar</div>
+                  </div>
+                  <label class="ios-toggle">
+                    <input type="checkbox" aria-label="Bjuda in anvandare" />
+                    <span class="ios-track"></span>
+                  </label>
+                </div>
+                <div class="perm-row">
+                  <div>
+                    <div class="perm-label">Hantera fakturering</div>
+                    <div class="perm-sublabel">Fakturor och betalning</div>
+                  </div>
+                  <label class="ios-toggle">
+                    <input type="checkbox" aria-label="Hantera fakturering" />
+                    <span class="ios-track"></span>
+                  </label>
+                </div>
+                <div class="perm-row">
+                  <div>
+                    <div class="perm-label">API-access</div>
+                    <div class="perm-sublabel">Externa integrationer</div>
+                  </div>
+                  <label class="ios-toggle">
+                    <input type="checkbox" checked aria-label="API-access" />
+                    <span class="ios-track"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="drawer-section">
+              <div class="drawer-section-title">Status</div>
+              <select class="compact-input" aria-label="Kontostatus">
+                <option value="active" selected>Aktiv</option>
+                <option value="inactive">Inaktiv</option>
+                <option value="pending">Vantande</option>
+              </select>
+            </div>
+
+            <div class="drawer-section" style="margin-top:var(--space-xl);padding-top:var(--space-lg);border-top:1px solid var(--border-light);">
+              <button type="button" class="btn btn-danger-text" style="padding:0;">Ta bort anvandare</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="drawer-footer">
+          <button type="button" class="btn btn-secondary" onclick="toggleDrawer()">Avbryt</button>
+          <button type="button" class="btn btn-primary">Spara andringar</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function selectUser(row) {
+      document.querySelectorAll('tbody tr').forEach(tr => tr.classList.remove('selected'));
+      row.classList.add('selected');
+      document.getElementById('edit-drawer').classList.remove('closed');
+    }
+
+    function toggleDrawer() {
+      document.getElementById('edit-drawer').classList.toggle('closed');
+    }
+  </script>
+</body>
+</html>

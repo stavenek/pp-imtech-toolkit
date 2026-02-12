@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newsflash - Integral Teamwork Toolkit</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg-primary:#ffffff;--bg-secondary:#f7f8fa;--bg-tertiary:#eef1f5;--bg-sidebar:#1e2a3a;--text-primary:#1a2332;--text-secondary:#627088;--text-sidebar:#ffffff;--text-sidebar-muted:rgba(255,255,255,0.35);--border:#dfe3ea;--border-light:#eef1f5;--accent:#3366cc;--accent-hover:#2952a3;--accent-light:rgba(51,102,204,0.06);--accent-muted:#8faad9;--success:#2e7d5b;--warning:#b8860b;--error:#c0392b;--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--radius-sm:6px;--radius-md:8px;--radius-lg:12px;--shadow-xs:0 1px 2px rgba(26,35,50,0.04);--shadow-sm:0 1px 4px rgba(26,35,50,0.06),0 1px 2px rgba(26,35,50,0.04);--shadow-md:0 4px 8px rgba(26,35,50,0.06),0 2px 4px rgba(26,35,50,0.04);--font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--font-size-base:14px;--sidebar-width:260px}
+[data-theme="dark"]{--bg-primary:#141a24;--bg-secondary:#1a2230;--bg-tertiary:#202a3a;--bg-sidebar:#0d1218;--text-primary:#dce2ea;--text-secondary:#8090a8;--border:#2a3648;--border-light:#1f2a3a;--accent:#5588dd;--accent-hover:#6699ee;--accent-light:rgba(85,136,221,0.08);--accent-muted:#6a8ec4;--success:#3da06e;--warning:#d4a017;--error:#e04a3a;--shadow-xs:0 1px 2px rgba(0,0,0,0.2);--shadow-sm:0 1px 4px rgba(0,0,0,0.25),0 1px 2px rgba(0,0,0,0.15);--shadow-md:0 4px 8px rgba(0,0,0,0.3),0 2px 4px rgba(0,0,0,0.2)}
+.skip-link{position:absolute;top:-100%;left:var(--space-md);background:var(--accent);color:#fff;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);z-index:10000;font-size:var(--font-size-base);text-decoration:none;font-family:var(--font-family)}.skip-link:focus{top:var(--space-md)}
+html{font-size:var(--font-size-base)}body{font-family:var(--font-family);background:var(--bg-secondary);color:var(--text-primary);line-height:1.6;display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-width);min-width:var(--sidebar-width);background:var(--bg-sidebar);color:var(--text-sidebar);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
+.sidebar-logo{padding:var(--space-lg);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:var(--space-sm)}.sidebar-logo svg{flex-shrink:0}.sidebar-logo-text{font-size:15px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap}
+.sidebar-nav{padding:var(--space-md) 0;flex:1}.sidebar-section-label{padding:var(--space-lg) var(--space-lg) var(--space-sm);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-sidebar-muted);user-select:none}
+.sidebar-link{display:flex;align-items:center;gap:var(--space-sm);padding:var(--space-sm) var(--space-lg);color:rgba(255,255,255,0.7);text-decoration:none;font-size:13.5px;font-weight:450;border-right:3px solid transparent;transition:all 0.15s ease;min-height:44px}.sidebar-link:hover{color:#fff;background:rgba(255,255,255,0.06)}.sidebar-link[aria-current="page"]{color:#fff;background:rgba(255,255,255,0.08);border-right-color:var(--accent);font-weight:550}.sidebar-link svg{width:18px;height:18px;flex-shrink:0;opacity:0.7}.sidebar-link[aria-current="page"] svg{opacity:1}
+.main-wrapper{margin-left:var(--sidebar-width);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--bg-primary);border-bottom:1px solid var(--border);padding:0 var(--space-xl);display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow-xs)}
+.breadcrumb{display:flex;align-items:center;gap:var(--space-xs);font-size:13px;color:var(--text-secondary);list-style:none}.breadcrumb li{display:flex;align-items:center;gap:var(--space-xs)}.breadcrumb a{color:var(--text-secondary);text-decoration:none}.breadcrumb a:hover{color:var(--accent)}.breadcrumb-current{color:var(--text-primary);font-weight:500}.breadcrumb-sep{color:var(--border);font-size:11px}
+.topbar-actions{display:flex;align-items:center;gap:var(--space-sm)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-xs);padding:var(--space-sm) var(--space-md);font-family:var(--font-family);font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-primary);color:var(--text-primary);cursor:pointer;min-height:44px;min-width:44px;transition:all 0.15s ease;text-decoration:none;white-space:nowrap}.btn:hover{background:var(--bg-secondary)}.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;border-radius:var(--radius-sm);transition:all 0.15s ease}.theme-toggle:hover{background:var(--bg-tertiary);color:var(--text-primary)}.theme-toggle svg{width:18px;height:18px}[data-theme="dark"] .theme-icon-light{display:none}[data-theme="light"] .theme-icon-dark{display:none}
+.content{padding:var(--space-xl);flex:1;max-width:860px}
+.page-header{margin-bottom:var(--space-xl)}.page-title{font-size:22px;font-weight:600;color:var(--text-primary);letter-spacing:-0.01em}.page-subtitle{font-size:14px;color:var(--text-secondary);margin-top:var(--space-xs)}
+.card{background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);padding:var(--space-lg);margin-bottom:var(--space-lg)}.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-md);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-light)}.card-title{font-size:15px;font-weight:600;color:var(--text-primary)}.card-subtitle{font-size:13px;color:var(--text-secondary);margin-top:2px}
+
+/* Timeline */
+.timeline{position:relative;padding-left:var(--space-xl)}
+.timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:var(--space-xl)}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-dot{position:absolute;left:calc(-1 * var(--space-xl) + 4px);top:4px;width:16px;height:16px;border-radius:50%;background:var(--bg-primary);border:3px solid var(--accent);z-index:1}
+.timeline-item:first-child .timeline-dot{background:var(--accent);border-color:var(--accent)}
+.timeline-date{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:var(--space-xs)}
+.timeline-card{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:var(--space-md)}
+.timeline-card-title{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:var(--space-sm)}
+.timeline-card-body{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.timeline-card-body p{margin-bottom:var(--space-sm)}
+.timeline-card-body p:last-child{margin-bottom:0}
+.timeline-card-author{font-size:12px;color:var(--text-secondary);margin-top:var(--space-sm);font-style:italic}
+
+@media(max-width:768px){.sidebar{transform:translateX(-100%);transition:transform 0.25s ease}.sidebar.open{transform:translateX(0)}.main-wrapper{margin-left:0}.content{max-width:100%}}
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Hoppa till huvudinnehåll</a>
+
+<nav class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar-logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#3366cc"/><path d="M8 14h12M14 8v12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <span class="sidebar-logo-text">Integral Teamwork</span>
+  </div>
+  <div class="sidebar-nav">
+    <div class="sidebar-section-label">Oversikt</div>
+    <a href="index.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+    <div class="sidebar-section-label">Teamwork</div>
+    <a href="agenda.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 4v16"/></svg>Teamwork Agenda</a>
+    <a href="strategic.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Strategic Reasoning</a>
+    <a href="newsflash.html" class="sidebar-link" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4c0-1 1-2 2-2h8l6 6v14c0 1-1 2-2 2H6c-1 0-2-1-2-2z"/><polyline points="14 2 14 8 20 8"/></svg>Newsflash</a>
+    <a href="desired-state.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Desired State</a>
+    <a href="goals-metrics.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Goals &amp; Metrics</a>
+    <a href="action-plan.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Action Plan</a>
+    <div class="sidebar-section-label">Resurser</div>
+    <a href="documents.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Team Documents</a>
+    <a href="attendance.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Attendance</a>
+    <a href="reflections.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Reflections</a>
+    <div class="sidebar-section-label">System</div>
+    <a href="admin.html" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Admin</a>
+  </div>
+</nav>
+
+<div class="main-wrapper">
+  <header class="topbar">
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a href="index.html">Hem</a></li>
+        <li><span class="breadcrumb-sep" aria-hidden="true">/</span></li>
+        <li><a href="agenda.html">Teamwork Agenda</a></li>
+        <li><span class="breadcrumb-sep" aria-hidden="true">/</span></li>
+        <li><span class="breadcrumb-current" aria-current="page">Newsflash</span></li>
+      </ol>
+    </nav>
+    <div class="topbar-actions">
+      <button class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ny nyhet
+      </button>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Byt tema">
+        <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content" class="content">
+    <div class="page-header">
+      <h1 class="page-title">Newsflash</h1>
+      <p class="page-subtitle">Manatliga uppdateringar och nyheter for teamet.</p>
+    </div>
+
+    <!-- Timeline -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Nyhetsflode</h2>
+          <p class="card-subtitle">Kronologiska uppdateringar</p>
+        </div>
+      </div>
+      <div class="timeline">
+        <article class="timeline-item">
+          <div class="timeline-dot" aria-hidden="true"></div>
+          <div class="timeline-date">Januari 2026</div>
+          <div class="timeline-card">
+            <h3 class="timeline-card-title">Nytt ar, nya ambitioner</h3>
+            <div class="timeline-card-body">
+              <p>Vi kickar igang 2026 med fornyad energi! Teamet har vuxit med tva nya medlemmar: Lisa Andersson och Fredrik Berg. Valkommen till Team Alpha!</p>
+              <p>Under januari fokuserar vi pa att uppdatera var strategiska plan och satta mal for forsta kvartalet. Alla teammedlemmar uppmanasatt bidra med sina perspektiv pa teamets Desired State.</p>
+              <p>Nasta teamwork-session ar planerad till 3 februari kl 10:00.</p>
+            </div>
+            <div class="timeline-card-author">Publicerad av Anna Karlsson, Team Leader</div>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-dot" aria-hidden="true"></div>
+          <div class="timeline-date">December 2025</div>
+          <div class="timeline-card">
+            <h3 class="timeline-card-title">Arssammanfattning 2025</h3>
+            <div class="timeline-card-body">
+              <p>Vilket ar det har varit! Teamet har uppnatt 78% av vara arsmal, en forbattring med 12% jamfort med 2024. Sarskilt stolte ar vi over att ha implementerat PDCA-metodik i tre av fyra projekt.</p>
+              <p>Tack till alla for ert engagemang och hard arbete. Vi ser fram emot att bygga vidare pa vara framgangar under 2026.</p>
+            </div>
+            <div class="timeline-card-author">Publicerad av Anna Karlsson, Team Leader</div>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-dot" aria-hidden="true"></div>
+          <div class="timeline-date">November 2025</div>
+          <div class="timeline-card">
+            <h3 class="timeline-card-title">Ny digital plattform lanserad</h3>
+            <div class="timeline-card-body">
+              <p>Vi har nu tillgang till Integral Teamwork Toolkit - var nya digitala plattform for teamarbete. Har kan vi samla allt fran strategisk planering till handlingsplaner och reflektioner.</p>
+              <p>En utbildningssession for alla teammedlemmar planeras till december. Se till att logga in och utforska plattformen redan nu!</p>
+            </div>
+            <div class="timeline-card-author">Publicerad av Erik Johansson</div>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-dot" aria-hidden="true"></div>
+          <div class="timeline-date">Oktober 2025</div>
+          <div class="timeline-card">
+            <h3 class="timeline-card-title">Kundnojdhet pa rekordniva</h3>
+            <div class="timeline-card-body">
+              <p>Var senaste kundundersokning visar ett NPS pa 72 - det hogsta vi nagonsin uppnatt! Detta ar ett direkt resultat av teamets fokuserade arbete med kvalitet och kundkommunikation.</p>
+              <p>Sarskilt uppskattades var snabbare aterkopping och forbattrade dokumentation. Bra jobbat allihop!</p>
+            </div>
+            <div class="timeline-card-author">Publicerad av Maria Lindgren</div>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-dot" aria-hidden="true"></div>
+          <div class="timeline-date">September 2025</div>
+          <div class="timeline-card">
+            <h3 class="timeline-card-title">Strategisk halvarsgenomgang</h3>
+            <div class="timeline-card-body">
+              <p>Vi har genomfort var halvarsgenomgang av det strategiska resonemanget. Baserat pa forandringarna i var omvarld har vi justerat tva av vara nyckelprioriteringar for att battre motsvara marknadens behov.</p>
+              <p>Uppdaterad strategisk plan finns tillganglig under Strategic Reasoning.</p>
+            </div>
+            <div class="timeline-card-author">Publicerad av Anna Karlsson, Team Leader</div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+function toggleTheme(){const h=document.documentElement;const c=h.getAttribute('data-theme');h.setAttribute('data-theme',c==='dark'?'light':'dark');localStorage.setItem('theme',c==='dark'?'light':'dark')}
+(function(){const s=localStorage.getItem('theme');if(s)document.documentElement.setAttribute('data-theme',s)})();
+</script>
+</body>
+</html>

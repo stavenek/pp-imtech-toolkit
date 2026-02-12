@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Integral Teamwork Toolkit</title>
+<style>
+/* ===== CSS RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f8fa;
+  --bg-tertiary: #eef1f5;
+  --bg-sidebar: #1e2a3a;
+  --text-primary: #1a2332;
+  --text-secondary: #627088;
+  --text-sidebar: #ffffff;
+  --text-sidebar-muted: rgba(255,255,255,0.35);
+  --border: #dfe3ea;
+  --border-light: #eef1f5;
+  --accent: #3366cc;
+  --accent-hover: #2952a3;
+  --accent-light: rgba(51, 102, 204, 0.06);
+  --accent-muted: #8faad9;
+  --success: #2e7d5b;
+  --warning: #b8860b;
+  --error: #c0392b;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-xs: 0 1px 2px rgba(26, 35, 50, 0.04);
+  --shadow-sm: 0 1px 4px rgba(26, 35, 50, 0.06), 0 1px 2px rgba(26, 35, 50, 0.04);
+  --shadow-md: 0 4px 8px rgba(26, 35, 50, 0.06), 0 2px 4px rgba(26, 35, 50, 0.04);
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-base: 14px;
+  --sidebar-width: 260px;
+}
+[data-theme="dark"] {
+  --bg-primary: #141a24;
+  --bg-secondary: #1a2230;
+  --bg-tertiary: #202a3a;
+  --bg-sidebar: #0d1218;
+  --text-primary: #dce2ea;
+  --text-secondary: #8090a8;
+  --border: #2a3648;
+  --border-light: #1f2a3a;
+  --accent: #5588dd;
+  --accent-hover: #6699ee;
+  --accent-light: rgba(85, 136, 221, 0.08);
+  --accent-muted: #6a8ec4;
+  --success: #3da06e;
+  --warning: #d4a017;
+  --error: #e04a3a;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.15);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ===== SKIP LINK ===== */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-md);
+  background: var(--accent);
+  color: #fff;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  z-index: 10000;
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  font-family: var(--font-family);
+}
+.skip-link:focus {
+  top: var(--space-md);
+}
+
+/* ===== BASE ===== */
+html { font-size: var(--font-size-base); }
+body {
+  font-family: var(--font-family);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: var(--space-lg) var(--space-lg);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.sidebar-logo svg { flex-shrink: 0; }
+.sidebar-logo-text {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.sidebar-nav { padding: var(--space-md) 0; flex: 1; }
+.sidebar-section-label {
+  padding: var(--space-lg) var(--space-lg) var(--space-sm) var(--space-lg);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-sidebar-muted);
+  user-select: none;
+}
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 450;
+  border-right: 3px solid transparent;
+  transition: all 0.15s ease;
+  min-height: 44px;
+}
+.sidebar-link:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.06);
+}
+.sidebar-link[aria-current="page"] {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+  border-right-color: var(--accent);
+  font-weight: 550;
+}
+.sidebar-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.sidebar-link[aria-current="page"] svg { opacity: 1; }
+
+/* ===== MAIN LAYOUT ===== */
+.main-wrapper {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  padding: 0 var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-xs);
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 13px;
+  color: var(--text-secondary);
+  list-style: none;
+}
+.breadcrumb li { display: flex; align-items: center; gap: var(--space-xs); }
+.breadcrumb a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb-current { color: var(--text-primary); font-weight: 500; }
+.breadcrumb-sep { color: var(--border); font-size: 11px; }
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--bg-secondary); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.btn-sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 12px;
+  min-height: 36px;
+}
+.btn-icon {
+  padding: var(--space-sm);
+  border: none;
+  background: transparent;
+}
+.btn-icon:hover { background: var(--bg-tertiary); }
+.btn svg { width: 16px; height: 16px; }
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+.theme-toggle:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.theme-toggle svg { width: 18px; height: 18px; }
+[data-theme="dark"] .theme-icon-light { display: none; }
+[data-theme="light"] .theme-icon-dark { display: none; }
+
+/* ===== CONTENT ===== */
+.content {
+  padding: var(--space-xl);
+  flex: 1;
+}
+.page-header {
+  margin-bottom: var(--space-xl);
+}
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.card-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ===== STATS GRID ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.stat-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stat-icon svg { width: 20px; height: 20px; color: var(--accent); }
+.stat-info { flex: 1; }
+.stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-top: 2px;
+}
+.stat-change {
+  font-size: 12px;
+  margin-top: var(--space-xs);
+  font-weight: 500;
+}
+.stat-change.up { color: var(--success); }
+.stat-change.down { color: var(--error); }
+
+/* ===== GREETING ===== */
+.greeting-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+.greeting-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.greeting-text h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.greeting-text p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ===== TWO COL LAYOUT ===== */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+/* ===== LIST ITEMS ===== */
+.activity-item {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+}
+.activity-item + .activity-item {
+  border-top: 1px solid var(--border-light);
+}
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.activity-dot.green { background: var(--success); }
+.activity-dot.orange { background: var(--warning); }
+.activity-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+.activity-time {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.meeting-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+}
+.meeting-item + .meeting-item {
+  border-top: 1px solid var(--border-light);
+}
+.meeting-date {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.meeting-date-day {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.meeting-date-month {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--accent-muted);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.meeting-info {
+  flex: 1;
+}
+.meeting-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.meeting-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+}
+.progress-row + .progress-row {
+  border-top: 1px solid var(--border-light);
+}
+.progress-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  width: 160px;
+  flex-shrink: 0;
+}
+.progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+.progress-fill.success { background: var(--success); }
+.progress-fill.warning { background: var(--warning); }
+.progress-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
+  .sidebar.open { transform: translateX(0); }
+  .main-wrapper { margin-left: 0; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .mobile-menu-btn { display: flex !important; }
+}
+.mobile-menu-btn { display: none !important; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar-logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#3366cc"/><path d="M8 14h12M14 8v12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <span class="sidebar-logo-text">Integral Teamwork</span>
+  </div>
+  <div class="sidebar-nav">
+    <div class="sidebar-section-label">Oversikt</div>
+    <a href="index.html" class="sidebar-link" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Dashboard
+    </a>
+    <div class="sidebar-section-label">Teamwork</div>
+    <a href="agenda.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 4v16"/></svg>
+      Teamwork Agenda
+    </a>
+    <a href="strategic.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Strategic Reasoning
+    </a>
+    <a href="newsflash.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4c0-1 1-2 2-2h8l6 6v14c0 1-1 2-2 2H6c-1 0-2-1-2-2z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Newsflash
+    </a>
+    <a href="desired-state.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Desired State
+    </a>
+    <a href="goals-metrics.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Goals &amp; Metrics
+    </a>
+    <a href="action-plan.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Action Plan
+    </a>
+    <div class="sidebar-section-label">Resurser</div>
+    <a href="documents.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Team Documents
+    </a>
+    <a href="attendance.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Attendance
+    </a>
+    <a href="reflections.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Reflections
+    </a>
+    <div class="sidebar-section-label">System</div>
+    <a href="admin.html" class="sidebar-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Admin
+    </a>
+  </div>
+</nav>
+
+<!-- ===== MAIN WRAPPER ===== -->
+<div class="main-wrapper">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a href="index.html">Hem</a></li>
+        <li><span class="breadcrumb-sep" aria-hidden="true">/</span></li>
+        <li><span class="breadcrumb-current" aria-current="page">Dashboard</span></li>
+      </ol>
+    </nav>
+    <div class="topbar-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Byt tema">
+        <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="btn btn-sm" aria-label="Notifikationer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main id="main-content" class="content">
+    <!-- Greeting -->
+    <div class="greeting-bar">
+      <div class="greeting-avatar" aria-hidden="true">AK</div>
+      <div class="greeting-text">
+        <h2>God morgon, Anna Karlsson</h2>
+        <p>Tisdag 27 januari 2026 &middot; Team Alpha</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <section aria-label="Statistik" class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Teammedlemmar</div>
+          <div class="stat-value">12</div>
+          <div class="stat-change up">+2 denna månad</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Aktiva åtgärder</div>
+          <div class="stat-value">8</div>
+          <div class="stat-change down">3 försenade</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Måluppfyllnad</div>
+          <div class="stat-value">68%</div>
+          <div class="stat-change up">+5% sedan förra veckan</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Dokument</div>
+          <div class="stat-value">24</div>
+          <div class="stat-change up">+3 nya</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two Column: Progress + Meetings -->
+    <div class="two-col">
+      <section>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Teamets framsteg</h3>
+              <p class="card-subtitle">Aktuell status per område</p>
+            </div>
+          </div>
+          <div class="progress-row">
+            <span class="progress-label">Strategic Reasoning</span>
+            <div class="progress-track"><div class="progress-fill success" style="width:75%"></div></div>
+            <span class="progress-value">75%</span>
+          </div>
+          <div class="progress-row">
+            <span class="progress-label">Desired State</span>
+            <div class="progress-track"><div class="progress-fill" style="width:55%"></div></div>
+            <span class="progress-value">55%</span>
+          </div>
+          <div class="progress-row">
+            <span class="progress-label">Goals &amp; Metrics</span>
+            <div class="progress-track"><div class="progress-fill warning" style="width:35%"></div></div>
+            <span class="progress-value">35%</span>
+          </div>
+          <div class="progress-row">
+            <span class="progress-label">Action Plan</span>
+            <div class="progress-track"><div class="progress-fill" style="width:60%"></div></div>
+            <span class="progress-value">60%</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Kommande möten</h3>
+              <p class="card-subtitle">Nästa 30 dagarna</p>
+            </div>
+          </div>
+          <div class="meeting-item">
+            <div class="meeting-date">
+              <span class="meeting-date-day">3</span>
+              <span class="meeting-date-month">feb</span>
+            </div>
+            <div class="meeting-info">
+              <div class="meeting-title">Teamwork-session: Strategisk Genomgång</div>
+              <div class="meeting-meta">10:00 - 11:30 &middot; Konferensrum A</div>
+            </div>
+          </div>
+          <div class="meeting-item">
+            <div class="meeting-date">
+              <span class="meeting-date-day">10</span>
+              <span class="meeting-date-month">feb</span>
+            </div>
+            <div class="meeting-info">
+              <div class="meeting-title">Uppföljning: Handlingsplan Q1</div>
+              <div class="meeting-meta">14:00 - 15:00 &middot; Teams</div>
+            </div>
+          </div>
+          <div class="meeting-item">
+            <div class="meeting-date">
+              <span class="meeting-date-day">18</span>
+              <span class="meeting-date-month">feb</span>
+            </div>
+            <div class="meeting-info">
+              <div class="meeting-title">Reflektionsmöte Januari</div>
+              <div class="meeting-meta">09:00 - 10:00 &middot; Konferensrum B</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Recent Activity -->
+    <section>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Senaste aktivitet</h3>
+            <p class="card-subtitle">Händelser i teamet</p>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot green" aria-hidden="true"></div>
+          <div>
+            <div class="activity-text"><strong>Erik Johansson</strong> slutförde åtgärd "Uppdatera kvartalsrapport"</div>
+            <div class="activity-time">Idag kl 09:15</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" aria-hidden="true"></div>
+          <div>
+            <div class="activity-text"><strong>Maria Lindgren</strong> laddade upp "Strategidokument Q1 2026.pdf"</div>
+            <div class="activity-time">Igår kl 16:42</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot orange" aria-hidden="true"></div>
+          <div>
+            <div class="activity-text"><strong>Johan Svensson</strong> uppdaterade Desired State</div>
+            <div class="activity-time">Igår kl 14:20</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot green" aria-hidden="true"></div>
+          <div>
+            <div class="activity-text"><strong>Anna Karlsson</strong> la till ny KPI i Goals &amp; Metrics</div>
+            <div class="activity-time">25 jan kl 11:05</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" aria-hidden="true"></div>
+          <div>
+            <div class="activity-text"><strong>Per Nilsson</strong> kommenterade i Reflections</div>
+            <div class="activity-time">24 jan kl 09:30</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+function toggleTheme(){
+  const html=document.documentElement;
+  const current=html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current==='dark'?'light':'dark');
+  localStorage.setItem('theme', current==='dark'?'light':'dark');
+}
+(function(){
+  const saved=localStorage.getItem('theme');
+  if(saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
+</body>
+</html>

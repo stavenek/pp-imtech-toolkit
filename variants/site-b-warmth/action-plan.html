@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Action Plan - Integral Teamwork Toolkit</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #ffffff; --bg-secondary: #faf8f6; --bg-tertiary: #f3efe9;
+  --bg-sidebar: #2c2520; --text-primary: #2c2520; --text-secondary: #7a706a;
+  --text-sidebar: #faf8f6; --border: #e8e0d8; --border-light: #f0ebe5;
+  --accent: #c06830; --accent-hover: #a85828; --accent-light: rgba(192, 104, 48, 0.08);
+  --accent-soft: #f5ece5; --success: #2d8a4e; --warning: #c07830; --error: #c03030;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(44, 37, 32, 0.06); --shadow-md: 0 4px 12px rgba(44, 37, 32, 0.08);
+  --shadow-lg: 0 8px 24px rgba(44, 37, 32, 0.1); --sidebar-width: 260px;
+}
+[data-theme="dark"] {
+  --bg-primary: #1c1917; --bg-secondary: #231f1c; --bg-tertiary: #2a2522;
+  --bg-sidebar: #0f0d0b; --text-primary: #e8e0d8; --text-secondary: #a89a90;
+  --border: #3d352e; --border-light: #332d28; --accent: #e08040; --accent-hover: #f09050;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #1c1917; --bg-secondary: #231f1c; --bg-tertiary: #2a2522;
+    --bg-sidebar: #0f0d0b; --text-primary: #e8e0d8; --text-secondary: #a89a90;
+    --border: #3d352e; --border-light: #332d28; --accent: #e08040; --accent-hover: #f09050;
+  }
+}
+.skip-link { position: absolute; top: -100%; left: var(--space-md); background: var(--accent); color: #fff; padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); z-index: 1000; font-size: 14px; text-decoration: none; }
+.skip-link:focus { top: var(--space-md); }
+body { font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.6; color: var(--text-primary); background: var(--bg-secondary); display: flex; min-height: 100vh; }
+.sidebar { width: var(--sidebar-width); min-width: var(--sidebar-width); background: var(--bg-sidebar); color: var(--text-sidebar); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; overflow-y: auto; }
+.sidebar-logo { padding: var(--space-lg); display: flex; align-items: center; gap: var(--space-sm); }
+.sidebar-logo svg { width: 32px; height: 32px; flex-shrink: 0; }
+.sidebar-logo span { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.sidebar nav { flex: 1; padding: var(--space-sm) var(--space-md); }
+.sidebar-separator { height: 1px; background: rgba(250, 248, 246, 0.1); margin: var(--space-sm) var(--space-md); }
+.sidebar a { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); color: rgba(250, 248, 246, 0.7); text-decoration: none; border-radius: var(--radius-sm); font-size: 13.5px; min-height: 44px; transition: background 0.15s, color 0.15s; }
+.sidebar a:hover { background: rgba(250, 248, 246, 0.08); color: var(--text-sidebar); }
+.sidebar a.active { background: rgba(192, 104, 48, 0.2); color: var(--text-sidebar); font-weight: 500; }
+.sidebar a svg { width: 20px; height: 20px; flex-shrink: 0; opacity: 0.7; }
+.sidebar a.active svg, .sidebar a:hover svg { opacity: 1; }
+.sidebar-footer { padding: var(--space-md) var(--space-lg); border-top: 1px solid rgba(250, 248, 246, 0.1); display: flex; align-items: center; gap: var(--space-sm); }
+.sidebar-footer .avatar { width: 36px; height: 36px; border-radius: var(--radius-full); background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #fff; flex-shrink: 0; }
+.sidebar-footer .user-info { overflow: hidden; }
+.sidebar-footer .user-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-footer .user-role { font-size: 12px; color: rgba(250, 248, 246, 0.5); }
+.theme-toggle { padding: var(--space-sm) var(--space-lg); display: flex; align-items: center; gap: var(--space-sm); font-size: 12px; color: rgba(250, 248, 246, 0.5); }
+.toggle-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: rgba(250, 248, 246, 0.15); border-radius: var(--radius-full); cursor: pointer; transition: background 0.2s; }
+.toggle-slider::before { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: var(--text-sidebar); border-radius: 50%; transition: transform 0.2s; }
+.toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+.toggle-switch input:focus-visible + .toggle-slider { outline: 2px solid var(--accent); outline-offset: 2px; }
+.main-content { flex: 1; margin-left: var(--sidebar-width); padding: var(--space-xl) var(--space-2xl); max-width: 1200px; }
+.breadcrumbs { display: flex; align-items: center; gap: var(--space-xs); font-size: 13px; color: var(--text-secondary); margin-bottom: var(--space-lg); }
+.breadcrumbs a { color: var(--text-secondary); text-decoration: none; }
+.breadcrumbs a:hover { color: var(--accent); }
+.breadcrumbs .separator { margin: 0 var(--space-xs); opacity: 0.5; }
+.breadcrumbs .current { color: var(--text-primary); font-weight: 500; }
+.page-header { margin-bottom: var(--space-xl); display: flex; align-items: center; justify-content: space-between; }
+.page-header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+.page-header p { color: var(--text-secondary); font-size: 14px; }
+.card { background: var(--bg-primary); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-lg); transition: box-shadow 0.2s; margin-bottom: var(--space-lg); }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
+.card-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-lg); border-radius: var(--radius-full); font-size: 13.5px; font-weight: 500; text-decoration: none; border: none; cursor: pointer; min-height: 44px; min-width: 44px; transition: background 0.15s, box-shadow 0.15s; font-family: inherit; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); box-shadow: var(--shadow-md); }
+.btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); }
+.btn-secondary:hover { background: var(--border); }
+.btn svg { width: 16px; height: 16px; }
+.badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: var(--radius-full); font-size: 12px; font-weight: 500; }
+.badge-orange { background: var(--accent-light); color: var(--accent); }
+.badge-green { background: rgba(45, 138, 78, 0.08); color: var(--success); }
+.badge-red { background: rgba(192, 48, 48, 0.08); color: var(--error); }
+.badge-blue { background: rgba(48, 104, 192, 0.08); color: #3068c0; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: var(--space-sm) var(--space-md); font-size: 13.5px; }
+th { color: var(--text-secondary); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; padding-bottom: var(--space-md); }
+tbody tr { border-top: 1px solid var(--border-light); }
+tbody tr:hover { background: var(--accent-light); }
+@media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: var(--space-md); } }
+
+/* PAGE SPECIFIC */
+.filters {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  min-height: 36px;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.filter-btn.active, .filter-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.idea-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.idea-item:last-child { border-bottom: none; }
+.idea-number {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Hoppa till huvudinnehall</a>
+
+<aside class="sidebar" role="navigation" aria-label="Huvudnavigering">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/><path d="M10 16l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Teamwork Toolkit</span>
+  </div>
+  <nav>
+    <a href="index.html"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>Dashboard</a>
+    <a href="agenda.html"><svg viewBox="0 0 20 20" fill="none"><path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Teamwork Agenda</a>
+    <div class="sidebar-separator"></div>
+    <a href="strategic.html"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3v14M5 10l5-7 5 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Strategic Reasoning</a>
+    <a href="newsflash.html"><svg viewBox="0 0 20 20" fill="none"><path d="M4 5h12v10H4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 8h6M7 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Newsflash</a>
+    <a href="desired-state.html"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="1" fill="currentColor"/></svg>Desired State</a>
+    <a href="goals-metrics.html"><svg viewBox="0 0 20 20" fill="none"><path d="M4 16l4-5 3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Goals &amp; Metrics</a>
+    <a href="action-plan.html" class="active" aria-current="page"><svg viewBox="0 0 20 20" fill="none"><path d="M6 4v12l4-2 4 2V4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Action Plan</a>
+    <div class="sidebar-separator"></div>
+    <a href="documents.html"><svg viewBox="0 0 20 20" fill="none"><path d="M6 3h5l5 5v9H6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 3v5h5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Team Documents</a>
+    <a href="attendance.html"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Attendance</a>
+    <a href="reflections.html"><svg viewBox="0 0 20 20" fill="none"><path d="M4 13l2-8h8l2 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="14" r="3" stroke="currentColor" stroke-width="1.5"/></svg>Reflections</a>
+    <div class="sidebar-separator"></div>
+    <a href="admin.html"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2l1.5 3h3.2l-2.6 2 1 3L10 8.5 6.9 10l1-3-2.6-2h3.2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 14h10v3H5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Admin</a>
+  </nav>
+  <div class="theme-toggle">
+    <label class="toggle-switch"><input type="checkbox" id="themeToggle" aria-label="Vaxla morkt lage"><span class="toggle-slider"></span></label>
+    <span>Morkt lage</span>
+  </div>
+  <div class="sidebar-footer">
+    <div class="avatar">AL</div>
+    <div class="user-info"><div class="user-name">Anna Lindqvist</div><div class="user-role">Team Leader</div></div>
+  </div>
+</aside>
+
+<main class="main-content" id="main">
+  <nav class="breadcrumbs" aria-label="Bradsmulor">
+    <a href="index.html">Dashboard</a>
+    <span class="separator">/</span>
+    <a href="agenda.html">Agenda</a>
+    <span class="separator">/</span>
+    <span class="current">Action Plan</span>
+  </nav>
+
+  <div class="page-header">
+    <div>
+      <h1>Action Plan</h1>
+      <p>Handlingssteg, ansvariga och deadlines for att na vara mal.</p>
+    </div>
+    <button class="btn btn-primary">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Lagg till steg
+    </button>
+  </div>
+
+  <!-- Active Actions -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Aktiva handlingssteg</h2>
+      <div class="filters">
+        <button class="filter-btn active">Alla</button>
+        <button class="filter-btn">Pagaende</button>
+        <button class="filter-btn">Ej paborjad</button>
+        <button class="filter-btn">Forsenad</button>
+      </div>
+    </div>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Aktivitet</th>
+            <th>Ansvarig</th>
+            <th>Status</th>
+            <th>Forfaller</th>
+            <th>Best Contribution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Uppdatera kundpresentationen</strong></td>
+            <td>Erik Svensson</td>
+            <td><span class="badge badge-orange">Pagaende</span></td>
+            <td>30 jan 2026</td>
+            <td>Oka kundbesokstid</td>
+          </tr>
+          <tr>
+            <td><strong>Boka lokal for workshop</strong></td>
+            <td>Maria Johansson</td>
+            <td><span class="badge badge-orange">Pagaende</span></td>
+            <td>2 feb 2026</td>
+            <td>Samarbetskultur</td>
+          </tr>
+          <tr>
+            <td><strong>Sammanstall kvartalsrapport</strong></td>
+            <td>Anna Lindqvist</td>
+            <td><span class="badge badge-red">Ej paborjad</span></td>
+            <td>5 feb 2026</td>
+            <td>Minska intern admin</td>
+          </tr>
+          <tr>
+            <td><strong>Digitalisera reserakningen</strong></td>
+            <td>Johan Bergstrom</td>
+            <td><span class="badge badge-orange">Pagaende</span></td>
+            <td>10 feb 2026</td>
+            <td>Minska intern admin</td>
+          </tr>
+          <tr>
+            <td><strong>Genomfor NPS-undersokning</strong></td>
+            <td>Lisa Karlsson</td>
+            <td><span class="badge badge-red">Ej paborjad</span></td>
+            <td>15 feb 2026</td>
+            <td>Kundnojdhet NPS</td>
+          </tr>
+          <tr>
+            <td><strong>Planera kundbesok Q1</strong></td>
+            <td>Erik Svensson</td>
+            <td><span class="badge badge-blue">Planerad</span></td>
+            <td>20 feb 2026</td>
+            <td>Oka kundbesokstid</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Completed Steps -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Slutforda steg</h2>
+    </div>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Aktivitet</th>
+            <th>Ansvarig</th>
+            <th>Status</th>
+            <th>Slutford</th>
+            <th>Best Contribution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-decoration: line-through; color: var(--text-secondary);">Granska strategidokument</td>
+            <td>Anna Lindqvist</td>
+            <td><span class="badge badge-green">Klar</span></td>
+            <td>20 jan 2026</td>
+            <td>Kundnarhet</td>
+          </tr>
+          <tr>
+            <td style="text-decoration: line-through; color: var(--text-secondary);">Kundanalys Q4</td>
+            <td>Maria Johansson</td>
+            <td><span class="badge badge-green">Klar</span></td>
+            <td>15 jan 2026</td>
+            <td>Kundnojdhet NPS</td>
+          </tr>
+          <tr>
+            <td style="text-decoration: line-through; color: var(--text-secondary);">Installera nytt CRM-plugin</td>
+            <td>Johan Bergstrom</td>
+            <td><span class="badge badge-green">Klar</span></td>
+            <td>10 jan 2026</td>
+            <td>Minska intern admin</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Log of Ideas -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Idelogg</h2>
+      <button class="btn btn-secondary">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Lagg till ide
+      </button>
+    </div>
+    <div class="idea-item">
+      <div class="idea-number">1</div>
+      <div>
+        <strong style="font-size: 13.5px;">Infor veckovisa kundsamtal</strong>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">Kort 15-minuterssamtal med nyckelkunder for att bygga relation. Foreslagen av Erik.</p>
+      </div>
+    </div>
+    <div class="idea-item">
+      <div class="idea-number">2</div>
+      <div>
+        <strong style="font-size: 13.5px;">Automatisera manadesrapporten</strong>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">Anvand Power BI for att automatiskt generera manadesdata. Foreslagen av Johan.</p>
+      </div>
+    </div>
+    <div class="idea-item">
+      <div class="idea-number">3</div>
+      <div>
+        <strong style="font-size: 13.5px;">Mentorprogram for nya medarbetare</strong>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">Erfarna teammedlemmar handleder nya kollegor under forsta 3 manaderna. Foreslagen av Maria.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: var(--space-md);">
+    <a href="agenda.html" class="btn btn-secondary">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M13 4l-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tillbaka till Agenda
+    </a>
+    <a href="documents.html" class="btn btn-primary">
+      Team Documents
+      <svg viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</main>
+
+<script>
+const toggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const stored = localStorage.getItem('theme');
+if (stored) { html.setAttribute('data-theme', stored); toggle.checked = stored === 'dark'; }
+toggle.addEventListener('change', () => { const theme = toggle.checked ? 'dark' : 'light'; html.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); });
+</script>
+</body>
+</html>

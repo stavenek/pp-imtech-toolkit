@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="sv" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teamwork Agenda - Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #ffffff; --bg-secondary: #f0f0f0; --bg-dark: #0a0a0a;
+  --text-primary: #0a0a0a; --text-secondary: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333333; --accent-inverse: #ffffff;
+  --highlight: #ffcc00; --highlight-soft: rgba(255, 204, 0, 0.12);
+  --success: #00a854; --warning: #fa8c16; --error: #e6001a;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px;
+  --radius: 0px;
+}
+[data-theme="dark"] {
+  --bg-primary: #0a0a0a; --bg-secondary: #161616;
+  --text-primary: #f0f0f0; --text-secondary: #888888;
+  --border: #2a2a2a; --border-strong: #f0f0f0;
+  --accent: #ffffff; --accent-hover: #cccccc; --accent-inverse: #0a0a0a;
+}
+body { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 14px; line-height: 1.6; color: var(--text-primary); background: var(--bg-primary); }
+.skip-link { position: absolute; top: -100%; left: var(--space-md); background: var(--highlight); color: var(--bg-dark); padding: var(--space-sm) var(--space-md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--space-md); }
+.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--highlight); padding: 0 var(--space-lg); }
+.top-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; gap: 0; overflow-x: auto; }
+.top-nav__logo { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-md) var(--space-md) var(--space-md) 0; color: var(--highlight); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; white-space: nowrap; min-height: 48px; border-right: 2px solid #333; padding-right: var(--space-lg); margin-right: var(--space-sm); }
+.top-nav__logo svg { width: 22px; height: 22px; flex-shrink: 0; }
+.top-nav__link { display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-md) var(--space-sm); color: #cccccc; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; min-width: 44px; justify-content: center; transition: color 0.15s, border-color 0.15s; }
+.top-nav__link:hover { color: #ffffff; border-bottom-color: #555; }
+.top-nav__link--active { color: var(--highlight); border-bottom-color: var(--highlight); }
+.top-nav__link svg { width: 16px; height: 16px; flex-shrink: 0; }
+.top-nav__actions { display: flex; align-items: center; margin-left: auto; gap: var(--space-sm); padding-left: var(--space-md); border-left: 2px solid #333; }
+.theme-toggle { background: none; border: 2px solid #555; color: #ccc; padding: var(--space-xs) var(--space-sm); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
+.theme-toggle:hover { background: #333; color: #fff; }
+.breadcrumbs { max-width: 1400px; margin: 0 auto; padding: var(--space-md) var(--space-lg); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); }
+.breadcrumbs a { color: var(--text-secondary); text-decoration: none; }
+.breadcrumbs a:hover { color: var(--text-primary); text-decoration: underline; }
+.breadcrumbs__sep { margin: 0 var(--space-sm); }
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--space-lg) var(--space-3xl); }
+.page-title { font-size: 42px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--space-2xl) 0 var(--space-xl); border-bottom: 3px solid var(--border-strong); margin-bottom: var(--space-xl); }
+.page-subtitle { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-top: var(--space-sm); }
+
+/* Agenda items */
+.agenda-list { list-style: none; }
+.agenda-item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0;
+  border: 2px solid var(--border-strong);
+  margin-bottom: var(--space-lg);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.agenda-item:hover {
+  box-shadow: 4px 4px 0 var(--border-strong);
+  transform: translate(-2px, -2px);
+}
+.agenda-item__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--accent-inverse);
+  font-size: 32px;
+  font-weight: 900;
+  border-right: 2px solid var(--border-strong);
+  min-height: 100px;
+}
+.agenda-item__content {
+  padding: var(--space-lg);
+}
+.agenda-item__heading {
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-sm);
+}
+.agenda-item__desc {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-bottom: var(--space-md);
+}
+.agenda-item__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.agenda-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--border-strong);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  min-height: 44px;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.agenda-link:hover {
+  background: var(--accent);
+  color: var(--accent-inverse);
+  box-shadow: 3px 3px 0 var(--highlight);
+}
+.agenda-link svg { width: 14px; height: 14px; }
+
+.footer { max-width: 1400px; margin: 0 auto; padding: var(--space-lg); border-top: 3px solid var(--border-strong); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Hoppa till huvudinnehåll</a>
+
+<nav class="top-nav" aria-label="Huvudnavigering">
+  <div class="top-nav__inner">
+    <a href="index.html" class="top-nav__logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><rect x="3" y="3" width="18" height="18"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+      ADMIN
+    </a>
+    <a href="index.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="agenda.html" class="top-nav__link top-nav__link--active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><rect x="3" y="4" width="2" height="2"/><rect x="3" y="10" width="2" height="2"/><rect x="3" y="16" width="2" height="2"/></svg>Teamwork Agenda</a>
+    <a href="strategic.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="9"/><path d="M12 3 L12 12 L18 16"/></svg>Strategic</a>
+    <a href="goals-metrics.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Goals</a>
+    <a href="action-plan.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Action Plan</a>
+    <a href="documents.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Documents</a>
+    <a href="attendance.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Attendance</a>
+    <a href="reflections.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Reflections</a>
+    <a href="newsflash.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Newsflash</a>
+    <a href="admin.html" class="top-nav__link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Admin</a>
+    <div class="top-nav__actions">
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Växla mörkt/ljust läge">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumbs" aria-label="Brödsmulor">
+  <a href="index.html">Dashboard</a><span class="breadcrumbs__sep">/</span><span aria-current="page">Teamwork Agenda</span>
+</div>
+
+<main class="main" id="main-content">
+  <h1 class="page-title">TEAMWORK AGENDA
+    <div class="page-subtitle">Teamets centrala nav &mdash; alla vägar leder hit</div>
+  </h1>
+
+  <ol class="agenda-list">
+    <!-- 1 -->
+    <li class="agenda-item">
+      <div class="agenda-item__number">1</div>
+      <div class="agenda-item__content">
+        <h2 class="agenda-item__heading">Vart är vi på väg och varför?</h2>
+        <p class="agenda-item__desc">Strategiska resonemang som styr teamets riktning. Uppdateras var sjätte månad av SuperUser.</p>
+        <div class="agenda-item__links">
+          <a href="strategic.html" class="agenda-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><circle cx="12" cy="12" r="9"/><path d="M12 3 L12 12 L18 16"/></svg>
+            Strategiskt Resonemang
+          </a>
+        </div>
+      </div>
+    </li>
+
+    <!-- 2 -->
+    <li class="agenda-item">
+      <div class="agenda-item__number">2</div>
+      <div class="agenda-item__content">
+        <h2 class="agenda-item__heading">Framsteg med Strategiskt Fokus</h2>
+        <p class="agenda-item__desc">Senaste nytt och uppdateringar kring strategiska framsteg.</p>
+        <div class="agenda-item__links">
+          <a href="newsflash.html" class="agenda-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Newsflash
+          </a>
+        </div>
+      </div>
+    </li>
+
+    <!-- 3 -->
+    <li class="agenda-item">
+      <div class="agenda-item__number">3</div>
+      <div class="agenda-item__content">
+        <h2 class="agenda-item__heading">Vad siktar vi på?</h2>
+        <p class="agenda-item__desc">Vårt önskade läge och mål med mätvärden enligt PDCA-modellen.</p>
+        <div class="agenda-item__links">
+          <a href="desired-state.html" class="agenda-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Önskat Läge
+          </a>
+          <a href="goals-metrics.html" class="agenda-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Mål &amp; Mätvärden
+          </a>
+        </div>
+      </div>
+    </li>
+
+    <!-- 4 -->
+    <li class="agenda-item">
+      <div class="agenda-item__number">4</div>
+      <div class="agenda-item__content">
+        <h2 class="agenda-item__heading">Vad är nästa steg?</h2>
+        <p class="agenda-item__desc">Handlingsplan med ansvariga och dokument som stödjer arbetet.</p>
+        <div class="agenda-item__links">
+          <a href="action-plan.html" class="agenda-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Handlingsplan
+          </a>
+          <a href="documents.html" class="agenda-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Dokument
+          </a>
+        </div>
+      </div>
+    </li>
+
+    <!-- 5 -->
+    <li class="agenda-item">
+      <div class="agenda-item__number">5</div>
+      <div class="agenda-item__content">
+        <h2 class="agenda-item__heading">Lär vi oss och växer?</h2>
+        <p class="agenda-item__desc">Närvarostatistik och reflektioner som stärker teamets lärande.</p>
+        <div class="agenda-item__links">
+          <a href="attendance.html" class="agenda-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Närvaro
+          </a>
+          <a href="reflections.html" class="agenda-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Reflektioner
+          </a>
+        </div>
+      </div>
+    </li>
+  </ol>
+</main>
+
+<footer class="footer">
+  <span>&copy; 2026 Integral Teamwork Toolkit</span>
+  <span>Variant C: Boldness</span>
+</footer>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script>
+</body>
+</html>
