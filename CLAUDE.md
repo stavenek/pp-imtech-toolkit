@@ -24,7 +24,8 @@ Then visit `http://localhost:8000` to see the index page linking to all prototyp
 
 - prototypes/ - a progression of protoypes created, always build the next version based on the last existing version
 - reqs/ - a list of requirements doc, as the project evolves, latest requiremts always dominate previous/older reqs
-- **`docs/admin-section-req.md`** — Comprehensive admin specification (domain model, permissions, UI flows, CRUD patterns). This is the canonical requirements document for the **admin** section of the gui. 
+- **`reqs/aaa-base-requirements.md** - en lista på krav som alltid ska gälla, kolla alltid efter varje uppdatering av andra krav att dessa krav fortfarande uppfylls
+- **`reqs/admin-section-req.md`** — Comprehensive admin specification (domain model, permissions, UI flows, CRUD patterns). This is the canonical requirements document for the **admin** section of the gui. 
 - **`reqs/old`** — Original requirement materials (PowerPoints, screenshots, old system analysis). Gitignored.
 - **`index.html`** — Landing page linking to all prototypes - **keep updated** with headers per version and direkt links to each prototype
 
@@ -38,3 +39,14 @@ Then visit `http://localhost:8000` to see the index page linking to all prototyp
 - CSS uses custom properties defined in `:root` for theming
 - No build step — edit HTML files directly
 - Temporary/scratch files go in `tmp/` (gitignored)
+
+# System principes
+- Keep the system as technically simple as possible
+- Keep the code as minimal as possible
+- Keep the number of rules and relations in the domain as small as possible
+- DRY
+- YAGNI
+- Prefer readability of code over effectiveness and minimality
+- Keep the concepts in the code as few as possible
+- Reuse code and UI patterns and concepts and flows
+

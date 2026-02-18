@@ -1,11 +1,11 @@
 
-Geminis UI känns absolut renas och mest lättarbetad, speciellt för våra kunder både Team Leaders & Admin. Men den verkar sakna vissa funktionaliteter som finns i de andra två. Går det att addera följande utan att tappa den väldigt översiktliga och lättjobbade UI som Gemini har?
+Geminis UI känns absolut renas och mest lättarbetad, speciellt för våra kunder både Team Leaders & Admin. 
+Men den verkar sakna vissa funktionaliteter som finns i de andra två. 
+Går det att addera följande utan att tappa den väldigt översiktliga och lättjobbade UI som Gemini har?
 
+Vi behöver följande roll nivåer för varje kund med olika admin rättigheter (1) User (2) Team Leader 
+(3) Organisation Admin (4) Integ Customer Admin (5) Integ Super Admin for all Customers & Users. Mest relevant info i Codex, men lite för grötigt.
  
-
-Vi behöver följande roll nivåer för varje kund med olika admin rättigheter (1) User (2) Team Leader (3) Organisation Admin (4) Integ Customer Admin (5) Integ Super Admin for all Customers & Users. Mest relevant info i Codex, men lite för grötigt.
- 
-
 Geminis sida ser perfekt ut för en Team Leader, inklusive tydlig knapp för ”Bjud in användare”. Mer info än så här behöver inte en Team Leader.
 Geminis Team Nivå räcker också bra för en Organisation Admin.
 Där bör man dock addera en ”knapp” för ”Create New Team” som bara syns för Org Admin och högre nivåer 4+5.
