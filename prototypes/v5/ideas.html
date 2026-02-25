@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idélogg v5 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); padding-bottom: 64px;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- TOP NAV --- */
+.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--hi); padding: 0 var(--lg); }
+.top-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; }
+.top-nav__logo { display: flex; align-items: center; gap: var(--sm); padding: var(--md) var(--lg) var(--md) 0; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; white-space: nowrap; border-right: 2px solid #333; margin-right: var(--sm); }
+.top-nav__link { display: flex; align-items: center; gap: var(--xs); padding: 0 var(--md); color: #ccc; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; transition: color .15s, border-color .15s; }
+.top-nav__link:hover { color: #fff; }
+.top-nav__link--active { color: var(--hi); border-bottom-color: var(--hi); }
+.top-nav__spacer { flex: 1; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: 0 var(--md); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- NAV SELECTORS (org + team in topnav) --- */
+.nav-selector { display: flex; align-items: center; padding: 0 var(--sm); }
+.nav-selector select { background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.nav-selector select:focus { outline: 2px solid var(--hi); }
+.nav-selector__label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-right: var(--xs); white-space: nowrap; }
+
+/* --- SUB NAV --- */
+.sub-nav { background: var(--bg); border-bottom: 2px solid var(--border-strong); padding: 0 var(--lg); }
+.sub-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; gap: 0; overflow-x: auto; }
+.sub-nav__link { display: flex; align-items: center; padding: var(--sm) var(--md); color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color .15s, border-color .15s; }
+.sub-nav__link:hover { color: var(--text); }
+.sub-nav__link--active { color: var(--text); font-weight: 900; border-bottom-color: var(--hi); background: var(--hi-soft); }
+.sub-nav__divider { width: 1px; background: var(--border); margin: 8px 4px; }
+.sub-nav__mobile { display: none; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; border-style: dashed; }
+
+/* --- FORMS --- */
+.form-group { margin-bottom: var(--md); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--xs); display: block; }
+.form-input, .form-select, .form-textarea { width: 100%; padding: var(--sm) var(--md); border: 2px solid var(--border-strong); background: var(--bg-alt); color: var(--text); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-textarea { min-height: 120px; resize: vertical; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%230a0a0a' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+/* --- IDEA GRID --- */
+.idea-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--lg); }
+.idea-card { background: var(--hi); border: 2px solid var(--border-strong); padding: var(--lg); display: flex; flex-direction: column; min-height: 200px; transition: box-shadow .15s, transform .15s; }
+.idea-card:hover { box-shadow: 4px 4px 0 var(--border-strong); transform: translate(-2px, -2px); }
+.idea-card__title { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--sm); }
+.idea-card__desc { font-size: 13px; color: #333; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+.idea-card__meta { font-size: 11px; color: #666; margin-top: var(--md); }
+.idea-card__actions { display: flex; gap: var(--sm); margin-top: var(--md); }
+.idea-btn { padding: 4px 12px; border: 2px solid var(--border-strong); background: #fff; font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+.idea-btn:hover { background: var(--bg-alt); }
+.idea-btn--danger { color: var(--err); }
+
+/* --- EMPTY STATE --- */
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+
+/* --- OVERLAY + SLIDE-OVER --- */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; }
+.overlay--visible { display: block; }
+.slide-over { position: fixed; top: 0; right: -540px; width: 520px; max-width: 100vw; height: 100vh; background: var(--bg); border-left: 3px solid var(--border-strong); z-index: 2001; overflow-y: auto; transition: right .25s ease; display: flex; flex-direction: column; }
+.slide-over--open { right: 0; }
+.so-header { display: flex; justify-content: space-between; align-items: flex-start; padding: var(--xl); padding-bottom: var(--md); border-bottom: 3px solid var(--border-strong); flex-shrink: 0; }
+.so-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.so-close { background: none; border: 2px solid var(--border-strong); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: 900; color: var(--text); }
+.so-close:hover { background: var(--bg-alt); }
+.so-body { flex: 1; overflow-y: auto; padding: var(--xl); }
+.so-footer { padding: var(--lg) var(--xl); border-top: 2px solid var(--border); display: flex; gap: var(--md); flex-shrink: 0; }
+
+/* --- INVITE TABS (reused for idea edit tabs) --- */
+.invite-tabs { display: flex; margin-bottom: var(--lg); }
+.invite-tab { flex: 1; padding: var(--sm) var(--md); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; cursor: pointer; border: 2px solid var(--border-strong); background: var(--bg); color: var(--text-muted); font-family: inherit; transition: background .15s, color .15s; }
+.invite-tab:first-child { border-right: 0; }
+.invite-tab--active { background: var(--accent); color: var(--accent-inv); }
+.invite-panel { display: none; }
+.invite-panel--active { display: block; }
+
+/* --- CONFIRM DIALOG --- */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .slide-over { width: 100vw; }
+  .sub-nav__inner { display: none; }
+  .sub-nav__mobile { display: block; }
+}
+@media (max-width: 480px) {
+  .main { padding: 0 var(--md) var(--2xl); }
+  .page-title { font-size: 24px; padding: var(--lg) 0; }
+  .idea-grid { grid-template-columns: 1fr; }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="top-nav" aria-label="Huvudnavigering">
+  <div class="top-nav__inner">
+    <a href="dashboard.html" class="top-nav__logo">ITT</a>
+    <div class="nav-selector" id="org-selector-wrap">
+      <span class="nav-selector__label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="nav-selector" id="team-selector-wrap">
+      <span class="nav-selector__label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+    <a href="dashboard.html" class="top-nav__link" id="nav-dashboard">Dashboard</a>
+    <a href="agenda.html" class="top-nav__link top-nav__link--active" id="nav-agenda">Agenda</a>
+    <a href="admin.html" class="top-nav__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="top-nav__spacer"></div>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== SUB NAV ===== -->
+<nav class="sub-nav" aria-label="Modulnavigering" id="sub-nav">
+  <div class="sub-nav__inner" id="sub-nav-inner"></div>
+  <select class="sub-nav__mobile" id="sub-nav-mobile" aria-label="Välj modul"></select>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Idélogg</h1>
+
+  <div style="margin-bottom: var(--lg);">
+    <button class="btn btn--hi" id="btn-new-idea">+ Ny idé</button>
+  </div>
+
+  <div class="idea-grid" id="idea-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <p>Inga idéer ännu.</p>
+  </div>
+</main>
+
+<!-- ===== OVERLAY ===== -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ===== NEW IDEA SLIDE-OVER ===== -->
+<div class="slide-over" id="so-new-idea" role="dialog" aria-modal="true">
+  <div class="so-header">
+    <h2 class="so-title" id="so-new-idea-title">Ny idé</h2>
+    <button class="so-close" onclick="tryCloseSlideOver()" aria-label="Stäng">&times;</button>
+  </div>
+  <div class="so-body">
+    <div class="form-group">
+      <label class="form-label" for="new-idea-title">Titel</label>
+      <input type="text" class="form-input" id="new-idea-title">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="new-idea-desc">Beskrivning</label>
+      <textarea class="form-textarea" id="new-idea-desc" rows="6"></textarea>
+    </div>
+  </div>
+  <div class="so-footer">
+    <button class="btn btn--outline" onclick="tryCloseSlideOver()">Avbryt</button>
+    <button class="btn" id="btn-save-new-idea">Spara</button>
+  </div>
+</div>
+
+<!-- ===== EDIT IDEA SLIDE-OVER ===== -->
+<div class="slide-over" id="so-edit-idea" role="dialog" aria-modal="true">
+  <div class="so-header">
+    <h2 class="so-title" id="so-edit-idea-title">Redigera idé</h2>
+    <button class="so-close" onclick="tryCloseSlideOver()" aria-label="Stäng">&times;</button>
+  </div>
+  <div class="so-body">
+    <!-- Tabs -->
+    <div class="invite-tabs">
+      <button class="invite-tab invite-tab--active" id="edit-tab-keep" data-tab="keep">Behålles som idé</button>
+      <button class="invite-tab" id="edit-tab-convert" data-tab="convert">Konvertera till åtgärd</button>
+    </div>
+
+    <!-- Tab 1: Keep as idea -->
+    <div class="invite-panel invite-panel--active" id="panel-keep">
+      <div class="form-group">
+        <label class="form-label" for="edit-idea-title">Titel</label>
+        <input type="text" class="form-input" id="edit-idea-title">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-idea-desc">Beskrivning</label>
+        <textarea class="form-textarea" id="edit-idea-desc" rows="6"></textarea>
+      </div>
+    </div>
+
+    <!-- Tab 2: Convert to action -->
+    <div class="invite-panel" id="panel-convert">
+      <div class="form-group">
+        <label class="form-label" for="conv-title">Titel</label>
+        <input type="text" class="form-input" id="conv-title">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="conv-desc">Beskrivning</label>
+        <textarea class="form-textarea" id="conv-desc" rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="conv-responsible">Ansvarig</label>
+        <select class="form-select" id="conv-responsible">
+          <option value="">Välj...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="conv-deadline">Deadline</label>
+        <input type="date" class="form-input" id="conv-deadline">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="conv-bc">Bästa bidrag</label>
+        <select class="form-select" id="conv-bc">
+          <option value="">Välj...</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="so-footer" id="so-edit-footer">
+    <button class="btn btn--outline" onclick="tryCloseSlideOver()">Avbryt</button>
+    <button class="btn" id="btn-save-edit-idea" style="display:inline-flex;">Spara</button>
+    <button class="btn btn--hi" id="btn-convert-idea" style="display:none;">Konvertera</button>
+  </div>
+</div>
+
+<!-- ===== CONFIRM DIALOG ===== -->
+<div class="dialog-overlay" id="confirm-dialog">
+  <div class="dialog">
+    <h3 class="dialog__title" id="dialog-title"></h3>
+    <p class="dialog__text" id="dialog-text"></p>
+    <div class="dialog__actions">
+      <button class="btn btn--outline" id="dialog-cancel">Avbryt</button>
+      <button class="btn btn--danger" id="dialog-confirm">Bekräfta</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  updateStaticText();
+  renderSubNav();
+  renderIdeas();
+}
+
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-dashboard').textContent = t('nav.dashboard');
+  $('nav-agenda').textContent = t('nav.agenda');
+  $('nav-admin').textContent = t('nav.admin');
+  $('page-title').textContent = t('idea.title');
+  $('btn-new-idea').textContent = t('idea.new');
+  $('dialog-cancel').textContent = t('btn.cancel');
+  $('edit-tab-keep').textContent = t('idea.keepAsIdea');
+  $('edit-tab-convert').textContent = t('idea.convertAction');
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 1. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  editIdeaId: null,
+  editTab: 'keep',
+};
+
+// ACTORS imported from mock-data.js
+
+// ============================================================
+// 2. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const actor = () => ACTORS[S.role];
+const userById = id => DB.users.find(u => u.id === id);
+const fullName = u => u ? `${u.firstName} ${u.lastName}` : '?';
+
+function getTeamId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('teamId')) return urlParams.get('teamId');
+  return localStorage.getItem('itt-team') || '';
+}
+
+function orgsForActor() {
+  const a = actor();
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function getUserTeams() {
+  const a = actor();
+  const u = DB.users.find(u => u.id === a.userId);
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  if (!u) return DB.teams;
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function getCurrentTeamId() {
+  const teams = getUserTeams();
+  const stored = getTeamId();
+  if (stored && teams.some(t => t.id === stored)) return stored;
+  return teams[0]?.id || 'alpha';
+}
+
+function getTeamMembers(teamId) {
+  return DB.users.filter(u => u.memberships.some(m => m.teamId === teamId));
+}
+
+// ============================================================
+// 3. TOAST
+// ============================================================
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 4. CONFIRM DIALOG
+// ============================================================
+let confirmCallback = null;
+function showConfirm(title, text, label, cb) {
+  $('dialog-title').textContent = title;
+  $('dialog-text').textContent = text;
+  const btn = $('dialog-confirm');
+  btn.textContent = t('btn.wait'); btn.disabled = true;
+  confirmCallback = cb;
+  $('confirm-dialog').classList.add('dialog-overlay--visible');
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 1000);
+}
+function closeConfirm() { $('confirm-dialog').classList.remove('dialog-overlay--visible'); confirmCallback = null; }
+$('dialog-cancel').onclick = closeConfirm;
+$('dialog-confirm').onclick = () => { if (confirmCallback) confirmCallback(); closeConfirm(); };
+
+// ============================================================
+// 5. SLIDE-OVER
+// ============================================================
+let slideOverDirty = false;
+let slideOverOpener = null;
+
+function openSlideOver(id) {
+  forceCloseSlideOver();
+  slideOverOpener = document.activeElement;
+  slideOverDirty = false;
+  $('overlay').classList.add('overlay--visible');
+  $(id).classList.add('slide-over--open');
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(() => {
+    const panel = $(id);
+    const first = panel.querySelector('button, input, select, textarea, a[href]');
+    if (first) first.focus();
+  });
+}
+function tryCloseSlideOver() {
+  if (slideOverDirty) {
+    showConfirm(t('confirm.unsavedTitle'), t('confirm.unsavedText'), t('confirm.unsavedBtn'), () => { forceCloseSlideOver(); });
+  } else {
+    forceCloseSlideOver();
+  }
+}
+function forceCloseSlideOver() {
+  $('overlay').classList.remove('overlay--visible');
+  document.querySelectorAll('.slide-over').forEach(s => s.classList.remove('slide-over--open'));
+  document.body.style.overflow = '';
+  if (slideOverOpener && slideOverOpener.focus) { slideOverOpener.focus(); slideOverOpener = null; }
+  slideOverDirty = false;
+}
+function closeSlideOver() { forceCloseSlideOver(); }
+
+$('overlay').addEventListener('click', tryCloseSlideOver);
+
+// ============================================================
+// 6. ORG + TEAM SELECTORS
+// ============================================================
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = getUserTeams();
+  if (teams.length > 0) {
+    localStorage.setItem('itt-team', teams[0].id);
+  }
+  renderSubNav();
+  renderIdeas();
+});
+
+function renderTeamSelector() {
+  const sel = $('team-select');
+  if (!sel) return;
+  const teams = getUserTeams();
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  const currentTeam = getCurrentTeamId();
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === currentTeam ? 'selected' : ''}>${t.title}</option>`).join('');
+}
+
+$('team-select')?.addEventListener('change', e => {
+  localStorage.setItem('itt-team', e.target.value);
+  renderSubNav();
+  renderIdeas();
+});
+
+// ============================================================
+// 7. SUB-NAVIGATION
+// ============================================================
+const MODULE_KEYS = ['strategic','newsflash','desiredState','goalsMetrics','actionPlan','documents','ideas','attendance','reflections'];
+const MODULE_NAV = [
+  { key:'strategic',    href:'strategic.html',      shortKey:'mod.short.strategic' },
+  { key:'newsflash',    href:'newsflash.html',      shortKey:'mod.short.newsflash' },
+  { sep: true },
+  { key:'desiredState', href:'desired-state.html',  shortKey:'mod.short.desiredState' },
+  { key:'goalsMetrics', href:'goals-metrics.html',  shortKey:'mod.short.goalsMetrics' },
+  { sep: true },
+  { key:'actionPlan',   href:'action-plan.html',    shortKey:'mod.short.actionPlan' },
+  { key:'documents',    href:'documents.html',       shortKey:'mod.short.documents' },
+  { key:'ideas',        href:'ideas.html',           shortKey:'mod.short.ideas', active: true },
+  { sep: true },
+  { key:'attendance',   href:'attendance.html',      shortKey:'mod.short.attendance' },
+  { key:'reflections',  href:'reflections.html',     shortKey:'mod.short.reflections' },
+];
+
+function getVisibility(teamId) {
+  const key = `itt-agenda-visibility-${teamId}`;
+  const stored = localStorage.getItem(key);
+  if (stored) { try { return JSON.parse(stored); } catch(e) { /* fall through */ } }
+  const def = {};
+  MODULE_KEYS.forEach(k => { def[k] = true; });
+  return def;
+}
+
+function renderSubNav() {
+  const teamId = getCurrentTeamId();
+  const vis = getVisibility(teamId);
+  const inner = $('sub-nav-inner');
+  const sel = $('sub-nav-mobile');
+
+  inner.innerHTML = MODULE_NAV.map(item => {
+    if (item.sep) return '<div class="sub-nav__divider"></div>';
+    const isVisible = vis[item.key] !== false;
+    const cls = 'sub-nav__link' + (item.active ? ' sub-nav__link--active' : '') + (!isVisible ? ' sub-nav__link--hidden' : '');
+    return `<a href="${item.href}" class="${cls}">${t(item.shortKey)}</a>`;
+  }).join('');
+
+  let optHtml = '';
+  const sections = [
+    { label: t('agenda.sec1'), items: MODULE_NAV.slice(0, 2) },
+    { label: t('agenda.sec2'), items: MODULE_NAV.slice(3, 5) },
+    { label: t('agenda.sec3'), items: MODULE_NAV.slice(6, 9) },
+    { label: t('agenda.sec4'), items: MODULE_NAV.slice(10, 12) },
+  ];
+  sections.forEach(sec => {
+    optHtml += `<optgroup label="${sec.label}">`;
+    sec.items.forEach(item => {
+      if (item.sep) return;
+      const selected = item.active ? 'selected' : '';
+      optHtml += `<option value="${item.href}" ${selected}>${t(item.shortKey)}</option>`;
+    });
+    optHtml += '</optgroup>';
+  });
+  sel.innerHTML = optHtml;
+}
+
+$('sub-nav-mobile')?.addEventListener('change', e => {
+  window.location.href = e.target.value;
+});
+
+// ============================================================
+// 8. RENDER IDEAS
+// ============================================================
+function getIdeas() {
+  const teamId = getCurrentTeamId();
+  return WS.ideas.filter(i => i.teamId === teamId);
+}
+
+function renderIdeas() {
+  const ideas = getIdeas();
+  const grid = $('idea-grid');
+  const empty = $('empty-state');
+
+  if (ideas.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = ideas.map(idea => {
+    const user = userById(idea.createdBy);
+    const name = user ? fullName(user) : '?';
+    return `<div class="idea-card" data-id="${idea.id}">
+      <div class="idea-card__title">${idea.title}</div>
+      <div class="idea-card__desc">${idea.description}</div>
+      <div class="idea-card__meta">Skapad av ${name} &middot; ${idea.createdDate}</div>
+      <div class="idea-card__actions">
+        <button class="idea-btn" onclick="editIdea('${idea.id}')">${t('idea.edit')}</button>
+        <button class="idea-btn idea-btn--danger" onclick="deleteIdea('${idea.id}')">&#10007;</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// 10. NEW IDEA
+// ============================================================
+function openNewIdeaSlideOver() {
+  $('new-idea-title').value = '';
+  $('new-idea-desc').value = '';
+  openSlideOver('so-new-idea');
+}
+
+$('btn-new-idea').addEventListener('click', openNewIdeaSlideOver);
+
+$('btn-save-new-idea').addEventListener('click', () => {
+  const title = $('new-idea-title').value.trim();
+  const desc = $('new-idea-desc').value.trim();
+  if (!title) { showToast('Ange en titel'); return; }
+  const teamId = getCurrentTeamId();
+  const newId = 'i' + Date.now();
+  const today = new Date().toISOString().slice(0, 10);
+  WS.ideas.push({
+    id: newId,
+    teamId: teamId,
+    title: title,
+    description: desc,
+    createdBy: actor().userId,
+    createdDate: today,
+  });
+  closeSlideOver();
+  renderIdeas();
+  showToast(t('btn.save'));
+});
+
+// Mark dirty on new idea changes
+['new-idea-title','new-idea-desc'].forEach(id => {
+  $(id)?.addEventListener('input', () => { slideOverDirty = true; });
+});
+
+// ============================================================
+// 11. EDIT IDEA (two tabs)
+// ============================================================
+function editIdea(id) {
+  const idea = WS.ideas.find(i => i.id === id);
+  if (!idea) return;
+  S.editIdeaId = id;
+  S.editTab = 'keep';
+
+  // Tab 1: Keep as idea
+  $('edit-idea-title').value = idea.title;
+  $('edit-idea-desc').value = idea.description;
+
+  // Tab 2: Convert to action
+  $('conv-title').value = idea.title;
+  $('conv-desc').value = idea.description;
+  $('conv-deadline').value = '';
+
+  // Populate responsible dropdown
+  const teamId = getCurrentTeamId();
+  const members = getTeamMembers(teamId);
+  $('conv-responsible').innerHTML = '<option value="">Välj...</option>' +
+    members.map(m => `<option value="${m.id}">${fullName(m)}</option>`).join('');
+
+  // Populate best contribution dropdown
+  const bcs = WS.bestContributions.filter(bc => bc.teamId === teamId);
+  $('conv-bc').innerHTML = '<option value="">Välj...</option>' +
+    bcs.map(bc => `<option value="${bc.id}">${bc.title}</option>`).join('');
+
+  // Reset to tab 1
+  switchEditTab('keep');
+  openSlideOver('so-edit-idea');
+}
+
+function switchEditTab(tab) {
+  S.editTab = tab;
+  $('edit-tab-keep').classList.toggle('invite-tab--active', tab === 'keep');
+  $('edit-tab-convert').classList.toggle('invite-tab--active', tab === 'convert');
+  $('panel-keep').classList.toggle('invite-panel--active', tab === 'keep');
+  $('panel-convert').classList.toggle('invite-panel--active', tab === 'convert');
+  $('btn-save-edit-idea').style.display = tab === 'keep' ? 'inline-flex' : 'none';
+  $('btn-convert-idea').style.display = tab === 'convert' ? 'inline-flex' : 'none';
+}
+
+$('edit-tab-keep').addEventListener('click', () => switchEditTab('keep'));
+$('edit-tab-convert').addEventListener('click', () => switchEditTab('convert'));
+
+// Save edited idea
+$('btn-save-edit-idea').addEventListener('click', () => {
+  const idea = WS.ideas.find(i => i.id === S.editIdeaId);
+  if (!idea) return;
+  idea.title = $('edit-idea-title').value.trim();
+  idea.description = $('edit-idea-desc').value.trim();
+  if (!idea.title) { showToast('Ange en titel'); return; }
+  closeSlideOver();
+  renderIdeas();
+  showToast(t('btn.save'));
+});
+
+// Convert idea to action
+$('btn-convert-idea').addEventListener('click', () => {
+  const idea = WS.ideas.find(i => i.id === S.editIdeaId);
+  if (!idea) return;
+  const title = $('conv-title').value.trim();
+  if (!title) { showToast('Ange en titel'); return; }
+
+  // Create action
+  const teamId = getCurrentTeamId();
+  const newActionId = 'a' + Date.now();
+  const bcId = $('conv-bc').value || '';
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  const aiId = bc && bc.areaOfImprovement.length > 0 ? bc.areaOfImprovement[bc.areaOfImprovement.length - 1].id : '';
+
+  WS.actions.push({
+    id: newActionId,
+    teamId: teamId,
+    bcId: bcId,
+    aiId: aiId,
+    title: title,
+    description: $('conv-desc').value.trim(),
+    responsibleId: $('conv-responsible').value || '',
+    supportId: '',
+    deadline: $('conv-deadline').value || '',
+    status: 'not_started',
+    comment: '',
+  });
+
+  // Remove idea
+  WS.ideas = WS.ideas.filter(i => i.id !== S.editIdeaId);
+  closeSlideOver();
+  renderIdeas();
+  showToast(t('idea.converted'));
+});
+
+// Mark dirty on edit changes
+['edit-idea-title','edit-idea-desc','conv-title','conv-desc','conv-responsible','conv-deadline','conv-bc'].forEach(id => {
+  $(id)?.addEventListener('input', () => { slideOverDirty = true; });
+  $(id)?.addEventListener('change', () => { slideOverDirty = true; });
+});
+
+// ============================================================
+// 12. DELETE IDEA
+// ============================================================
+function deleteIdea(id) {
+  const idea = WS.ideas.find(i => i.id === id);
+  if (!idea) return;
+  showConfirm(t('idea.confirmDelete'), `"${idea.title}"`, t('btn.confirm'), () => {
+    WS.ideas = WS.ideas.filter(i => i.id !== id);
+    renderIdeas();
+    showToast(t('idea.delete') + ': ' + idea.title);
+  });
+}
+
+// ============================================================
+// 13. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSubNav();
+  updateStaticText();
+  renderIdeas();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 14. INIT
+// ============================================================
+(function init() {
+  const lang = localStorage.getItem('itt-lang') || 'sv';
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  setRole(S.role);
+})();
+</script>
+</body>
+</html>

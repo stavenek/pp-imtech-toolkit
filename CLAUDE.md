@@ -26,6 +26,7 @@ Then visit `http://localhost:8000` to see the index page linking to all prototyp
 - reqs/ - a list of requirements doc, as the project evolves, latest requiremts always dominate previous/older reqs
 - **`reqs/aaa-base-requirements.md** - en lista på krav som alltid ska gälla, kolla alltid efter varje uppdatering av andra krav att dessa krav fortfarande uppfylls
 - **`reqs/admin-section-req.md`** — Comprehensive admin specification (domain model, permissions, UI flows, CRUD patterns). This is the canonical requirements document for the **admin** section of the gui. 
+- **`reqs/tools-sections-req.md`** — Comprehensive other pages specification (domain model, permissions, UI flows, CRUD patterns). This is the canonical requirements document for the **other pages and tools** sections of the gui. 
 - **`reqs/old`** — Original requirement materials (PowerPoints, screenshots, old system analysis). Gitignored.
 - **`index.html`** — Landing page linking to all prototypes - **keep updated** with headers per version and direkt links to each prototype
 
@@ -39,6 +40,18 @@ Then visit `http://localhost:8000` to see the index page linking to all prototyp
 - CSS uses custom properties defined in `:root` for theming
 - No build step — edit HTML files directly
 - Temporary/scratch files go in `tmp/` (gitignored)
+
+## Target Tech Stack (production)
+
+The prototypes in this repo will eventually be implemented as a production app using:
+
+- **Vite + React** — SPA (no SSR needed, this is an admin tool behind login)
+- **Mantine** (https://mantine.dev) — React component library for UI
+  - Provides tables, forms, modals, tabs, navigation, notifications etc.
+  - Easy to customize styling (CSS Modules)
+  - Modern React 18+ API
+- **React Hook Form** — form handling and validation
+- **TanStack Query** — server state / API integration
 
 # System principes
 - Keep the system as technically simple as possible

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reflektioner v5 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); padding-bottom: 64px;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- TOP NAV --- */
+.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--hi); padding: 0 var(--lg); }
+.top-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; }
+.top-nav__logo { display: flex; align-items: center; gap: var(--sm); padding: var(--md) var(--lg) var(--md) 0; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; white-space: nowrap; border-right: 2px solid #333; margin-right: var(--sm); }
+.top-nav__link { display: flex; align-items: center; gap: var(--xs); padding: 0 var(--md); color: #ccc; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; transition: color .15s, border-color .15s; }
+.top-nav__link:hover { color: #fff; }
+.top-nav__link--active { color: var(--hi); border-bottom-color: var(--hi); }
+.top-nav__spacer { flex: 1; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: 0 var(--md); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- NAV SELECTORS (org + team in topnav) --- */
+.nav-selector { display: flex; align-items: center; padding: 0 var(--sm); }
+.nav-selector select { background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.nav-selector select:focus { outline: 2px solid var(--hi); }
+.nav-selector__label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-right: var(--xs); white-space: nowrap; }
+
+/* --- SUB NAV --- */
+.sub-nav { background: var(--bg); border-bottom: 2px solid var(--border-strong); padding: 0 var(--lg); }
+.sub-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; overflow-x: auto; }
+.sub-nav__link { display: flex; align-items: center; padding: var(--sm) var(--md); color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color .15s, border-color .15s; }
+.sub-nav__link:hover { color: var(--text); }
+.sub-nav__link--active { color: var(--text); font-weight: 900; border-bottom-color: var(--hi); background: var(--hi-soft); }
+.sub-nav__divider { width: 1px; background: var(--border); margin: 8px 4px; }
+.sub-nav__mobile { display: none; }
+@media (max-width: 1024px) { .sub-nav__inner { display: none; } .sub-nav__mobile { display: block; } }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+
+/* --- TEXT MODULE --- */
+.text-module { border: 3px solid var(--border-strong); padding: var(--xl); margin-bottom: var(--xl); }
+.text-module__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--xs); }
+.text-module__help { font-size: 12px; color: var(--text-muted); margin-bottom: var(--lg); }
+.text-module textarea { width: 100%; min-height: 150px; padding: var(--md); border: 2px solid var(--border-strong); font-family: inherit; font-size: 14px; line-height: 1.6; resize: vertical; background: var(--bg); color: var(--text); }
+.text-module textarea:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+.text-module__footer { display: flex; justify-content: flex-end; margin-top: var(--md); }
+
+/* --- REFLECTION LIST --- */
+.ref-list { list-style: none; }
+.ref-item { display: flex; align-items: flex-start; gap: var(--md); padding: var(--md) 0; border-bottom: 1px solid var(--border); }
+.ref-item:last-child { border-bottom: none; }
+.ref-item__date { min-width: 90px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); padding-top: 2px; }
+.ref-item__text { flex: 1; font-size: 14px; line-height: 1.5; }
+.ref-item__actions { display: flex; gap: var(--xs); flex-shrink: 0; }
+.ref-item__btn { padding: var(--xs) var(--sm); border: 1px solid var(--border); background: var(--bg); font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; transition: background .15s; }
+.ref-item__btn:hover { background: var(--bg-alt); }
+.ref-item__btn--del:hover { background: #fff1f0; color: var(--err); }
+.ref-empty { color: var(--text-muted); padding: var(--lg) 0; font-size: 13px; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .page-title { font-size: 24px; padding: var(--lg) 0; }
+  .text-module { padding: var(--lg); }
+}
+@media (max-width: 480px) {
+  .main { padding: 0 var(--md) var(--2xl); }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="top-nav" aria-label="Huvudnavigering">
+  <div class="top-nav__inner">
+    <a href="#" class="top-nav__logo" id="nav-logo">ITT</a>
+    <div class="nav-selector" id="org-selector-wrap">
+      <span class="nav-selector__label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="nav-selector" id="team-selector-wrap">
+      <span class="nav-selector__label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+    <a href="dashboard.html" class="top-nav__link" id="nav-dashboard">Dashboard</a>
+    <a href="agenda.html" class="top-nav__link top-nav__link--active" id="nav-agenda">Agenda</a>
+    <a href="admin.html" class="top-nav__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="top-nav__spacer"></div>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== SUB NAV ===== -->
+<nav class="sub-nav" aria-label="Modulnavigering" id="sub-nav">
+  <div class="sub-nav__inner" id="sub-nav-inner"></div>
+  <select class="sub-nav__mobile form-select" id="sub-nav-mobile" aria-label="Välj modul"></select>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Reflektioner &amp; Spelregler</h1>
+
+  <div id="content-area"></div>
+</main>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  updateStaticText();
+  renderSubNav();
+  renderContent();
+}
+
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-dashboard').textContent = t('nav.dashboard');
+  $('nav-agenda').textContent = t('nav.agenda');
+  $('nav-admin').textContent = t('nav.admin');
+  $('page-title').textContent = t('ref.title');
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 1. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+};
+
+// ACTORS imported from mock-data.js
+
+// ============================================================
+// 2. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const actor = () => ACTORS[S.role];
+
+function getTeamId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('teamId')) return urlParams.get('teamId');
+  return localStorage.getItem('itt-team') || '';
+}
+
+function orgsForActor() {
+  const a = actor();
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function getUserTeams() {
+  const a = actor();
+  const u = DB.users.find(u => u.id === a.userId);
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  if (!u) return DB.teams;
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function getCurrentTeamId() {
+  const teams = getUserTeams();
+  const stored = getTeamId();
+  if (stored && teams.some(t => t.id === stored)) return stored;
+  return teams[0]?.id || 'alpha';
+}
+
+// ============================================================
+// 3. TOAST
+// ============================================================
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 4. ORG + TEAM SELECTORS
+// ============================================================
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = getUserTeams();
+  if (teams.length > 0) {
+    localStorage.setItem('itt-team', teams[0].id);
+  }
+  renderSubNav();
+  renderContent();
+});
+
+function renderTeamSelector() {
+  const sel = $('team-select');
+  if (!sel) return;
+  const teams = getUserTeams();
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  const currentTeam = getCurrentTeamId();
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === currentTeam ? 'selected' : ''}>${t.title}</option>`).join('');
+}
+
+$('team-select')?.addEventListener('change', e => {
+  localStorage.setItem('itt-team', e.target.value);
+  renderSubNav();
+  renderContent();
+});
+
+// ============================================================
+// 5. SUB-NAV
+// ============================================================
+const MODULE_KEYS = ['strategic', 'newsflash', 'desiredState', 'goalsMetrics', 'actionPlan', 'documents', 'ideas', 'attendance', 'reflections'];
+
+const MODULE_META = [
+  { key: 'strategic',   shortKey: 'mod.short.strategic',   href: 'strategic.html',    section: 1 },
+  { key: 'newsflash',   shortKey: 'mod.short.newsflash',   href: 'newsflash.html',    section: 1 },
+  { key: 'desiredState', shortKey: 'mod.short.desiredState', href: 'desired-state.html', section: 2 },
+  { key: 'goalsMetrics', shortKey: 'mod.short.goalsMetrics', href: 'goals-metrics.html', section: 2 },
+  { key: 'actionPlan',  shortKey: 'mod.short.actionPlan',  href: 'action-plan.html',  section: 3 },
+  { key: 'documents',   shortKey: 'mod.short.documents',   href: 'documents.html',    section: 3 },
+  { key: 'ideas',       shortKey: 'mod.short.ideas',       href: 'ideas.html',        section: 3 },
+  { key: 'attendance',  shortKey: 'mod.short.attendance',  href: 'attendance.html',   section: 4 },
+  { key: 'reflections', shortKey: 'mod.short.reflections', href: 'reflections.html',  section: 4 },
+];
+
+const CURRENT_MODULE = 'reflections';
+
+function getVisibility(teamId) {
+  const key = `itt-agenda-visibility-${teamId}`;
+  const stored = localStorage.getItem(key);
+  if (stored) { try { return JSON.parse(stored); } catch(e) { /* fall through */ } }
+  const def = {};
+  MODULE_KEYS.forEach(k => { def[k] = true; });
+  return def;
+}
+
+function renderSubNav() {
+  const teamId = getCurrentTeamId();
+  const vis = getVisibility(teamId);
+  const visibleModules = MODULE_META.filter(m => vis[m.key] !== false);
+
+  // Desktop
+  let html = '';
+  let lastSection = 0;
+  visibleModules.forEach(m => {
+    if (lastSection && m.section !== lastSection) {
+      html += '<div class="sub-nav__divider" aria-hidden="true"></div>';
+    }
+    lastSection = m.section;
+    const isActive = m.key === CURRENT_MODULE;
+    html += `<a href="${m.href}" class="sub-nav__link${isActive ? ' sub-nav__link--active' : ''}"${isActive ? ' aria-current="page"' : ''}>${t(m.shortKey)}</a>`;
+  });
+  $('sub-nav-inner').innerHTML = html;
+
+  // Mobile select
+  const select = $('sub-nav-mobile');
+  let optHtml = '';
+  const sections = [
+    { num: 1, label: t('agenda.sec1') },
+    { num: 2, label: t('agenda.sec2') },
+    { num: 3, label: t('agenda.sec3') },
+    { num: 4, label: t('agenda.sec4') },
+  ];
+  sections.forEach(sec => {
+    const mods = visibleModules.filter(m => m.section === sec.num);
+    if (mods.length === 0) return;
+    optHtml += `<optgroup label="${sec.label}">`;
+    mods.forEach(m => {
+      const isActive = m.key === CURRENT_MODULE;
+      optHtml += `<option value="${m.href}"${isActive ? ' selected' : ''}>${t(m.shortKey)}</option>`;
+    });
+    optHtml += '</optgroup>';
+  });
+  select.innerHTML = optHtml;
+}
+
+$('sub-nav-mobile')?.addEventListener('change', e => {
+  window.location.href = e.target.value;
+});
+
+// ============================================================
+// 6. RENDER CONTENT
+// ============================================================
+function renderContent() {
+  const teamId = getCurrentTeamId();
+  const data = WS.textModules[teamId] || { teamworkRules: '', reflections: [] };
+  const refs = Array.isArray(data.reflections) ? data.reflections : [];
+
+  // Build reflections list
+  let refListHtml = '';
+  if (refs.length === 0) {
+    refListHtml = `<div class="ref-empty">Inga reflektioner ännu.</div>`;
+  } else {
+    refListHtml = '<ul class="ref-list">' + refs.map(r => `
+      <li class="ref-item" data-id="${r.id}">
+        <span class="ref-item__date">${r.date}</span>
+        <span class="ref-item__text">${r.text}</span>
+        <span class="ref-item__actions" data-min-role="team-leader">
+          <button class="ref-item__btn" data-edit="${r.id}">Redigera</button>
+          <button class="ref-item__btn ref-item__btn--del" data-del="${r.id}">Radera</button>
+        </span>
+      </li>
+    `).join('') + '</ul>';
+  }
+
+  $('content-area').innerHTML = `
+    <div class="text-module" id="block-rules">
+      <h2 class="text-module__title" id="lbl-rules">${t('ref.rules')}</h2>
+      <textarea id="ta-rules" aria-labelledby="lbl-rules">${data.teamworkRules || ''}</textarea>
+      <div class="text-module__footer">
+        <button class="btn" id="save-rules">${t('btn.save')}</button>
+      </div>
+    </div>
+
+    <div class="text-module" id="block-reflections">
+      <h2 class="text-module__title" id="lbl-reflections">${t('ref.reflections')}</h2>
+      <p class="text-module__help" id="help-reflections">${t('ref.reflHelp')}</p>
+      <div style="margin-bottom:var(--md);" data-min-role="team-leader">
+        <button class="btn btn--hi" id="ref-add-btn">+ Ny reflektion</button>
+      </div>
+      ${refListHtml}
+    </div>
+  `;
+
+  // Save rules handler
+  $('save-rules').addEventListener('click', () => {
+    const teamId = getCurrentTeamId();
+    if (!WS.textModules[teamId]) WS.textModules[teamId] = {};
+    WS.textModules[teamId].teamworkRules = $('ta-rules').value;
+    showToast(t('ref.saved'));
+  });
+
+  // Add reflection
+  $('ref-add-btn').addEventListener('click', () => {
+    const text = prompt('Ny reflektion / lärdom:');
+    if (!text || !text.trim()) return;
+    const teamId = getCurrentTeamId();
+    if (!WS.textModules[teamId]) WS.textModules[teamId] = { teamworkRules: '', reflections: [] };
+    if (!Array.isArray(WS.textModules[teamId].reflections)) WS.textModules[teamId].reflections = [];
+    const newId = 'r' + Date.now();
+    const today = new Date().toISOString().substring(0, 10);
+    WS.textModules[teamId].reflections.unshift({ id: newId, date: today, text: text.trim() });
+    showToast('Reflektion tillagd');
+    renderContent();
+  });
+
+  // Edit / Delete handlers via delegation
+  $('block-reflections').addEventListener('click', e => {
+    const editBtn = e.target.closest('[data-edit]');
+    const delBtn = e.target.closest('[data-del]');
+    const teamId = getCurrentTeamId();
+    const refs = WS.textModules[teamId]?.reflections || [];
+
+    if (delBtn) {
+      const id = delBtn.dataset.del;
+      WS.textModules[teamId].reflections = refs.filter(r => r.id !== id);
+      showToast('Reflektion raderad');
+      renderContent();
+    }
+
+    if (editBtn) {
+      const id = editBtn.dataset.edit;
+      const ref = refs.find(r => r.id === id);
+      if (!ref) return;
+      const newText = prompt('Redigera reflektion:', ref.text);
+      if (newText !== null && newText.trim()) {
+        ref.text = newText.trim();
+        showToast('Reflektion uppdaterad');
+        renderContent();
+      }
+    }
+  });
+}
+
+// ============================================================
+// 7. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderOrgSelector();
+  renderTeamSelector();
+  updateStaticText();
+  renderSubNav();
+  renderContent();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 9. INIT
+// ============================================================
+(function init() {
+  const lang = localStorage.getItem('itt-lang') || 'sv';
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  setRole(S.role);
+})();
+</script>
+</body>
+</html>

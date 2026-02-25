@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mål & Mätetal — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); padding-bottom: 64px;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- TOP NAV --- */
+.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--hi); padding: 0 var(--lg); }
+.top-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; }
+.top-nav__logo { display: flex; align-items: center; gap: var(--sm); padding: var(--md) var(--lg) var(--md) 0; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; white-space: nowrap; border-right: 2px solid #333; margin-right: var(--sm); }
+.top-nav__link { display: flex; align-items: center; gap: var(--xs); padding: 0 var(--md); color: #ccc; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; transition: color .15s, border-color .15s; }
+.top-nav__link:hover { color: #fff; }
+.top-nav__link--active { color: var(--hi); border-bottom-color: var(--hi); }
+.top-nav__spacer { flex: 1; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: 0 var(--md); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- NAV SELECTORS (org + team in topnav) --- */
+.nav-selector { display: flex; align-items: center; padding: 0 var(--sm); }
+.nav-selector select { background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.nav-selector select:focus { outline: 2px solid var(--hi); }
+.nav-selector__label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-right: var(--xs); white-space: nowrap; }
+
+/* --- SUB NAV --- */
+.sub-nav { background: var(--bg); border-bottom: 2px solid var(--border-strong); padding: 0 var(--lg); }
+.sub-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; gap: 0; overflow-x: auto; }
+.sub-nav__link { display: flex; align-items: center; padding: var(--sm) var(--md); color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color .15s, border-color .15s; }
+.sub-nav__link:hover { color: var(--text); }
+.sub-nav__link--active { color: var(--text); font-weight: 900; border-bottom-color: var(--hi); background: var(--hi-soft); }
+.sub-nav__divider { width: 1px; background: var(--border); margin: 8px 4px; }
+.sub-nav__mobile { display: none; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+
+/* --- TABLE --- */
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border: 2px solid var(--border-strong); padding: var(--sm) var(--md); text-align: left; vertical-align: middle; }
+.data-table thead th { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+.data-table caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+/* --- PDCA BARS --- */
+.pdca-cell { min-width: 80px; }
+.pdca-val { font-size: 12px; font-weight: 700; }
+.pdca-bar { height: 8px; background: var(--bg-alt); border: 1px solid var(--border); margin-top: var(--xs); }
+.pdca-bar__fill { height: 100%; background: var(--hi); }
+
+/* --- GOAL SUMMARY --- */
+.goal-summary { font-size: 16px; font-weight: 700; margin-bottom: var(--xl); padding: var(--md) var(--lg); border: 2px solid var(--border-strong); background: var(--hi-soft); }
+
+/* --- SECTION TITLE --- */
+.section-title { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--lg); padding-bottom: var(--sm); border-bottom: 2px solid var(--border); color: var(--text-muted); }
+
+/* --- TRACKED CONTRIBUTION CARDS --- */
+.tc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: var(--lg); margin-top: var(--lg); }
+.tc-card { border: 2px solid var(--border-strong); padding: var(--lg); cursor: pointer; transition: box-shadow .15s; }
+.tc-card:hover { box-shadow: 4px 4px 0 var(--hi); }
+.tc-card--expanded { box-shadow: 4px 4px 0 var(--hi); }
+.tc-card__title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--sm); }
+.tc-card__bc { font-size: 12px; color: var(--text-muted); margin-bottom: var(--md); }
+.tc-card__row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: var(--xs); }
+.tc-card__row strong { font-weight: 700; }
+
+/* --- PROGRESS BAR --- */
+.progress { height: 16px; background: var(--bg-alt); border: 2px solid var(--border-strong); margin: var(--sm) 0; position: relative; }
+.progress__fill { height: 100%; transition: width .3s; }
+.progress__fill--ok { background: var(--ok); }
+.progress__fill--warn { background: var(--hi); }
+.progress__fill--danger { background: var(--err); }
+.progress__label { position: absolute; right: var(--sm); top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 900; color: var(--text); }
+
+/* --- MEASUREMENT DETAIL --- */
+.tc-detail { display: none; margin-top: var(--md); padding-top: var(--md); border-top: 1px solid var(--border); }
+.tc-detail--open { display: block; }
+.tc-detail__table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: var(--md); }
+.tc-detail__table th, .tc-detail__table td { padding: var(--xs) var(--sm); border-bottom: 1px solid var(--border); text-align: left; }
+.tc-detail__table thead th { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+/* --- LINE CHART --- */
+.chart { border: 2px solid var(--border-strong); padding: var(--lg); margin-top: var(--xl); }
+.chart__title { font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: var(--lg); }
+.chart__toggles { display: flex; flex-wrap: wrap; gap: var(--sm); margin-bottom: var(--lg); }
+.chart__toggle { display: flex; align-items: center; gap: var(--xs); font-size: 11px; cursor: pointer; }
+.chart__toggle input { accent-color: var(--accent); }
+.chart__swatch { display: inline-block; width: 12px; height: 3px; }
+.chart__svg { width: 100%; height: 220px; }
+.chart__x-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: var(--xs); }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .sub-nav__inner { display: none; }
+  .sub-nav__mobile { display: block; }
+  .tc-grid { grid-template-columns: 1fr; }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="top-nav" aria-label="Huvudnavigering">
+  <div class="top-nav__inner">
+    <a href="#" class="top-nav__logo">ITT</a>
+    <div class="nav-selector" id="org-selector-wrap">
+      <span class="nav-selector__label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="nav-selector" id="team-selector-wrap">
+      <span class="nav-selector__label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+    <a href="dashboard.html" class="top-nav__link" id="nav-dashboard">Dashboard</a>
+    <a href="agenda.html" class="top-nav__link top-nav__link--active" id="nav-agenda">Agenda</a>
+    <a href="admin.html" class="top-nav__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="top-nav__spacer"></div>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== SUB NAV ===== -->
+<nav class="sub-nav" aria-label="Modulnavigering" id="sub-nav">
+  <div class="sub-nav__inner" id="sub-nav-inner"></div>
+  <select class="sub-nav__mobile" id="sub-nav-mobile" aria-label="Välj modul"></select>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Mål & Mätetal</h1>
+
+  <!-- Goal summary -->
+  <div class="goal-summary" id="goal-summary"></div>
+
+  <!-- PDCA Table -->
+  <div class="section-title" id="pdca-section-title">PDCA-översikt</div>
+  <div class="table-wrap">
+    <table class="data-table" id="pdca-table">
+      <caption class="sr-only">PDCA-översikt</caption>
+      <thead id="pdca-thead"></thead>
+      <tbody id="pdca-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Tracked Contributions -->
+  <div class="section-title" id="tracked-section-title" style="margin-top: var(--xl);">Spårade bidrag</div>
+  <div class="tc-grid" id="tc-grid"></div>
+
+  <!-- Line Chart -->
+  <div class="chart" id="chart">
+    <div class="chart__title" id="chart-title">Mätvärden över tid</div>
+    <div class="chart__toggles" id="chart-toggles"></div>
+    <div id="chart-area"></div>
+  </div>
+</main>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  renderAll();
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 1. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  teamId: '',
+  expandedCard: null,
+  chartVisible: {},
+};
+
+const ROLE_NAMES = {
+  'super-admin': 'role.superAdmin',
+  'integ-admin': 'role.integAdmin',
+  'org-admin': 'role.orgAdmin',
+  'team-leader': 'role.teamLeader',
+  'user': 'role.user',
+};
+
+// ACTORS imported from mock-data.js
+
+const CHART_COLORS = ['#ffcc00', '#4a90d9', '#00a854', '#fa8c16', '#9b59b6'];
+
+// ============================================================
+// 2. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const actor = () => ACTORS[S.role];
+const bcById = id => WS.bestContributions.find(b => b.id === id);
+
+function getTeamId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('teamId')) return urlParams.get('teamId');
+  return localStorage.getItem('itt-team') || 'alpha';
+}
+
+function orgsForActor() {
+  const a = actor();
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function getUserTeams() {
+  const a = actor();
+  const u = DB.users.find(u => u.id === a.userId);
+  if (!u) return DB.teams;
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  // Team-leader or user: filter by memberships
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 3. ORG + TEAM SELECTORS
+// ============================================================
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = getUserTeams();
+  if (teams.length > 0) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+  renderAll();
+});
+
+function renderTeamSelector() {
+  const sel = $('team-select');
+  if (!sel) return;
+  const teams = getUserTeams();
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  const currentTeam = S.teamId || teams[0]?.id;
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === currentTeam ? 'selected' : ''}>${t.title}</option>`).join('');
+}
+
+$('team-select')?.addEventListener('change', e => {
+  S.teamId = e.target.value;
+  localStorage.setItem('itt-team', e.target.value);
+  renderAll();
+});
+
+// ============================================================
+// 4. SUB-NAV (MODULE LINKS)
+// ============================================================
+const MODULES = [
+  { key: 'strategic',    file: 'strategic.html',    section: 1 },
+  { key: 'newsflash',    file: 'newsflash.html',    section: 1 },
+  { key: 'desiredState', file: 'desired-state.html', section: 2 },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2 },
+  { key: 'actionPlan',   file: 'action-plan.html',  section: 3 },
+  { key: 'documents',    file: 'documents.html',    section: 3 },
+  { key: 'ideas',        file: 'ideas.html',        section: 3 },
+  { key: 'attendance',   file: 'attendance.html',   section: 4 },
+  { key: 'reflections',  file: 'reflections.html',  section: 4 },
+];
+
+function getVisibleModules() {
+  const stored = localStorage.getItem('itt-agenda-visibility-' + S.teamId);
+  if (!stored) return MODULES;
+  try {
+    const visibility = JSON.parse(stored);
+    return MODULES.filter(m => visibility[m.key] !== false);
+  } catch { return MODULES; }
+}
+
+function renderSubNav() {
+  const visible = getVisibleModules();
+  const linksEl = $('sub-nav-inner');
+  const selectEl = $('sub-nav-mobile');
+  let html = '';
+  let lastSection = 0;
+
+  visible.forEach(m => {
+    if (lastSection && m.section !== lastSection) {
+      html += '<div class="sub-nav__divider"></div>';
+    }
+    lastSection = m.section;
+    const active = m.key === 'goalsMetrics' ? ' sub-nav__link--active' : '';
+    const ariaCurrent = m.key === 'goalsMetrics' ? ' aria-current="page"' : '';
+    html += `<a href="${m.file}" class="sub-nav__link${active}"${ariaCurrent}>${t('mod.short.' + m.key)}</a>`;
+  });
+  linksEl.innerHTML = html;
+
+  // Mobile select with optgroups
+  const sections = {
+    1: t('agenda.sec1'),
+    2: t('agenda.sec2'),
+    3: t('agenda.sec3'),
+    4: t('agenda.sec4'),
+  };
+  let selectHtml = '';
+  let currentSection = 0;
+  visible.forEach(m => {
+    if (m.section !== currentSection) {
+      if (currentSection) selectHtml += '</optgroup>';
+      selectHtml += `<optgroup label="${sections[m.section]}">`;
+      currentSection = m.section;
+    }
+    const selected = m.key === 'goalsMetrics' ? ' selected' : '';
+    selectHtml += `<option value="${m.file}"${selected}>${t('mod.' + m.key)}</option>`;
+  });
+  if (currentSection) selectHtml += '</optgroup>';
+  selectEl.innerHTML = selectHtml;
+}
+
+$('sub-nav-mobile')?.addEventListener('change', e => {
+  window.location.href = e.target.value;
+});
+
+// ============================================================
+// 5. GOAL SUMMARY
+// ============================================================
+function renderGoalSummary() {
+  const tcs = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  const total = tcs.length;
+  const done = tcs.filter(tc => (tc.currentValue / tc.targetValue) >= 0.75).length;
+  $('goal-summary').textContent = t('gm.goalSummary', { done: done, total: total });
+}
+
+// ============================================================
+// 6. PDCA TABLE
+// ============================================================
+function renderPdcaTable() {
+  const teamBcs = WS.bestContributions.filter(b => b.teamId === S.teamId);
+  const pdcaData = WS.pdca.filter(p => teamBcs.some(b => b.id === p.bcId));
+
+  $('pdca-thead').innerHTML = `<tr>
+    <th>${t('gm.bestContrib')}</th>
+    <th>${t('gm.plan')}</th>
+    <th>${t('gm.do')}</th>
+    <th>${t('gm.check')}</th>
+    <th>${t('gm.act')}</th>
+    <th>${t('gm.total')}</th>
+  </tr>`;
+
+  let tbody = '';
+  pdcaData.forEach(p => {
+    const bc = bcById(p.bcId);
+    if (!bc) return;
+    const total = Math.round((p.plan + p.do + p.check + p.act) / 4);
+    tbody += `<tr>
+      <td style="font-weight:700;">${bc.title}</td>
+      ${pdcaCell(p.plan)}
+      ${pdcaCell(p.do)}
+      ${pdcaCell(p.check)}
+      ${pdcaCell(p.act)}
+      ${pdcaCell(total)}
+    </tr>`;
+  });
+  $('pdca-tbody').innerHTML = tbody;
+}
+
+function pdcaCell(val) {
+  return `<td class="pdca-cell">
+    <span class="pdca-val">${val}%</span>
+    <div class="pdca-bar"><div class="pdca-bar__fill" style="width:${val}%"></div></div>
+  </td>`;
+}
+
+// ============================================================
+// 7. TRACKED CONTRIBUTIONS CARDS
+// ============================================================
+function renderTrackedContributions() {
+  const tcs = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  const grid = $('tc-grid');
+
+  if (tcs.length === 0) {
+    grid.innerHTML = '<div style="text-align:center; padding: var(--2xl); color: var(--text-muted); border: 2px dashed var(--border);">Inga spårade bidrag</div>';
+    return;
+  }
+
+  let html = '';
+  tcs.forEach((tc, idx) => {
+    const bc = bcById(tc.bcId);
+    const bcTitle = bc ? bc.title : '';
+    const pct = Math.round((tc.currentValue / tc.targetValue) * 100);
+    const colorClass = pct >= 75 ? 'progress__fill--ok' : pct >= 50 ? 'progress__fill--warn' : 'progress__fill--danger';
+    const isExpanded = S.expandedCard === tc.id;
+
+    let detailHtml = '';
+    if (tc.measurements && tc.measurements.length > 0) {
+      detailHtml += '<table class="tc-detail__table"><thead><tr><th>Datum</th><th>Värde</th></tr></thead><tbody>';
+      [...tc.measurements].reverse().forEach(m => {
+        detailHtml += `<tr><td>${m.date}</td><td>${m.value} ${tc.unit}</td></tr>`;
+      });
+      detailHtml += '</tbody></table>';
+    }
+
+    html += `<div class="tc-card${isExpanded ? ' tc-card--expanded' : ''}" data-tc-id="${tc.id}">
+      <div class="tc-card__title">${tc.title}</div>
+      <div class="tc-card__bc">${t('gm.bestContrib')}: ${bcTitle}</div>
+      <div class="tc-card__row"><span>${t('gm.target')}:</span> <strong>${tc.targetValue} ${tc.unit}</strong></div>
+      <div class="tc-card__row"><span>${t('gm.current')}:</span> <strong>${tc.currentValue} ${tc.unit}</strong></div>
+      <div class="progress">
+        <div class="progress__fill ${colorClass}" style="width:${Math.min(pct, 100)}%"></div>
+        <span class="progress__label">${pct}%</span>
+      </div>
+      <div class="tc-detail${isExpanded ? ' tc-detail--open' : ''}" id="detail-${tc.id}">
+        ${detailHtml}
+        <button class="btn btn--sm btn--outline" onclick="event.stopPropagation(); showToast('${t('gm.newMeasurement')} (demo)')">${t('gm.newMeasurement')}</button>
+      </div>
+    </div>`;
+  });
+  grid.innerHTML = html;
+
+  // Click to expand/collapse
+  grid.querySelectorAll('.tc-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const tcId = card.dataset.tcId;
+      S.expandedCard = S.expandedCard === tcId ? null : tcId;
+      renderTrackedContributions();
+    });
+  });
+}
+
+// ============================================================
+// 8. BAR CHART
+// ============================================================
+function renderChart() {
+  const tcs = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+
+  // Initialize chart visibility
+  tcs.forEach((tc, idx) => {
+    if (S.chartVisible[tc.id] === undefined) S.chartVisible[tc.id] = idx < 3;
+  });
+
+  // Toggles
+  let togglesHtml = '';
+  tcs.forEach((tc, idx) => {
+    const color = CHART_COLORS[idx % CHART_COLORS.length];
+    const checked = S.chartVisible[tc.id] ? 'checked' : '';
+    togglesHtml += `<label class="chart__toggle">
+      <input type="checkbox" data-tc-id="${tc.id}" ${checked}>
+      <span class="chart__swatch" style="background:${color}"></span>
+      ${tc.title}
+    </label>`;
+  });
+  $('chart-toggles').innerHTML = togglesHtml;
+
+  const visibleTcs = tcs.filter(tc => S.chartVisible[tc.id]);
+  const area = $('chart-area');
+
+  if (visibleTcs.length === 0) {
+    area.innerHTML = '<div style="color:var(--text-muted);padding:var(--xl);text-align:center;">Välj bidrag att visa</div>';
+    bindChartToggles();
+    return;
+  }
+
+  // Collect all dates & find value range
+  const allDates = [...new Set(visibleTcs.flatMap(tc => tc.measurements.map(m => m.date)))].sort();
+  let maxVal = 0;
+  visibleTcs.forEach(tc => tc.measurements.forEach(m => { if (m.value > maxVal) maxVal = m.value; }));
+  if (maxVal === 0) maxVal = 1;
+
+  const W = 600, H = 220, PAD = 8;
+
+  // Build SVG lines + dots
+  let lines = '';
+  let dots = '';
+  visibleTcs.forEach((tc, idx) => {
+    const globalIdx = tcs.indexOf(tc);
+    const color = CHART_COLORS[globalIdx % CHART_COLORS.length];
+    const points = allDates.map((date, i) => {
+      const m = tc.measurements.find(m => m.date === date);
+      const val = m ? m.value : 0;
+      const x = PAD + (i / Math.max(1, allDates.length - 1)) * (W - PAD * 2);
+      const y = H - PAD - (val / maxVal) * (H - PAD * 2);
+      return { x, y, val };
+    });
+    lines += `<polyline points="${points.map(p => p.x+','+p.y).join(' ')}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    points.forEach(p => {
+      dots += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="${color}" stroke="#fff" stroke-width="1.5"><title>${tc.title}: ${p.val} ${tc.unit}</title></circle>`;
+    });
+  });
+
+  // X-axis labels
+  const xLabels = allDates.map(d => `<span>${d.substring(5)}</span>`).join('');
+
+  area.innerHTML = `
+    <svg class="chart__svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      ${lines}${dots}
+    </svg>
+    <div class="chart__x-labels">${xLabels}</div>
+  `;
+
+  bindChartToggles();
+}
+
+function bindChartToggles() {
+  $('chart-toggles').querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      S.chartVisible[cb.dataset.tcId] = cb.checked;
+      renderChart();
+    });
+  });
+}
+
+// ============================================================
+// 9. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderAll();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 11. STATIC TEXT UPDATE
+// ============================================================
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-dashboard').textContent = t('nav.dashboard');
+  $('nav-agenda').textContent = t('nav.agenda');
+  $('nav-admin').textContent = t('nav.admin');
+  $('page-title').textContent = t('gm.title');
+  $('pdca-section-title').textContent = t('gm.pdcaTitle');
+  $('tracked-section-title').textContent = t('gm.trackedTitle');
+  $('chart-title').textContent = t('gm.chartTitle');
+}
+
+// ============================================================
+// 12. RENDER ALL
+// ============================================================
+function renderAll() {
+  S.teamId = getTeamId();
+  updateStaticText();
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSubNav();
+  renderGoalSummary();
+  renderPdcaTable();
+  renderTrackedContributions();
+  renderChart();
+}
+
+// ============================================================
+// 13. INIT
+// ============================================================
+S.role = localStorage.getItem('itt-role') || 'super-admin';
+document.body.className = 'role-' + S.role;
+document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === S.role));
+renderAll();
+</script>
+</body>
+</html>

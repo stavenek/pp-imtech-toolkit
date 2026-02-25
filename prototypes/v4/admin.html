@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin v4 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); padding-bottom: 64px;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- TOP NAV --- */
+.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--hi); padding: 0 var(--lg); }
+.top-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; }
+.top-nav__logo { display: flex; align-items: center; gap: var(--sm); padding: var(--md) var(--lg) var(--md) 0; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; white-space: nowrap; border-right: 2px solid #333; margin-right: var(--sm); }
+.top-nav__link { display: flex; align-items: center; gap: var(--xs); padding: 0 var(--md); color: #ccc; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; transition: color .15s, border-color .15s; }
+.top-nav__link:hover { color: #fff; }
+.top-nav__link--active { color: var(--hi); border-bottom-color: var(--hi); }
+.top-nav__spacer { flex: 1; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: 0 var(--md); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- BREADCRUMBS --- */
+.breadcrumbs { max-width: 1400px; margin: 0 auto; padding: var(--md) var(--lg); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+.breadcrumbs a { color: var(--text-muted); text-decoration: none; }
+.breadcrumbs a:hover { color: var(--text); }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: 0; }
+
+/* --- ADMIN TABS --- */
+.admin-tabs { display: flex; gap: 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+.admin-tab { padding: var(--md) var(--lg); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; border: none; background: none; color: var(--text-muted); border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; font-family: inherit; transition: color .15s, border-color .15s, background .15s; }
+.admin-tab:hover { color: var(--text); background: var(--hi-soft); }
+.admin-tab--active { color: var(--text); border-bottom-color: var(--hi); background: var(--hi-soft); }
+.tab-panel { display: none; }
+.tab-panel--active { display: block; }
+.admin-tabs-mobile { display: none; margin-bottom: var(--lg); }
+
+/* --- TOOLBAR --- */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); margin-bottom: var(--lg); }
+.toolbar__left { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); flex: 1; }
+.toolbar__right { display: flex; gap: var(--sm); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; border-style: dashed; }
+
+/* --- FORMS --- */
+.form-group { margin-bottom: var(--md); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--xs); display: block; }
+.form-input, .form-select { width: 100%; padding: var(--sm) var(--md); border: 2px solid var(--border-strong); background: var(--bg-alt); color: var(--text); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-input:focus, .form-select:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%230a0a0a' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+.form-readonly { padding: var(--sm) 0; font-size: 14px; color: var(--text-muted); }
+.search-input { max-width: 320px; }
+
+/* --- SEGMENTED --- */
+.segmented { display: inline-flex; }
+.seg-btn { display: inline-flex; align-items: center; padding: var(--xs) var(--md); border: 2px solid var(--border-strong); border-right-width: 0; background: var(--bg); color: var(--text); font-family: inherit; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 36px; transition: background .15s, color .15s; }
+.seg-btn:last-child { border-right-width: 2px; }
+.seg-btn:hover { background: var(--bg-alt); }
+.seg-btn--active { background: var(--accent); color: var(--accent-inv); }
+
+/* --- TABLE --- */
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border: 2px solid var(--border-strong); padding: var(--sm) var(--md); text-align: left; vertical-align: middle; }
+.data-table thead th { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; cursor: default; user-select: none; }
+.data-table thead th.sortable { cursor: pointer; }
+.data-table thead th.sortable:hover { background: #333; }
+.data-table .sort-arrow { margin-left: var(--xs); opacity: 0.4; }
+.data-table .sort-arrow--active { opacity: 1; }
+.data-table tbody tr { cursor: pointer; transition: background .1s; }
+.data-table tbody tr:hover { background: var(--hi-soft); }
+.data-table caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+/* --- BADGES --- */
+.badge { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
+.badge--super { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.badge--integ { background: #e0e0ff; color: #3030a0; border-color: #3030a0; }
+.badge--admin { background: var(--accent); color: var(--accent-inv); border-color: var(--accent); }
+.badge--leader { background: var(--hi-soft); color: var(--text); border-color: var(--hi); }
+.badge--user { background: var(--bg-alt); color: var(--text-muted); border-color: var(--border); }
+.badge--active { background: #e6f7ee; color: #006d36; border-color: var(--ok); }
+.badge--pending { background: #fff7e6; color: #8a3e00; border-color: var(--warn); }
+.badge--deactivated { background: #fff1f0; color: #a8071a; border-color: var(--err); }
+.badge--basic { background: var(--bg-alt); color: var(--text-muted); border-color: var(--border); }
+.badge--plus { background: var(--accent); color: var(--accent-inv); border-color: var(--accent); }
+.badge--pro { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.badge--primary { background: #e6f7ee; color: #006d36; border-color: var(--ok); font-size: 9px; margin-left: var(--sm); }
+.leader-icon { display: inline-block; width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px; }
+
+/* --- PAGINATION --- */
+.pagination { display: flex; align-items: center; justify-content: space-between; padding: var(--md) 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.pagination__pages { display: flex; }
+.pag-btn { min-width: 36px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--border-strong); background: var(--bg); color: var(--text); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; margin-left: -2px; transition: background .15s; }
+.pag-btn:first-child { margin-left: 0; }
+.pag-btn:hover { background: var(--hi-soft); }
+.pag-btn--active { background: var(--accent); color: var(--accent-inv); }
+.pag-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* --- OVERLAY + SLIDE-OVER --- */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; }
+.overlay--visible { display: block; }
+.slide-over { position: fixed; top: 0; right: -540px; width: 520px; max-width: 100vw; height: 100vh; background: var(--bg); border-left: 3px solid var(--border-strong); z-index: 2001; overflow-y: auto; transition: right .25s ease; display: flex; flex-direction: column; }
+.slide-over--open { right: 0; }
+.so-header { display: flex; justify-content: space-between; align-items: flex-start; padding: var(--xl); padding-bottom: var(--md); border-bottom: 3px solid var(--border-strong); flex-shrink: 0; }
+.so-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.so-close { background: none; border: 2px solid var(--border-strong); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: 900; color: var(--text); }
+.so-close:hover { background: var(--bg-alt); }
+.so-body { flex: 1; overflow-y: auto; padding: var(--xl); }
+.so-section { margin-bottom: var(--xl); }
+.so-section-title { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); padding-bottom: var(--sm); border-bottom: 2px solid var(--border); margin-bottom: var(--md); }
+.so-footer { padding: var(--lg) var(--xl); border-top: 2px solid var(--border); display: flex; gap: var(--md); flex-shrink: 0; }
+.so-danger { padding: var(--lg) var(--xl); border-top: 3px solid var(--err); flex-shrink: 0; }
+
+/* --- MEMBERSHIP TABLE --- */
+.mem-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mem-table th, .mem-table td { padding: var(--sm) var(--md); border: 2px solid var(--border); text-align: left; }
+.mem-table thead th { background: var(--bg-alt); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+.mem-table .rm-btn { background: none; border: none; color: var(--err); cursor: pointer; font-size: 18px; font-weight: 900; padding: 0 var(--sm); min-width: 32px; min-height: 32px; }
+.mem-table .rm-btn:hover { background: #fff1f0; }
+.mem-table .role-select { min-height: 36px; padding: 2px 28px 2px 8px; font-size: 12px; width: auto; border-width: 1px; }
+
+.org-row { display: flex; align-items: center; justify-content: space-between; padding: var(--sm) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+
+/* --- INVITE TABS --- */
+.invite-tabs { display: flex; margin-bottom: var(--lg); }
+.invite-tab { flex: 1; padding: var(--sm) var(--md); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; cursor: pointer; border: 2px solid var(--border-strong); background: var(--bg); color: var(--text-muted); font-family: inherit; transition: background .15s, color .15s; }
+.invite-tab:first-child { border-right: 0; }
+.invite-tab--active { background: var(--accent); color: var(--accent-inv); }
+.invite-panel { display: none; }
+.invite-panel--active { display: block; }
+
+.check-list { list-style: none; }
+.check-item { display: flex; align-items: center; gap: var(--sm); padding: var(--sm) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.check-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+
+.radio-group { display: flex; flex-direction: column; gap: var(--sm); }
+.radio-item { display: flex; align-items: center; gap: var(--sm); padding: var(--sm); cursor: pointer; font-size: 13px; transition: background .1s; }
+.radio-item:hover { background: var(--hi-soft); }
+.radio-item input[type="radio"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+.radio-item.disabled { opacity: 0.4; pointer-events: none; }
+
+/* --- ORG CARD --- */
+.org-card { border: 3px solid var(--border-strong); padding: var(--xl); max-width: 600px; margin-bottom: var(--lg); }
+.org-card__title { font-size: 20px; font-weight: 900; text-transform: uppercase; margin-bottom: var(--lg); padding-bottom: var(--md); border-bottom: 3px solid var(--border-strong); }
+.org-card__row { display: flex; justify-content: space-between; padding: var(--sm) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.org-card__label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; color: var(--text-muted); }
+
+/* --- CUSTOMIZATION TABLE --- */
+.custom-table { width: 100%; border-collapse: collapse; }
+.custom-table th, .custom-table td { border: 2px solid var(--border); padding: var(--sm) var(--md); text-align: left; font-size: 13px; }
+.custom-table thead th { background: var(--bg-alt); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+.custom-table input { border: 1px solid var(--border); padding: 6px 10px; font-family: inherit; font-size: 13px; width: 100%; min-height: 36px; }
+.custom-table input:focus { outline: 2px solid var(--hi); }
+.custom-cat-header { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; padding: var(--sm) var(--md); }
+.custom-cat-header td { border-color: var(--accent); }
+
+/* --- CONFIRM DIALOG --- */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- EMPTY STATE --- */
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+
+/* --- NO ACCESS --- */
+.no-access { text-align: center; padding: var(--2xl); color: var(--text-muted); }
+.no-access h2 { font-size: 24px; font-weight: 900; text-transform: uppercase; margin-bottom: var(--md); color: var(--text); }
+
+/* --- MINI NAV PANEL --- */
+.mini-nav { position: fixed; bottom: 56px; right: var(--lg); z-index: 1500; background: var(--bg-dark); border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); padding: var(--xs); display: flex; gap: 2px; }
+.mini-nav-btn { min-width: 28px; min-height: 28px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #555; background: transparent; color: #ccc; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; transition: all .15s; }
+.mini-nav-btn:hover { background: #333; color: #fff; }
+.mini-nav-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) { .slide-over { width: 100vw; } }
+@media (max-width: 768px) { .col-hide-sm { display: none; } }
+@media (max-width: 480px) { .admin-tabs { display: none; } .admin-tabs-mobile { display: block; } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, .pag-btn:focus-visible, .seg-btn:focus-visible, .admin-tab:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="top-nav" aria-label="Huvudnavigering">
+  <div class="top-nav__inner">
+    <a href="#" class="top-nav__logo">ITT | Admin</a>
+    <a href="#" class="top-nav__link" id="nav-dashboard">Dashboard</a>
+    <a href="#" class="top-nav__link top-nav__link--active" aria-current="page" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="top-nav__spacer"></div>
+    <div class="lang-switcher" data-min-role="integ-admin" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+<div class="breadcrumbs"><a href="#" id="bc-dashboard">Dashboard</a> <span>/</span> <span id="bc-admin">Admin</span></div>
+
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Administration</h1>
+
+  <div class="no-access" id="no-access" style="display:none;">
+    <h2 id="no-access-title">Ingen åtkomst</h2>
+    <p id="no-access-text">Du har inte behörighet att se admin-sektionen. Kontakta din teamledare eller administratör.</p>
+  </div>
+
+  <div id="admin-content">
+    <!-- SHARED ORG SELECTOR (page-level, above tabs) -->
+    <div class="toolbar" id="org-selector-wrap" style="margin-bottom:0;">
+      <div class="toolbar__left">
+        <div class="form-group" style="margin:0;">
+          <label class="form-label" for="org-select" id="lbl-org">Organisation</label>
+          <select class="form-select" id="org-select" style="width:280px;"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-tabs" role="tablist" aria-label="Adminsektioner" id="admin-tabs"></div>
+    <div class="admin-tabs-mobile">
+      <select class="form-select" id="mobile-tab-select" aria-label="Välj adminsektion"></select>
+    </div>
+
+    <!-- TAB: ANVÄNDARE -->
+    <div class="tab-panel" id="panel-users" role="tabpanel">
+      <div class="toolbar">
+        <div class="toolbar__left"></div>
+        <div class="toolbar__right" data-min-role="team-leader">
+          <button class="btn btn--hi" id="btn-invite">+ Bjud In Användare</button>
+        </div>
+      </div>
+      <div class="toolbar" style="gap: var(--lg);">
+        <input type="search" class="form-input search-input" placeholder="Sök namn eller e-post..." id="user-search" aria-label="Sök användare">
+        <div data-min-role="integ-admin" id="role-filter-wrap">
+          <span class="form-label" style="margin-bottom:var(--xs);" id="lbl-sysrole">Systemroll</span>
+          <div class="segmented" role="group" aria-label="Filtrera systemroll" id="role-filter"></div>
+        </div>
+        <div>
+          <span class="form-label" style="margin-bottom:var(--xs);" id="lbl-status">Status</span>
+          <div class="segmented" role="group" aria-label="Filtrera status" id="status-filter"></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" aria-label="Användarlista">
+          <caption class="sr-only" id="user-caption">Användarlista</caption>
+          <thead id="users-thead"></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="users-pagination"></div>
+      <div aria-live="polite" class="sr-only" id="user-live"></div>
+    </div>
+
+    <!-- TAB: TEAM -->
+    <div class="tab-panel" id="panel-teams" role="tabpanel">
+      <div class="toolbar">
+        <div class="toolbar__left">
+          <input type="search" class="form-input search-input" placeholder="Sök teamnamn..." id="team-search" aria-label="Sök team">
+        </div>
+        <div class="toolbar__right">
+          <button class="btn btn--hi" id="btn-create-team">+ Skapa Team</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" aria-label="Teamlista">
+          <caption class="sr-only" id="team-caption">Teamlista</caption>
+          <thead id="teams-thead"></thead>
+          <tbody id="teams-tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="teams-pagination"></div>
+      <div aria-live="polite" class="sr-only" id="team-live"></div>
+    </div>
+
+    <!-- TAB: ORGANISATION -->
+    <div class="tab-panel" id="panel-orgs" role="tabpanel">
+      <div id="org-list-view">
+        <div class="toolbar" data-min-role="super-admin">
+          <div class="toolbar__left"></div>
+          <div class="toolbar__right">
+            <button class="btn btn--hi" id="btn-create-org">+ Skapa Organisation</button>
+          </div>
+        </div>
+        <div class="table-wrap" id="org-table-wrap">
+          <table class="data-table" aria-label="Organisationslista">
+            <thead id="orgs-thead"><tr><th>Organisation</th><th>Abonnemang</th><th>Team</th><th>Användare</th><th style="width:120px;" data-min-role="integ-admin">Åtgärder</th></tr></thead>
+            <tbody id="orgs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="org-card-view" style="display:none;"></div>
+    </div>
+
+    <!-- TAB: ANPASSNING -->
+    <div class="tab-panel" id="panel-custom" role="tabpanel">
+      <div class="toolbar">
+        <div class="toolbar__left">
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" for="custom-org-select" id="lbl-custom-org">Organisation</label>
+            <select class="form-select" id="custom-org-select" style="width:280px;"></select>
+          </div>
+        </div>
+      </div>
+      <p style="margin-bottom:var(--lg);color:var(--text-muted);" id="custom-info-text">Alla rubriker och etiketter kan anpassas per organisation. Om det anpassade fältet lämnas tomt används standardetiketten.</p>
+      <div id="custom-table-wrap"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ===== OVERLAY ===== -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ===== SLIDE-OVERS ===== -->
+<div class="slide-over" id="so-user" role="dialog" aria-modal="true" aria-label="Användardetalj">
+  <div class="so-header"><div class="so-title" id="so-user-title">Användare</div><button class="so-close" aria-label="Stäng" data-close>&times;</button></div>
+  <div class="so-body" id="so-user-body"></div>
+  <div class="so-footer" id="so-user-footer"></div>
+  <div class="so-danger" id="so-user-danger"></div>
+</div>
+<div class="slide-over" id="so-invite" role="dialog" aria-modal="true" aria-label="Bjud in användare">
+  <div class="so-header"><div class="so-title" id="so-invite-title">Bjud In Användare</div><button class="so-close" aria-label="Stäng" data-close>&times;</button></div>
+  <div class="so-body">
+    <div class="invite-tabs">
+      <button class="invite-tab invite-tab--active" data-invite-tab="single" id="inv-tab-single">Enskild</button>
+      <button class="invite-tab" data-invite-tab="bulk" id="inv-tab-bulk">Bulk-Import</button>
+    </div>
+    <div class="invite-panel invite-panel--active" id="invite-single">
+      <div class="form-group"><label class="form-label" for="invite-email" id="lbl-invite-email">E-postadress</label><input type="email" class="form-input" id="invite-email" placeholder="namn@foretag.se" aria-required="true"></div>
+      <div class="form-group"><label class="form-label" id="lbl-invite-teams">Välj team</label><ul class="check-list" id="invite-teams"></ul></div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:var(--lg);" id="invite-hint">Användaren får rollen "Medlem" i alla valda team. Befordran görs efter registrering.</p>
+      <button class="btn btn--hi" id="btn-send-invite" style="width:100%;justify-content:center;">Skicka Inbjudan</button>
+    </div>
+    <div class="invite-panel" id="invite-bulk">
+      <div class="form-group"><label class="form-label" id="lbl-bulk-step1">Steg 1: Ladda upp CSV</label><p style="font-size:12px;color:var(--text-muted);margin-bottom:var(--sm);" id="bulk-hint">En e-postadress per rad.</p><input type="file" accept=".csv" style="margin-bottom:var(--md);"></div>
+      <div class="form-group"><label class="form-label" id="lbl-bulk-teams">Välj team för alla</label><ul class="check-list" id="invite-bulk-teams"></ul></div>
+      <button class="btn btn--hi" style="width:100%;justify-content:center;" id="btn-bulk-send">Granska &amp; Skicka</button>
+    </div>
+  </div>
+</div>
+<div class="slide-over" id="so-team" role="dialog" aria-modal="true" aria-label="Redigera team">
+  <div class="so-header"><div class="so-title" id="so-team-title">Team</div><button class="so-close" aria-label="Stäng" data-close>&times;</button></div>
+  <div class="so-body" id="so-team-body"></div>
+  <div class="so-footer" id="so-team-footer"></div>
+  <div class="so-danger" id="so-team-danger"></div>
+</div>
+<div class="slide-over" id="so-org" role="dialog" aria-modal="true" aria-label="Redigera organisation">
+  <div class="so-header"><div class="so-title" id="so-org-title">Organisation</div><button class="so-close" aria-label="Stäng" data-close>&times;</button></div>
+  <div class="so-body" id="so-org-body"></div>
+  <div class="so-footer" id="so-org-footer"></div>
+  <div class="so-danger" id="so-org-danger"></div>
+</div>
+
+<!-- ===== CONFIRM DIALOG ===== -->
+<div class="dialog-overlay" id="confirm-dialog">
+  <div class="dialog">
+    <div class="dialog__title" id="dialog-title">Bekräfta</div>
+    <div class="dialog__text" id="dialog-text"></div>
+    <div class="dialog__actions">
+      <button class="btn btn--outline" id="dialog-cancel">Avbryt</button>
+      <button class="btn btn--danger" id="dialog-confirm">Bekräfta</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== MINI NAV ===== -->
+<div class="mini-nav" id="mini-nav" data-min-role="org-admin" style="display:none;"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script src="mock-data.js"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS (loaded from i18n-sv.js, i18n-en.js)
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  updateStaticText();
+  renderAll();
+}
+
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-dashboard').textContent = t('nav.dashboard');
+  $('nav-admin').textContent = t('nav.admin');
+  $('bc-dashboard').textContent = t('bc.dashboard');
+  $('bc-admin').textContent = t('bc.admin');
+  $('no-access-title').textContent = t('noAccess.title');
+  $('no-access-text').textContent = t('noAccess.text');
+  $('lbl-org').textContent = t('lbl.org');
+  $('lbl-sysrole').textContent = t('lbl.sysRole');
+  $('lbl-status').textContent = t('lbl.status');
+  $('btn-invite').textContent = t('btn.invite');
+  $('btn-create-team').textContent = t('btn.createTeam');
+  $('btn-create-org').textContent = t('btn.createOrg');
+  $('lbl-custom-org').textContent = t('lbl.org');
+  $('custom-info-text').textContent = t('custom.infoText');
+  $('user-search').placeholder = t('search.placeholder');
+  $('team-search').placeholder = t('search.teamPlaceholder');
+  $('so-invite-title').textContent = t('invite.title');
+  $('inv-tab-single').textContent = t('invite.single');
+  $('inv-tab-bulk').textContent = t('invite.bulk');
+  $('lbl-invite-email').textContent = t('invite.email');
+  $('lbl-invite-teams').textContent = t('invite.selectTeam');
+  $('invite-hint').textContent = t('invite.hint');
+  $('lbl-bulk-step1').textContent = t('invite.bulkStep1');
+  $('bulk-hint').textContent = t('invite.bulkHint');
+  $('lbl-bulk-teams').textContent = t('invite.bulkTeams');
+  $('btn-send-invite').textContent = t('btn.sendInvite');
+  $('btn-bulk-send').textContent = t('btn.reviewSend');
+  $('dialog-cancel').textContent = t('btn.cancel');
+}
+
+// Language switcher events
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+
+// ============================================================
+// 2. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  tab: 'users',
+  selectedOrg: 'all',
+  search: '',
+  roleFilter: 'all',
+  statusFilter: 'all',
+  sortCol: 'name',
+  sortDir: 'asc',
+  page: 1,
+  pageSize: 25,
+  teamSearch: '',
+  teamSortCol: 'title',
+  teamSortDir: 'asc',
+  teamPage: 1,
+  openSlideOver: null,
+  editUserId: null,
+  editTeamId: null,
+  editOrgId: null,
+};
+
+const ROLE_NAMES = {
+  'super-admin': 'role.superAdmin',
+  'integ-admin': 'role.integAdmin',
+  'org-admin': 'role.orgAdmin',
+  'team-leader': 'role.teamLeader',
+  'user': 'role.user',
+};
+
+
+// ============================================================
+// 3. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const orgById = id => DB.organizations.find(o => o.id === id);
+const teamById = id => DB.teams.find(t => t.id === id);
+const userById = id => DB.users.find(u => u.id === id);
+const fullName = u => `${u.firstName} ${u.lastName}`;
+const actor = () => ACTORS[S.role];
+const isLeaderInAny = u => u.memberships.some(m => m.teamRole === 'team_leader');
+const userPrimaryOrg = u => { const p = u.orgs.find(o => o.isPrimary); return p ? p.orgId : u.orgs[0]?.orgId; };
+const userOrgIds = u => u.orgs.map(o => o.orgId);
+
+function teamCountForOrg(orgId) { return DB.teams.filter(t => t.orgId === orgId).length; }
+function userCountForOrg(orgId) { return DB.users.filter(u => u.orgs.some(o => o.orgId === orgId)).length; }
+function teamMembers(teamId) { return DB.users.filter(u => u.memberships.some(m => m.teamId === teamId)); }
+function teamLeaders(teamId) { return DB.users.filter(u => u.memberships.some(m => m.teamId === teamId && m.teamRole === 'team_leader')); }
+
+function roleBadge(systemRole) {
+  if (systemRole === 'super_admin') return `<span class="badge badge--super">${t('filter.superAdmin')}</span>`;
+  if (systemRole === 'integ_admin') return `<span class="badge badge--integ">${t('filter.integAdmin')}</span>`;
+  if (systemRole === 'org_admin') return `<span class="badge badge--admin">${t('filter.orgAdmin')}</span>`;
+  return `<span class="badge badge--user">${t('filter.user')}</span>`;
+}
+function chatRoleBadge(chatRole) {
+  if (chatRole === 'boss') return `<span class="badge badge--super">${t('chatRole.boss')}</span>`;
+  if (chatRole === 'coach') return `<span class="badge badge--integ">${t('chatRole.coach')}</span>`;
+  return `<span class="badge badge--user">${t('chatRole.base')}</span>`;
+}
+function statusBadge(status) {
+  if (status === 'registered') return `<span class="badge badge--active">${t('badge.active')}</span>`;
+  if (status === 'pending') return `<span class="badge badge--pending">${t('badge.pending')}</span>`;
+  return `<span class="badge badge--deactivated">${t('badge.deactivated')}</span>`;
+}
+function tierBadge(tier) {
+  if (tier === 'pro') return '<span class="badge badge--pro">Pro</span>';
+  if (tier === 'plus') return '<span class="badge badge--plus">Plus</span>';
+  return '<span class="badge badge--basic">Basic</span>';
+}
+function leaderSvg() {
+  return '<svg class="leader-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>';
+}
+
+function canEditUser(targetUser) {
+  const r = S.role;
+  if (r === 'super-admin') return targetUser.systemRole !== 'super_admin';
+  if (r === 'integ-admin') return targetUser.systemRole !== 'super_admin' && targetUser.systemRole !== 'integ_admin' && actor().orgs.some(o => userOrgIds(targetUser).includes(o));
+  if (r === 'org-admin') return targetUser.systemRole === null && actor().orgs.some(o => userOrgIds(targetUser).includes(o));
+  return false;
+}
+function canChangeSystemRole() { return S.role === 'super-admin' || S.role === 'integ-admin'; }
+function canChangeTeamRole() { return S.role !== 'team-leader' && S.role !== 'user'; }
+function visibleTabs() {
+  if (S.role === 'user') return [];
+  if (S.role === 'team-leader') return ['users'];
+  if (S.role === 'org-admin') return ['users','teams','orgs'];
+  return ['users','teams','orgs','custom'];
+}
+function visibleOrgs() {
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => actor().orgs.includes(o.id));
+}
+function visibleUsers() {
+  if (S.role === 'team-leader') {
+    const tIds = actor().teams;
+    return DB.users.filter(u => u.memberships.some(m => tIds.includes(m.teamId)));
+  }
+  const selOrg = S.selectedOrg;
+  if (selOrg === 'all') return DB.users;
+  return DB.users.filter(u => u.orgs.some(o => o.orgId === selOrg));
+}
+function visibleTeams() {
+  const selOrg = S.selectedOrg;
+  if (S.role === 'super-admin') return selOrg === 'all' ? DB.teams : DB.teams.filter(t => t.orgId === selOrg);
+  return DB.teams.filter(t => actor().orgs.includes(t.orgId));
+}
+
+// ============================================================
+// 4. TOAST
+// ============================================================
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 5. CONFIRM DIALOG
+// ============================================================
+let confirmCallback = null;
+function showConfirm(title, text, label, cb) {
+  $('dialog-title').textContent = title;
+  $('dialog-text').textContent = text;
+  const btn = $('dialog-confirm');
+  btn.textContent = t('btn.wait'); btn.disabled = true;
+  confirmCallback = cb;
+  $('confirm-dialog').classList.add('dialog-overlay--visible');
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 1000);
+}
+function closeConfirm() { $('confirm-dialog').classList.remove('dialog-overlay--visible'); confirmCallback = null; }
+$('dialog-cancel').onclick = closeConfirm;
+$('dialog-confirm').onclick = () => { if (confirmCallback) confirmCallback(); closeConfirm(); };
+
+// ============================================================
+// 6. SLIDE-OVER
+// ============================================================
+let slideOverDirty = false;
+let slideOverOpener = null;
+
+function openSlideOver(id) {
+  forceCloseSlideOver();
+  slideOverOpener = document.activeElement;
+  slideOverDirty = false;
+  $('overlay').classList.add('overlay--visible');
+  $(id).classList.add('slide-over--open');
+  S.openSlideOver = id;
+  document.body.style.overflow = 'hidden';
+  // Focus first focusable inside
+  requestAnimationFrame(() => {
+    const panel = $(id);
+    const first = panel.querySelector('button, input, select, textarea, a[href]');
+    if (first) first.focus();
+  });
+}
+function tryCloseSlideOver() {
+  if (slideOverDirty) {
+    showConfirm(t('confirm.unsavedTitle'), t('confirm.unsavedText'), t('confirm.unsavedBtn'), () => {
+      forceCloseSlideOver();
+    });
+  } else {
+    forceCloseSlideOver();
+  }
+}
+function forceCloseSlideOver() {
+  $('overlay').classList.remove('overlay--visible');
+  document.querySelectorAll('.slide-over').forEach(s => s.classList.remove('slide-over--open'));
+  S.openSlideOver = null;
+  document.body.style.overflow = '';
+  if (slideOverOpener && slideOverOpener.focus) {
+    slideOverOpener.focus();
+    slideOverOpener = null;
+  }
+  slideOverDirty = false;
+}
+// Alias for backwards compat in save handlers (they should force-close after saving)
+function closeSlideOver() { forceCloseSlideOver(); }
+
+$('overlay').onclick = tryCloseSlideOver;
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = tryCloseSlideOver);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('confirm-dialog').classList.contains('dialog-overlay--visible')) closeConfirm(); else tryCloseSlideOver(); } });
+
+// Mark dirty on any input change inside a slide-over
+document.addEventListener('input', e => { if (e.target.closest('.slide-over')) slideOverDirty = true; });
+document.addEventListener('change', e => { if (e.target.closest('.slide-over')) slideOverDirty = true; });
+
+// Focus trap inside open slide-over
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab' || !S.openSlideOver) return;
+  if ($('confirm-dialog').classList.contains('dialog-overlay--visible')) return;
+  const panel = $(S.openSlideOver);
+  const focusable = panel.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])');
+  if (focusable.length === 0) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey) {
+    if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+  } else {
+    if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
+
+// ============================================================
+// 7. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+  closeSlideOver();
+  const tabs = visibleTabs();
+  if (!tabs.includes(S.tab)) S.tab = tabs[0] || 'users';
+  if (role !== 'super-admin') {
+    const orgs = visibleOrgs();
+    S.selectedOrg = orgs.length === 1 ? orgs[0].id : orgs[0]?.id || 'all';
+  } else {
+    S.selectedOrg = 'all';
+  }
+  S.page = 1;
+  S.teamPage = 1;
+  S.teamSearch = '';
+  if ($('team-search')) $('team-search').value = '';
+  updatePageTitle();
+  renderAll();
+}
+
+function updatePageTitle() {
+  const roleName = t(ROLE_NAMES[S.role] || 'role.user');
+  $('page-title').textContent = t('title.adminFor', { role: roleName });
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 8. TABS
+// ============================================================
+const TAB_KEYS = { users:'tab.users', teams:'tab.teams', orgs:'tab.orgs', custom:'tab.custom' };
+
+function renderTabs() {
+  const tabs = visibleTabs();
+  const container = $('admin-tabs');
+  const mobile = $('mobile-tab-select');
+  $('no-access').style.display = tabs.length === 0 ? '' : 'none';
+  $('admin-content').style.display = tabs.length === 0 ? 'none' : '';
+  if (tabs.length === 0) return;
+  container.innerHTML = tabs.map(tab =>
+    `<button class="admin-tab ${tab===S.tab?'admin-tab--active':''}" role="tab" aria-selected="${tab===S.tab}" data-tab="${tab}">${t(TAB_KEYS[tab])}</button>`
+  ).join('');
+  mobile.innerHTML = tabs.map(tab =>
+    `<option value="${tab}" ${tab===S.tab?'selected':''}>${t(TAB_KEYS[tab])}</option>`
+  ).join('');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('tab-panel--active'));
+  const panel = $('panel-' + S.tab);
+  if (panel) panel.classList.add('tab-panel--active');
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('.admin-tab[data-tab]')) { S.tab = e.target.dataset.tab; S.page = 1; S.teamPage = 1; renderAll(); }
+});
+$('mobile-tab-select').addEventListener('change', e => { S.tab = e.target.value; S.page = 1; S.teamPage = 1; renderAll(); });
+
+// ============================================================
+// 9. ORG SELECTOR (shared page-level element)
+// ============================================================
+function renderOrgSelector() {
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const orgs = visibleOrgs();
+  // Hide for team-leader and for tabs that don't use it (custom has its own)
+  const showOnTab = ['users','teams','orgs'].includes(S.tab);
+  if (S.role === 'team-leader' || !showOnTab) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  let html = '';
+  if (S.role === 'super-admin') html += `<option value="all">${t('lbl.allOrgs')}</option>`;
+  orgs.forEach(o => { html += `<option value="${o.id}">${o.title}</option>`; });
+  sel.innerHTML = html;
+  if (orgs.length <= 1 && S.role !== 'super-admin') { wrap.style.display = 'none'; }
+  sel.value = S.selectedOrg;
+}
+$('org-select').addEventListener('change', e => {
+  S.selectedOrg = e.target.value;
+  S.page = 1;
+  S.teamPage = 1;
+  renderUsers();
+  renderTeams();
+  renderOrgs();
+});
+
+// ============================================================
+// 10. FILTERS
+// ============================================================
+function renderFilters() {
+  const rf = $('role-filter');
+  const roles = [['all',t('filter.all')],['super_admin',t('filter.superAdmin')],['integ_admin',t('filter.integAdmin')],['org_admin',t('filter.orgAdmin')],['null',t('filter.user')]];
+  rf.innerHTML = roles.map(([v,l]) =>
+    `<button class="seg-btn ${S.roleFilter===v?'seg-btn--active':''}" data-role-filter="${v}">${l}</button>`
+  ).join('');
+  const sf = $('status-filter');
+  const statuses = [['all',t('filter.all')],['registered',t('filter.active')],['pending',t('filter.pending')],['soft_deleted',t('filter.deactivated')]];
+  sf.innerHTML = statuses.map(([v,l]) =>
+    `<button class="seg-btn ${S.statusFilter===v?'seg-btn--active':''}" data-status-filter="${v}">${l}</button>`
+  ).join('');
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-role-filter]')) { S.roleFilter = e.target.dataset.roleFilter; S.page = 1; renderUsers(); renderFilters(); }
+  if (e.target.matches('[data-status-filter]')) { S.statusFilter = e.target.dataset.statusFilter; S.page = 1; renderUsers(); renderFilters(); }
+});
+
+let searchTimer;
+$('user-search').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { S.search = e.target.value; S.page = 1; renderUsers(); }, 300);
+});
+
+// ============================================================
+// 11. USERS TABLE
+// ============================================================
+function getFilteredUsers() {
+  let users = visibleUsers();
+  if (S.roleFilter !== 'all') {
+    if (S.roleFilter === 'null') users = users.filter(u => u.systemRole === null);
+    else users = users.filter(u => u.systemRole === S.roleFilter);
+  }
+  if (S.statusFilter !== 'all') users = users.filter(u => u.registerStatus === S.statusFilter);
+  if (S.search.trim()) {
+    const q = S.search.toLowerCase();
+    users = users.filter(u => `${fullName(u)} ${u.email}`.toLowerCase().includes(q));
+  }
+  return users;
+}
+
+function sortUsers(users) {
+  const sorted = [...users];
+  const dir = S.sortDir === 'asc' ? 1 : -1;
+  sorted.sort((a, b) => {
+    let va, vb;
+    switch (S.sortCol) {
+      case 'name': va = fullName(a); vb = fullName(b); break;
+      case 'username': va = a.username || ''; vb = b.username || ''; break;
+      case 'email': va = a.email; vb = b.email; break;
+      case 'status': va = a.registerStatus; vb = b.registerStatus; break;
+      case 'role': va = a.systemRole || 'zzz'; vb = b.systemRole || 'zzz'; break;
+      case 'chatRole': va = a.chatRole || 'base'; vb = b.chatRole || 'base'; break;
+      case 'org': va = orgById(userPrimaryOrg(a))?.title || ''; vb = orgById(userPrimaryOrg(b))?.title || ''; break;
+      default: va = ''; vb = '';
+    }
+    return va.localeCompare(vb, 'sv') * dir;
+  });
+  return sorted;
+}
+
+function showOrgColumn() { return S.selectedOrg === 'all'; }
+
+function renderUsersHead() {
+  const showRole = S.role === 'super-admin' || S.role === 'integ-admin';
+  const showOrg = showOrgColumn();
+  const arrow = col => `<span class="sort-arrow ${S.sortCol===col?'sort-arrow--active':''}">${S.sortCol===col?(S.sortDir==='asc'?'↓':'↑'):'↓'}</span>`;
+  const sortAttr = col => ` aria-sort="${S.sortCol===col?(S.sortDir==='asc'?'ascending':'descending'):'none'}"`;
+  let html = '<tr>';
+  html += `<th class="sortable" data-sort="name"${sortAttr('name')}>${t('col.name')} ${arrow('name')}</th>`;
+  html += `<th class="sortable col-hide-sm" data-sort="username"${sortAttr('username')}>${t('col.username')} ${arrow('username')}</th>`;
+  html += `<th class="sortable" data-sort="email"${sortAttr('email')}>${t('col.email')} ${arrow('email')}</th>`;
+  if (showOrg) html += `<th class="sortable" data-sort="org"${sortAttr('org')}>${t('lbl.org')} ${arrow('org')}</th>`;
+  html += `<th class="sortable" data-sort="status"${sortAttr('status')}>${t('col.status')} ${arrow('status')}</th>`;
+  if (showRole) html += `<th class="sortable" data-sort="role"${sortAttr('role')}>${t('col.sysRole')} ${arrow('role')}</th>`;
+  if (showRole) html += `<th class="sortable" data-sort="chatRole"${sortAttr('chatRole')}>${t('col.accessLevel')} ${arrow('chatRole')}</th>`;
+  html += '</tr>';
+  $('users-thead').innerHTML = html;
+}
+
+function renderUsers() {
+  renderUsersHead();
+  const showRole = S.role === 'super-admin' || S.role === 'integ-admin';
+  let users = sortUsers(getFilteredUsers());
+  const total = users.length;
+  const totalPages = Math.max(1, Math.ceil(total / S.pageSize));
+  if (S.page > totalPages) S.page = totalPages;
+  const start = (S.page - 1) * S.pageSize;
+  const page = users.slice(start, start + S.pageSize);
+
+  const showOrg = showOrgColumn();
+  const tbody = $('users-tbody');
+  if (total === 0) {
+    const cols = (showRole ? 6 : 4) + (showOrg ? 1 : 0);
+    tbody.innerHTML = `<tr><td colspan="${cols}"><div class="empty-state"><p>${t('empty.noUsers')}</p><button class="btn btn--outline btn--sm" onclick="resetFilters()">${t('btn.clearFilters')}</button></div></td></tr>`;
+  } else {
+    tbody.innerHTML = page.map(u => {
+      const leader = isLeaderInAny(u) ? leaderSvg() : '';
+      const primaryOrg = orgById(userPrimaryOrg(u));
+      let html = `<tr data-user-id="${u.id}">`;
+      html += `<td><strong>${leader}${fullName(u)}</strong></td>`;
+      html += `<td class="col-hide-sm">${u.username || '—'}</td>`;
+      html += `<td><a href="mailto:${u.email}" style="color:inherit;" onclick="event.stopPropagation()">${u.email}</a></td>`;
+      if (showOrg) html += `<td>${primaryOrg?.title || '—'}</td>`;
+      html += `<td>${statusBadge(u.registerStatus)}</td>`;
+      if (showRole) html += `<td>${roleBadge(u.systemRole)}</td>`;
+      if (showRole) html += `<td>${chatRoleBadge(u.chatRole)}</td>`;
+      html += '</tr>';
+      return html;
+    }).join('');
+  }
+
+  // Pagination
+  const pag = $('users-pagination');
+  if (total <= S.pageSize) {
+    pag.innerHTML = `<span>${t('pag.showingAll', {total})}</span><span></span>`;
+  } else {
+    let pages = '';
+    for (let i = 1; i <= totalPages; i++) pages += `<button class="pag-btn ${i===S.page?'pag-btn--active':''}" data-page="${i}">${i}</button>`;
+    pag.innerHTML = `<span>${t('pag.showing', {start:start+1, end:Math.min(start+S.pageSize,total), total})}</span><div class="pagination__pages"><button class="pag-btn" data-page="${S.page-1}" ${S.page<=1?'disabled':''}>&laquo;</button>${pages}<button class="pag-btn" data-page="${S.page+1}" ${S.page>=totalPages?'disabled':''}>&raquo;</button></div>`;
+  }
+
+  $('user-live').textContent = t('pag.showing', {start:start+1, end:Math.min(start+S.pageSize,total), total});
+  $('user-caption').textContent = t('pag.captionShowing', {count:page.length, total});
+  renderMiniNav(totalPages);
+}
+
+function resetFilters() {
+  S.search = ''; S.roleFilter = 'all'; S.statusFilter = 'all'; S.page = 1;
+  $('user-search').value = '';
+  renderFilters(); renderUsers();
+}
+
+// Sort click
+document.addEventListener('click', e => {
+  const th = e.target.closest('[data-sort]');
+  if (th && th.closest('.data-table')) {
+    const col = th.dataset.sort;
+    if (S.sortCol === col) S.sortDir = S.sortDir === 'asc' ? 'desc' : 'asc';
+    else { S.sortCol = col; S.sortDir = 'asc'; }
+    renderUsers();
+  }
+});
+
+// Page click
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-page]')) {
+    const p = parseInt(e.target.dataset.page);
+    if (p >= 1) { S.page = p; renderUsers(); window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+});
+
+// Row click -> open user
+document.addEventListener('click', e => {
+  const row = e.target.closest('tr[data-user-id]');
+  if (row) openUserSlideOver(row.dataset.userId);
+});
+
+// ============================================================
+// 11b. MINI NAV PANEL
+// ============================================================
+function renderMiniNav(totalPages) {
+  const nav = $('mini-nav');
+  const isUsers = S.tab === 'users';
+  const isTeams = S.tab === 'teams';
+  if (!totalPages || totalPages <= 1 || (!isUsers && !isTeams)) { nav.style.display = 'none'; return; }
+  nav.style.display = 'flex';
+  const currentPage = isTeams ? S.teamPage : S.page;
+  const pageAttr = isTeams ? 'data-team-page' : 'data-page';
+  let html = '';
+  for (let i = 1; i <= totalPages; i++) {
+    html += `<button class="mini-nav-btn ${i===currentPage?'mini-nav-btn--active':''}" ${pageAttr}="${i}">${i}</button>`;
+  }
+  nav.innerHTML = html;
+}
+
+// ============================================================
+// 12. USER SLIDE-OVER
+// ============================================================
+function openUserSlideOver(userId) {
+  const u = userById(userId);
+  if (!u) return;
+  S.editUserId = userId;
+  const editable = canEditUser(u);
+  const canRole = canChangeSystemRole();
+  const canTeam = canChangeTeamRole();
+
+  $('so-user-title').textContent = t('so.userTitle', {name: fullName(u)});
+
+  let html = '';
+  // Personuppgifter
+  html += `<div class="so-section"><div class="so-section-title">${t('so.personal')}</div>`;
+  if (editable) {
+    html += `<div class="form-group"><label class="form-label">${t('so.firstName')}</label><input class="form-input" id="eu-fname" value="${u.firstName}"></div>`;
+    html += `<div class="form-group"><label class="form-label">${t('so.lastName')}</label><input class="form-input" id="eu-lname" value="${u.lastName}"></div>`;
+  } else {
+    html += `<div class="form-group"><label class="form-label">${t('so.firstName')}</label><div class="form-readonly">${u.firstName}</div></div>`;
+    html += `<div class="form-group"><label class="form-label">${t('so.lastName')}</label><div class="form-readonly">${u.lastName}</div></div>`;
+  }
+  html += `<div class="form-group"><label class="form-label">${t('so.email')}</label><div class="form-readonly">${u.email}</div></div>`;
+  if (editable) {
+    html += `<div class="form-group"><label class="form-label">${t('so.username')}</label><input class="form-input" id="eu-username" value="${u.username||''}"></div>`;
+    html += `<div class="form-group"><label class="form-label">${t('so.phone')}</label><input class="form-input" id="eu-phone" value="${u.phone||''}"></div>`;
+    html += `<div class="form-group"><label class="form-label">${t('so.description')}</label><textarea class="form-input" id="eu-desc" rows="2" style="min-height:60px;">${u.description||''}</textarea></div>`;
+  } else {
+    html += `<div class="form-group"><label class="form-label">${t('so.username')}</label><div class="form-readonly">${u.username||'—'}</div></div>`;
+    html += `<div class="form-group"><label class="form-label">${t('so.phone')}</label><div class="form-readonly">${u.phone||'—'}</div></div>`;
+    if (u.description) html += `<div class="form-group"><label class="form-label">${t('so.description')}</label><div class="form-readonly">${u.description}</div></div>`;
+  }
+  html += '</div>';
+
+  // Systemroll
+  html += `<div class="so-section"><div class="so-section-title">${t('so.sysRole')}</div>`;
+  const roles = [{v:'null',l:t('so.noSysRole')},{v:'org_admin',l:t('filter.orgAdmin')},{v:'integ_admin',l:t('filter.integAdmin')},{v:'super_admin',l:t('filter.superAdmin')}];
+  html += '<div class="radio-group">';
+  roles.forEach(r => {
+    const current = (u.systemRole || 'null') === r.v;
+    let disabled = !canRole;
+    if (canRole && S.role === 'super-admin' && r.v === 'super_admin') disabled = true;
+    if (canRole && S.role === 'integ-admin' && (r.v === 'super_admin' || r.v === 'integ_admin')) disabled = true;
+    html += `<label class="radio-item ${disabled?'disabled':''}"><input type="radio" name="eu-sysrole" value="${r.v}" ${current?'checked':''} ${disabled?'disabled':''}> ${r.l}</label>`;
+  });
+  html += '</div></div>';
+
+  // Accessnivå (was Chattroll)
+  if (S.role === 'super-admin' || S.role === 'integ-admin') {
+    html += `<div class="so-section"><div class="so-section-title">${t('so.accessLevel')}</div>`;
+    const chatRoles = [{v:'base',l:t('chatRole.base')},{v:'coach',l:t('chatRole.coach')},{v:'boss',l:t('chatRole.boss')}];
+    html += '<div class="radio-group">';
+    chatRoles.forEach(r => {
+      const current = (u.chatRole || 'base') === r.v;
+      html += `<label class="radio-item"><input type="radio" name="eu-chatrole" value="${r.v}" ${current?'checked':''}> ${r.l}</label>`;
+    });
+    html += '</div></div>';
+  }
+
+  // Team-medlemskap
+  html += `<div class="so-section"><div class="so-section-title">${t('so.teamMembership', {count:u.memberships.length})}</div>`;
+  html += `<table class="mem-table"><thead><tr><th>${t('so.teamCol')}</th><th>${t('so.roleCol')}</th><th></th></tr></thead><tbody>`;
+  u.memberships.forEach(m => {
+    const tm = teamById(m.teamId);
+    if (!tm) return;
+    if (canTeam) {
+      html += `<tr><td>${tm.title}</td><td><select class="form-select role-select" data-team-role="${m.teamId}"><option value="team_leader" ${m.teamRole==='team_leader'?'selected':''}>${t('so.roleLeader')}</option><option value="member" ${m.teamRole==='member'?'selected':''}>${t('so.roleMember')}</option></select></td><td><button class="rm-btn" data-rm-team="${m.teamId}" aria-label="Ta bort">&times;</button></td></tr>`;
+    } else {
+      html += `<tr><td>${tm.title}</td><td>${m.teamRole==='team_leader'?t('so.roleLeader'):t('so.roleMember')}</td><td></td></tr>`;
+    }
+  });
+  html += '</tbody></table>';
+  if (canTeam) {
+    const availableTeams = DB.teams.filter(tm => actor().orgs.includes(tm.orgId) && !u.memberships.some(m => m.teamId === tm.id));
+    if (availableTeams.length) {
+      html += `<div style="margin-top:var(--md);display:flex;gap:var(--sm);align-items:end;"><select class="form-select" id="eu-add-team" style="width:200px;"><option value="">${t('select.chooseTeam')}</option>${availableTeams.map(tm=>`<option value="${tm.id}">${tm.title}</option>`).join('')}</select><button class="btn btn--outline btn--sm" id="eu-add-team-btn">${t('btn.add')}</button></div>`;
+    }
+  }
+  html += '</div>';
+
+  // Organisationer
+  html += `<div class="so-section"><div class="so-section-title">${t('so.orgs', {count:u.orgs.length})}</div>`;
+  u.orgs.forEach(o => {
+    const org = orgById(o.orgId);
+    if (!org) return;
+    const canRemoveOrg = (S.role === 'super-admin' || S.role === 'integ-admin') && u.orgs.length > 1;
+    html += `<div class="org-row"><span>${org.title} ${o.isPrimary?`<span class="badge badge--primary">${t('badge.primary')}</span>`:''}</span>${canRemoveOrg?`<button class="rm-btn" data-rm-org="${o.orgId}">&times;</button>`:''}</div>`;
+  });
+  if (S.role === 'super-admin' || S.role === 'integ-admin') {
+    const availOrgs = DB.organizations.filter(o => !u.orgs.some(uo => uo.orgId === o.id));
+    if (availOrgs.length) {
+      html += `<div style="margin-top:var(--md);display:flex;gap:var(--sm);align-items:end;"><select class="form-select" id="eu-add-org" style="width:200px;"><option value="">${t('select.chooseOrg')}</option>${availOrgs.map(o=>`<option value="${o.id}">${o.title}</option>`).join('')}</select><button class="btn btn--outline btn--sm" id="eu-add-org-btn">${t('btn.add')}</button></div>`;
+    }
+  }
+  html += '</div>';
+
+  // Information
+  html += `<div class="so-section"><div class="so-section-title">${t('so.info')}</div>`;
+  html += `<div class="form-group"><label class="form-label">${t('so.registered')}</label><div class="form-readonly">${u.registerDate}</div></div>`;
+  html += `<div class="form-group"><label class="form-label">${t('col.status')}</label><div>${statusBadge(u.registerStatus)}</div></div>`;
+  html += `<div class="form-group"><label class="form-label">${t('so.lastActive')}</label><div class="form-readonly">${u.lastActive||'—'}</div></div>`;
+  html += '</div>';
+
+  $('so-user-body').innerHTML = html;
+
+  if (editable) {
+    $('so-user-footer').innerHTML = `<button class="btn btn--hi" id="eu-save">${t('btn.saveChanges')}</button><button class="btn btn--outline" data-close>${t('btn.cancel')}</button>`;
+    $('so-user-footer').style.display = '';
+    $('so-user-footer').querySelector('[data-close]').onclick = tryCloseSlideOver;
+  } else {
+    $('so-user-footer').innerHTML = '';
+    $('so-user-footer').style.display = 'none';
+  }
+
+  const canDeactivate = editable && u.registerStatus !== 'pending' && u.registerStatus !== 'soft_deleted';
+  if (canDeactivate) {
+    $('so-user-danger').innerHTML = `<button class="btn btn--danger" id="eu-deactivate">${t('so.deactivate')}</button>`;
+    $('so-user-danger').style.display = '';
+  } else {
+    $('so-user-danger').innerHTML = '';
+    $('so-user-danger').style.display = 'none';
+  }
+
+  openSlideOver('so-user');
+  bindUserSlideOverEvents(u);
+}
+
+function bindUserSlideOverEvents(u) {
+  const saveBtn = $('eu-save');
+  if (saveBtn) saveBtn.onclick = () => {
+    // Check for system role change requiring confirmation
+    if (canChangeSystemRole()) {
+      const checked = document.querySelector('input[name="eu-sysrole"]:checked');
+      if (checked) {
+        const newRole = checked.value === 'null' ? null : checked.value;
+        const oldRole = u.systemRole;
+        if (newRole !== oldRole) {
+          const roleKeys = {super_admin:'filter.superAdmin', integ_admin:'filter.integAdmin', org_admin:'filter.orgAdmin'};
+          const roleName = newRole ? t(roleKeys[newRole] || 'filter.user') : t('so.noSysRole');
+          let confirmText = t('confirm.roleChangeText', {name: fullName(u), role: roleName});
+          // Check if this is the last org_admin being degraded
+          if (oldRole === 'org_admin' && (newRole === null || newRole === undefined)) {
+            const userOrgs = u.orgs.map(o => o.orgId);
+            const hasOtherOrgAdmin = userOrgs.some(orgId => {
+              return DB.users.some(other => other.id !== u.id && other.systemRole === 'org_admin' && other.orgs.some(o => o.orgId === orgId));
+            });
+            if (!hasOtherOrgAdmin) {
+              confirmText += '\n\n' + t('confirm.lastOrgAdminWarning');
+            }
+          }
+          showConfirm(t('confirm.roleChangeTitle'), confirmText, t('confirm.roleChangeBtn'), () => {
+            applyUserSave(u);
+          });
+          return;
+        }
+      }
+    }
+    applyUserSave(u);
+  };
+
+  function applyUserSave(u) {
+    const fn = $('eu-fname'); if (fn) u.firstName = fn.value;
+    const ln = $('eu-lname'); if (ln) u.lastName = ln.value;
+    const un = $('eu-username'); if (un) u.username = un.value;
+    const ph = $('eu-phone'); if (ph) u.phone = ph.value;
+    const de = $('eu-desc'); if (de) u.description = de.value;
+    if (canChangeSystemRole()) {
+      const checked = document.querySelector('input[name="eu-sysrole"]:checked');
+      if (checked) u.systemRole = checked.value === 'null' ? null : checked.value;
+    }
+    if (S.role === 'super-admin' || S.role === 'integ-admin') {
+      const chatChecked = document.querySelector('input[name="eu-chatrole"]:checked');
+      if (chatChecked) u.chatRole = chatChecked.value;
+    }
+    closeSlideOver(); renderUsers(); showToast(t('toast.userUpdated'));
+  }
+
+  const deactBtn = $('eu-deactivate');
+  if (deactBtn) deactBtn.onclick = () => {
+    showConfirm(t('confirm.deactivateTitle'), t('confirm.deactivateText', {name:fullName(u)}), t('confirm.deactivateBtn'), () => {
+      u.firstName = '*****'; u.lastName = '*****'; u.email = '*****@*****.***';
+      u.username = ''; u.phone = ''; u.description = '';
+      u.registerStatus = 'soft_deleted';
+      closeSlideOver(); renderUsers(); showToast(t('toast.deactivated', {name:fullName(u)}));
+    });
+  };
+
+  document.querySelectorAll('[data-team-role]').forEach(sel => {
+    sel.onchange = () => {
+      const m = u.memberships.find(m => m.teamId === sel.dataset.teamRole);
+      if (m) { m.teamRole = sel.value; showToast(t('toast.teamRoleUpdated')); }
+    };
+  });
+
+  document.querySelectorAll('[data-rm-team]').forEach(btn => {
+    btn.onclick = () => {
+      if (u.memberships.length <= 1) { showToast(t('toast.minOneTeam')); return; }
+      const teamId = btn.dataset.rmTeam;
+      const tm = teamById(teamId);
+      showConfirm(t('confirm.removeTeamTitle'), t('confirm.removeTeamFullText', {name:fullName(u), team:tm.title}), t('confirm.removeBtn'), () => {
+        u.memberships = u.memberships.filter(m => m.teamId !== teamId);
+        openUserSlideOver(u.id); renderUsers(); showToast(t('toast.removedFromTeam', {name:tm.title}));
+      });
+    };
+  });
+
+  const addTeamBtn = $('eu-add-team-btn');
+  if (addTeamBtn) addTeamBtn.onclick = () => {
+    const sel = $('eu-add-team');
+    if (!sel.value) return;
+    u.memberships.push({ teamId: sel.value, teamRole: 'member', joinedDate: '2026-02-17' });
+    openUserSlideOver(u.id); showToast(t('toast.addedToTeam'));
+  };
+
+  document.querySelectorAll('[data-rm-org]').forEach(btn => {
+    btn.onclick = () => {
+      if (u.orgs.length <= 1) { showToast(t('toast.minOneOrg')); return; }
+      const orgId = btn.dataset.rmOrg;
+      const org = orgById(orgId);
+      const orgTeams = DB.teams.filter(tm => tm.orgId === orgId).map(tm => tm.id);
+      const affectedTeams = u.memberships.filter(m => orgTeams.includes(m.teamId)).length;
+      const extra = affectedTeams ? t('extra.lostMemberships', {count:affectedTeams}) : '';
+      showConfirm(t('confirm.removeOrgTitle'), t('confirm.removeOrgText', {name:fullName(u), org:org?.title||orgId, extra}), t('confirm.removeBtn'), () => {
+        u.orgs = u.orgs.filter(o => o.orgId !== orgId);
+        u.memberships = u.memberships.filter(m => !orgTeams.includes(m.teamId));
+        if (!u.orgs.some(o => o.isPrimary) && u.orgs.length) u.orgs[0].isPrimary = true;
+        openUserSlideOver(u.id); renderUsers(); showToast(t('toast.removedFromOrg'));
+      });
+    };
+  });
+
+  const addOrgBtn = $('eu-add-org-btn');
+  if (addOrgBtn) addOrgBtn.onclick = () => {
+    const sel = $('eu-add-org');
+    if (!sel.value) return;
+    u.orgs.push({ orgId: sel.value, isPrimary: false });
+    openUserSlideOver(u.id); showToast(t('toast.addedToOrg'));
+  };
+}
+
+// ============================================================
+// 13. INVITE SLIDE-OVER
+// ============================================================
+$('btn-invite').onclick = () => {
+  let teams;
+  if (S.role === 'team-leader') {
+    teams = DB.teams.filter(tm => actor().teams.includes(tm.id));
+  } else {
+    const orgId = S.selectedOrg === 'all' ? actor().orgs[0] : S.selectedOrg;
+    teams = DB.teams.filter(tm => tm.orgId === orgId);
+  }
+  const html = teams.map(tm => `<li class="check-item"><input type="checkbox" id="inv-${tm.id}" value="${tm.id}"><label for="inv-${tm.id}">${tm.title}</label></li>`).join('');
+  $('invite-teams').innerHTML = html;
+  $('invite-bulk-teams').innerHTML = html.replace(/inv-/g, 'invb-');
+  $('invite-email').value = '';
+  openSlideOver('so-invite');
+};
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-invite-tab]')) {
+    document.querySelectorAll('.invite-tab').forEach(tab => tab.classList.remove('invite-tab--active'));
+    document.querySelectorAll('.invite-panel').forEach(p => p.classList.remove('invite-panel--active'));
+    e.target.classList.add('invite-tab--active');
+    $('invite-' + e.target.dataset.inviteTab).classList.add('invite-panel--active');
+  }
+});
+
+$('btn-send-invite').onclick = () => {
+  const email = $('invite-email').value.trim();
+  const checked = Array.from($('invite-teams').querySelectorAll('input:checked')).map(i => i.value);
+  if (!email) { showToast(t('toast.enterEmail')); return; }
+  if (!checked.length) { showToast(t('toast.selectTeam')); return; }
+  if (DB.users.some(u => u.email.toLowerCase() === email.toLowerCase())) { showToast(t('toast.emailExists')); return; }
+  const orgId = S.selectedOrg === 'all' ? teamById(checked[0])?.orgId : S.selectedOrg;
+  DB.users.push({
+    id: 'u_' + Math.random().toString(36).slice(2, 7),
+    firstName: email.split('@')[0].split('.')[0] || 'Ny',
+    lastName: email.split('@')[0].split('.')[1] || 'Användare',
+    email, username: '', phone: '', description: '',
+    systemRole: null, chatRole: 'base', registerDate: '2026-02-17', registerStatus: 'pending', lastActive: '',
+    orgs: [{ orgId: orgId, isPrimary: true }],
+    memberships: checked.map(tId => ({ teamId: tId, teamRole: 'member', joinedDate: '2026-02-17' }))
+  });
+  closeSlideOver(); renderUsers(); showToast(t('toast.inviteSent', {email}));
+};
+
+$('btn-bulk-send').onclick = () => showToast(t('toast.csvValidation'));
+
+// ============================================================
+// 14. TEAMS TAB
+// ============================================================
+function showTeamOrgColumn() { return S.selectedOrg === 'all'; }
+
+function getFilteredTeams() {
+  let teams = visibleTeams();
+  if (S.teamSearch.trim()) {
+    const q = S.teamSearch.toLowerCase();
+    teams = teams.filter(tm => tm.title.toLowerCase().includes(q));
+  }
+  return teams;
+}
+
+function sortTeams(teams) {
+  const sorted = [...teams];
+  const dir = S.teamSortDir === 'asc' ? 1 : -1;
+  sorted.sort((a, b) => {
+    let va, vb;
+    switch (S.teamSortCol) {
+      case 'title': va = a.title; vb = b.title; break;
+      case 'org': va = orgById(a.orgId)?.title || ''; vb = orgById(b.orgId)?.title || ''; break;
+      case 'members': return (teamMembers(a.id).length - teamMembers(b.id).length) * dir;
+      default: va = a.title; vb = b.title;
+    }
+    return va.localeCompare(vb, 'sv') * dir;
+  });
+  return sorted;
+}
+
+function renderTeamsHead() {
+  const showOrg = showTeamOrgColumn();
+  const arrow = col => `<span class="sort-arrow ${S.teamSortCol===col?'sort-arrow--active':''}">${S.teamSortCol===col?(S.teamSortDir==='asc'?'↓':'↑'):'↓'}</span>`;
+  const sortAttr = col => ` aria-sort="${S.teamSortCol===col?(S.teamSortDir==='asc'?'ascending':'descending'):'none'}"`;
+  let html = '<tr>';
+  html += `<th class="sortable" data-team-sort="title"${sortAttr('title')}>${t('col.title')} ${arrow('title')}</th>`;
+  if (showOrg) html += `<th class="sortable" data-team-sort="org"${sortAttr('org')}>${t('lbl.org')} ${arrow('org')}</th>`;
+  html += `<th class="sortable" data-team-sort="members"${sortAttr('members')}>${t('col.members')} ${arrow('members')}</th>`;
+  html += `<th>${t('col.teamLeader')}</th>`;
+  html += `<th style="width:120px;">${t('col.actions')}</th>`;
+  html += '</tr>';
+  $('teams-thead').innerHTML = html;
+}
+
+function renderTeams() {
+  renderTeamsHead();
+  const showOrg = showTeamOrgColumn();
+  let teams = sortTeams(getFilteredTeams());
+  const total = teams.length;
+  const totalPages = Math.max(1, Math.ceil(total / S.pageSize));
+  if (S.teamPage > totalPages) S.teamPage = totalPages;
+  const start = (S.teamPage - 1) * S.pageSize;
+  const page = teams.slice(start, start + S.pageSize);
+  const colCount = showOrg ? 5 : 4;
+
+  const tbody = $('teams-tbody');
+  if (total === 0) {
+    const hasSearch = S.teamSearch.trim().length > 0;
+    tbody.innerHTML = `<tr><td colspan="${colCount}"><div class="empty-state"><p>${hasSearch ? t('empty.noTeamsSearch') : t('empty.noTeams')}</p>${hasSearch ? `<button class="btn btn--outline btn--sm" onclick="S.teamSearch='';$('team-search').value='';S.teamPage=1;renderTeams();">${t('btn.clearFilters')}</button>` : `<button class="btn btn--hi btn--sm" id="btn-create-team-empty">${t('btn.createFirstTeam')}</button>`}</div></td></tr>`;
+  } else {
+    tbody.innerHTML = page.map(tm => {
+      const members = teamMembers(tm.id);
+      const leaders = teamLeaders(tm.id).map(u => `${u.firstName} ${u.lastName[0]}.`).join(', ') || `<span style="color:var(--text-muted);">${t('lbl.none')}</span>`;
+      const org = orgById(tm.orgId);
+      let html = `<tr data-team-id="${tm.id}">`;
+      html += `<td><strong>${tm.title}</strong></td>`;
+      if (showOrg) html += `<td>${org?.title || '—'}</td>`;
+      html += `<td>${members.length}</td>`;
+      html += `<td>${leaders}</td>`;
+      html += `<td><button class="btn btn--outline btn--sm" data-edit-team="${tm.id}" style="margin-right:var(--xs);" aria-label="${t('col.actions')}: ${tm.title}">&#9998;</button><button class="btn btn--outline btn--sm" data-delete-team="${tm.id}" style="color:var(--err);" aria-label="${t('so.deleteTeam')}: ${tm.title}">&#10005;</button></td>`;
+      html += '</tr>';
+      return html;
+    }).join('');
+  }
+
+  // Pagination
+  const pag = $('teams-pagination');
+  if (total <= S.pageSize) {
+    pag.innerHTML = `<span>${t('pag.showingAllTeams', {total})}</span><span></span>`;
+  } else {
+    let pages = '';
+    for (let i = 1; i <= totalPages; i++) pages += `<button class="pag-btn ${i===S.teamPage?'pag-btn--active':''}" data-team-page="${i}">${i}</button>`;
+    pag.innerHTML = `<span>${t('pag.showingTeams', {start:start+1, end:Math.min(start+S.pageSize,total), total})}</span><div class="pagination__pages"><button class="pag-btn" data-team-page="${S.teamPage-1}" ${S.teamPage<=1?'disabled':''}>&laquo;</button>${pages}<button class="pag-btn" data-team-page="${S.teamPage+1}" ${S.teamPage>=totalPages?'disabled':''}>&raquo;</button></div>`;
+  }
+
+  $('team-live').textContent = t('pag.showingTeams', {start:start+1, end:Math.min(start+S.pageSize,total), total});
+  $('team-caption').textContent = t('pag.teamCaption', {count:page.length, total});
+  if (S.tab === 'teams') renderMiniNav(totalPages);
+}
+
+// Team sort click
+document.addEventListener('click', e => {
+  const th = e.target.closest('[data-team-sort]');
+  if (th) {
+    const col = th.dataset.teamSort;
+    if (S.teamSortCol === col) S.teamSortDir = S.teamSortDir === 'asc' ? 'desc' : 'asc';
+    else { S.teamSortCol = col; S.teamSortDir = 'asc'; }
+    renderTeams();
+  }
+});
+
+// Team page click
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-team-page]')) {
+    const p = parseInt(e.target.dataset.teamPage);
+    if (p >= 1) { S.teamPage = p; renderTeams(); window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+});
+
+// Team search
+let teamSearchTimer;
+$('team-search').addEventListener('input', e => {
+  clearTimeout(teamSearchTimer);
+  teamSearchTimer = setTimeout(() => { S.teamSearch = e.target.value; S.teamPage = 1; renderTeams(); }, 300);
+});
+
+document.addEventListener('click', e => {
+  if (e.target.matches('#btn-create-team') || e.target.matches('#btn-create-team-empty')) openTeamSlideOver(null);
+  if (e.target.matches('[data-edit-team]')) openTeamSlideOver(e.target.dataset.editTeam);
+  if (!e.target.closest('button') && !e.target.closest('a')) {
+    const row = e.target.closest('tr[data-team-id]');
+    if (row) openTeamSlideOver(row.dataset.teamId);
+  }
+  if (e.target.matches('[data-delete-team]')) {
+    const tm = teamById(e.target.dataset.deleteTeam);
+    const count = teamMembers(tm.id).length;
+    if (count > 0) {
+      showConfirm(t('confirm.cantDeleteTeam'), t('confirm.cantDeleteTeamText', {count}), 'OK', () => {});
+    } else {
+      showConfirm(t('confirm.deleteTeamTitle'), t('confirm.deleteTeamFullText', {name:tm.title}), t('confirm.deleteTeamBtn'), () => {
+        DB.teams = DB.teams.filter(x => x.id !== tm.id);
+        renderTeams(); showToast(t('toast.teamDeleted'));
+      });
+    }
+  }
+});
+
+function openTeamSlideOver(teamId) {
+  const isNew = !teamId;
+  const tm = isNew ? { id: null, title: '', orgId: S.selectedOrg === 'all' ? actor().orgs[0] : S.selectedOrg } : teamById(teamId);
+  S.editTeamId = teamId;
+  $('so-team-title').textContent = isNew ? t('so.createTeam') : t('so.editTeam', {name:tm.title});
+  let html = '<div class="so-section">';
+  html += `<div class="form-group"><label class="form-label">${t('so.orgTitle')}</label><input class="form-input" id="et-title" value="${tm.title}" aria-required="true"></div>`;
+  html += `<div class="form-group"><label class="form-label">${t('lbl.org')}</label><div class="form-readonly">${orgById(tm.orgId)?.title || '—'}</div></div>`;
+  html += '</div>';
+  if (!isNew) {
+    const members = teamMembers(tm.id);
+    html += `<div class="so-section"><div class="so-section-title">${t('col.members')} (${members.length})</div>`;
+    if (members.length) {
+      html += `<table class="mem-table"><thead><tr><th>${t('col.name')}</th><th>${t('so.roleCol')}</th><th></th></tr></thead><tbody>`;
+      members.forEach(u => {
+        const m = u.memberships.find(x => x.teamId === tm.id);
+        html += `<tr><td><a href="#" data-team-member-click="${u.id}" style="color:inherit;font-weight:700;">${fullName(u)}</a></td><td><select class="form-select role-select" data-tm-role="${u.id}"><option value="team_leader" ${m.teamRole==='team_leader'?'selected':''}>${t('so.roleLeader')}</option><option value="member" ${m.teamRole==='member'?'selected':''}>${t('so.roleMember')}</option></select></td><td><button class="rm-btn" data-tm-remove="${u.id}">&times;</button></td></tr>`;
+      });
+      html += '</tbody></table>';
+    } else {
+      html += `<div class="empty-state"><p>${t('empty.noMembers')}</p></div>`;
+    }
+    const candidates = DB.users.filter(u => u.orgs.some(o => o.orgId === tm.orgId) && !u.memberships.some(m => m.teamId === tm.id) && u.registerStatus !== 'soft_deleted');
+    if (candidates.length) {
+      html += `<div style="margin-top:var(--md);display:flex;gap:var(--sm);"><select class="form-select" id="et-add-member" style="width:220px;"><option value="">${t('select.chooseUser')}</option>${candidates.map(u=>`<option value="${u.id}">${fullName(u)}</option>`).join('')}</select><button class="btn btn--outline btn--sm" id="et-add-member-btn">${t('btn.add')}</button></div>`;
+    }
+    html += '</div>';
+  }
+  $('so-team-body').innerHTML = html;
+  $('so-team-footer').innerHTML = `<button class="btn btn--hi" id="et-save">${isNew?t('btn.createTeam'):t('btn.save')}</button><button class="btn btn--outline" data-close>${t('btn.cancel')}</button>`;
+  $('so-team-footer').querySelector('[data-close]').onclick = tryCloseSlideOver;
+  if (!isNew) {
+    const count = teamMembers(tm.id).length;
+    $('so-team-danger').innerHTML = `<button class="btn btn--danger" id="et-delete" ${count>0?`disabled title="${t('lbl.removeAllFirst')}"`:''}>${t('so.deleteTeam')}</button>`;
+    $('so-team-danger').style.display = '';
+  } else {
+    $('so-team-danger').style.display = 'none';
+  }
+  openSlideOver('so-team');
+  bindTeamSlideOverEvents(tm, isNew);
+}
+
+function bindTeamSlideOverEvents(tm, isNew) {
+  $('et-save').onclick = () => {
+    const title = $('et-title').value.trim();
+    if (!title) { showToast(t('toast.enterTeamName')); return; }
+    if (isNew) {
+      DB.teams.push({ id: 'team_' + Math.random().toString(36).slice(2,7), title, orgId: tm.orgId });
+      showToast(t('toast.teamCreated'));
+    } else {
+      tm.title = title;
+      showToast(t('toast.teamUpdated'));
+    }
+    closeSlideOver(); renderTeams(); renderUsers();
+  };
+  const delBtn = $('et-delete');
+  if (delBtn && !delBtn.disabled) {
+    delBtn.onclick = () => {
+      showConfirm(t('confirm.deleteTeamTitle'), t('confirm.deleteTeamFullText', {name:tm.title}), t('confirm.deleteTeamBtn'), () => {
+        DB.teams = DB.teams.filter(x => x.id !== tm.id);
+        closeSlideOver(); renderTeams(); showToast(t('toast.teamDeleted'));
+      });
+    };
+  }
+  document.querySelectorAll('[data-tm-role]').forEach(sel => {
+    sel.onchange = () => {
+      const u = userById(sel.dataset.tmRole);
+      const m = u.memberships.find(x => x.teamId === tm.id);
+      if (m) { m.teamRole = sel.value; showToast(t('toast.teamRoleUpdated')); }
+    };
+  });
+  document.querySelectorAll('[data-tm-remove]').forEach(btn => {
+    btn.onclick = () => {
+      const u = userById(btn.dataset.tmRemove);
+      if (u.memberships.length <= 1) { showToast(t('toast.minOneTeam')); return; }
+      showConfirm(t('confirm.removeTeamTitle'), t('confirm.removeTeamFullText', {name:fullName(u), team:tm.title}), t('confirm.removeBtn'), () => {
+        u.memberships = u.memberships.filter(m => m.teamId !== tm.id);
+        openTeamSlideOver(tm.id); showToast(t('toast.memberRemoved'));
+      });
+    };
+  });
+  const addBtn = $('et-add-member-btn');
+  if (addBtn) addBtn.onclick = () => {
+    const sel = $('et-add-member');
+    if (!sel.value) return;
+    const u = userById(sel.value);
+    u.memberships.push({ teamId: tm.id, teamRole: 'member', joinedDate: '2026-02-17' });
+    openTeamSlideOver(tm.id); showToast(t('toast.memberAdded'));
+  };
+  document.querySelectorAll('[data-team-member-click]').forEach(a => {
+    a.onclick = e => { e.preventDefault(); openUserSlideOver(a.dataset.teamMemberClick); };
+  });
+}
+
+// ============================================================
+// 15. ORGANIZATION TAB
+// ============================================================
+function renderOrgs() {
+  // Update orgs thead
+  const canEdit = S.role === 'super-admin' || S.role === 'integ-admin';
+  $('orgs-thead').innerHTML = `<tr><th>${t('col.org')}</th><th>${t('col.subscription')}</th><th>${t('col.team')}</th><th>${t('col.users')}</th>${canEdit?`<th style="width:120px;" data-min-role="integ-admin">${t('col.actions')}</th>`:'<th></th>'}</tr>`;
+  const isOrgAdmin = S.role === 'org-admin';
+  if (isOrgAdmin) {
+    $('org-list-view').style.display = 'none';
+    $('org-card-view').style.display = '';
+    const orgs = visibleOrgs();
+    $('org-card-view').innerHTML = orgs.map(o => {
+      const tc = teamCountForOrg(o.id); const uc = userCountForOrg(o.id);
+      return `<div class="org-card"><div class="org-card__title">${o.title}</div><div class="org-card__row"><span class="org-card__label">${t('so.orgDescription')}</span><span>${o.details||'—'}</span></div><div class="org-card__row"><span class="org-card__label">${t('col.subscription')}</span><span>${tierBadge(o.subscriptionTier)}</span></div><div class="org-card__row"><span class="org-card__label">${t('col.team')}</span><span>${tc} st</span></div><div class="org-card__row"><span class="org-card__label">${t('col.users')}</span><span>${uc} st</span></div></div>`;
+    }).join('');
+  } else {
+    $('org-list-view').style.display = '';
+    $('org-card-view').style.display = 'none';
+    const orgs = S.role === 'super-admin' ? DB.organizations : visibleOrgs();
+    $('orgs-tbody').innerHTML = orgs.map(o => {
+      const tc = teamCountForOrg(o.id); const uc = userCountForOrg(o.id);
+      return `<tr data-org-id="${o.id}"><td><strong>${o.title}</strong></td><td>${tierBadge(o.subscriptionTier)}</td><td><a href="#" onclick="S.tab='teams';S.selectedOrg='${o.id}';renderAll();return false;" style="color:var(--text);font-weight:700;">${tc}</a></td><td><a href="#" onclick="S.tab='users';S.selectedOrg='${o.id}';renderAll();return false;" style="color:var(--text);font-weight:700;">${uc}</a></td>${canEdit?`<td><button class="btn btn--outline btn--sm" data-edit-org="${o.id}" style="margin-right:var(--xs);" aria-label="${t('so.editOrg', {name:o.title})}">&#9998;</button><button class="btn btn--outline btn--sm" data-delete-org="${o.id}" style="color:var(--err);" aria-label="${t('so.deleteOrg')}: ${o.title}">&#10005;</button></td>`:'<td></td>'}</tr>`;
+    }).join('');
+  }
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-edit-org]')) openOrgSlideOver(e.target.dataset.editOrg);
+  if (!e.target.closest('button') && !e.target.closest('a')) {
+    const row = e.target.closest('tr[data-org-id]');
+    if (row) openOrgSlideOver(row.dataset.orgId);
+  }
+  if (e.target.matches('[data-delete-org]')) {
+    const o = orgById(e.target.dataset.deleteOrg);
+    const tc = teamCountForOrg(o.id); const uc = userCountForOrg(o.id);
+    if (tc > 0 || uc > 0) {
+      showConfirm(t('confirm.cantDeleteOrg'), t('confirm.cantDeleteOrgText', {teams:tc, users:uc}), 'OK', () => {});
+    } else {
+      showConfirm(t('confirm.deleteOrgTitle'), t('confirm.deleteOrgText', {name:o.title}), t('confirm.deleteOrgBtn'), () => {
+        DB.organizations = DB.organizations.filter(x => x.id !== o.id);
+        renderOrgs(); showToast(t('toast.orgDeleted'));
+      });
+    }
+  }
+  if (e.target.matches('#btn-create-org')) {
+    openCreateOrgSlideOver();
+  }
+});
+
+function openOrgSlideOver(orgId) {
+  const o = orgById(orgId);
+  if (!o) return;
+  S.editOrgId = orgId;
+  const tc = teamCountForOrg(o.id); const uc = userCountForOrg(o.id);
+  const canEditTier = S.role === 'super-admin' || S.role === 'integ-admin';
+  $('so-org-title').textContent = t('so.editOrg', {name:o.title});
+  let html = `<div class="so-section"><div class="so-section-title">${t('so.orgDetails')}</div>`;
+  html += `<div class="form-group"><label class="form-label">${t('so.orgTitle')}</label><input class="form-input" id="eo-title" value="${o.title}" aria-required="true"></div>`;
+  html += `<div class="form-group"><label class="form-label">${t('so.orgDescription')}</label><textarea class="form-input" id="eo-details" rows="3" style="min-height:70px;">${o.details||''}</textarea></div>`;
+  if (canEditTier) {
+    html += `<div class="form-group"><label class="form-label">${t('so.orgSubscription')}</label><select class="form-select" id="eo-tier"><option value="basic" ${o.subscriptionTier==='basic'?'selected':''}>Basic</option><option value="plus" ${o.subscriptionTier==='plus'?'selected':''}>Plus</option><option value="pro" ${o.subscriptionTier==='pro'?'selected':''}>Pro</option></select></div>`;
+  } else {
+    html += `<div class="form-group"><label class="form-label">${t('so.orgSubscription')}</label><div class="form-readonly">${tierBadge(o.subscriptionTier)}</div></div>`;
+  }
+  html += '</div>';
+  html += `<div class="so-section"><div class="so-section-title">${t('so.orgSummary')}</div>`;
+  html += `<div class="form-group"><label class="form-label">${t('col.team')}</label><div class="form-readonly">${tc} st</div></div>`;
+  html += `<div class="form-group"><label class="form-label">${t('col.users')}</label><div class="form-readonly">${uc} st</div></div>`;
+  html += '</div>';
+  $('so-org-body').innerHTML = html;
+  $('so-org-footer').innerHTML = `<button class="btn btn--hi" id="eo-save">${t('btn.save')}</button><button class="btn btn--outline" data-close>${t('btn.cancel')}</button>`;
+  $('so-org-footer').querySelector('[data-close]').onclick = tryCloseSlideOver;
+  const canDelete = S.role === 'super-admin' && tc === 0 && uc === 0;
+  $('so-org-danger').innerHTML = `<button class="btn btn--danger" id="eo-delete" ${canDelete?'':`disabled title="${t('lbl.cantDeleteHasData')}"`}>${t('so.deleteOrg')}</button>`;
+  $('so-org-danger').style.display = S.role === 'super-admin' ? '' : 'none';
+  openSlideOver('so-org');
+
+  $('eo-save').onclick = () => {
+    o.title = $('eo-title').value.trim();
+    o.details = $('eo-details').value.trim();
+    const tierEl = $('eo-tier');
+    if (tierEl) o.subscriptionTier = tierEl.value;
+    closeSlideOver(); renderOrgs(); renderOrgSelector(); showToast(t('toast.orgUpdated'));
+  };
+  const delBtn = $('eo-delete');
+  if (delBtn && !delBtn.disabled) {
+    delBtn.onclick = () => {
+      showConfirm(t('confirm.deleteOrgTitle'), t('confirm.deleteOrgText', {name:o.title}), t('confirm.deleteOrgBtn'), () => {
+        DB.organizations = DB.organizations.filter(x => x.id !== o.id);
+        closeSlideOver(); renderOrgs(); renderOrgSelector(); showToast(t('toast.orgDeleted'));
+      });
+    };
+  }
+}
+
+function openCreateOrgSlideOver() {
+  $('so-org-title').textContent = t('btn.createOrg');
+  let html = `<div class="so-section"><div class="so-section-title">${t('so.orgDetails')}</div>`;
+  html += `<div class="form-group"><label class="form-label">${t('so.orgTitle')}</label><input class="form-input" id="eo-title" value="" aria-required="true"></div>`;
+  html += `<div class="form-group"><label class="form-label">${t('so.orgDescription')}</label><textarea class="form-input" id="eo-details" rows="3" style="min-height:70px;"></textarea></div>`;
+  html += `<div class="form-group"><label class="form-label">${t('so.orgSubscription')}</label><select class="form-select" id="eo-tier"><option value="basic" selected>Basic</option><option value="plus">Plus</option><option value="pro">Pro</option></select></div>`;
+  html += '</div>';
+  $('so-org-body').innerHTML = html;
+  $('so-org-footer').innerHTML = `<button class="btn btn--hi" id="eo-save">${t('btn.createOrg')}</button><button class="btn btn--outline" data-close>${t('btn.cancel')}</button>`;
+  $('so-org-footer').querySelector('[data-close]').onclick = tryCloseSlideOver;
+  $('so-org-danger').style.display = 'none';
+  openSlideOver('so-org');
+
+  $('eo-save').onclick = () => {
+    const title = $('eo-title').value.trim();
+    if (!title) { showToast(t('toast.enterTeamName')); return; }
+    const newOrg = {
+      id: 'org_' + Math.random().toString(36).slice(2, 7),
+      title,
+      details: $('eo-details').value.trim(),
+      subscriptionTier: $('eo-tier').value,
+    };
+    DB.organizations.push(newOrg);
+    DB.customizations.push(
+      { orgId: newOrg.id, category: 'agenda', key: 'agenda.title', defaultLabel: 'Agenda', customLabel: '' },
+      { orgId: newOrg.id, category: 'sections', key: 'section.goals', defaultLabel: 'Mål & Mätetal', customLabel: '' },
+      { orgId: newOrg.id, category: 'sections', key: 'section.actions', defaultLabel: 'Handlingsplan', customLabel: '' },
+      { orgId: newOrg.id, category: 'modules', key: 'module.ideas', defaultLabel: 'Idéer', customLabel: '' },
+      { orgId: newOrg.id, category: 'ui', key: 'ui.saveButton', defaultLabel: 'Spara', customLabel: '' },
+      { orgId: newOrg.id, category: 'nav', key: 'nav.dashboard', defaultLabel: 'Dashboard', customLabel: '' },
+    );
+    closeSlideOver(); renderOrgs(); renderOrgSelector(); showToast(t('toast.orgCreated'));
+  };
+}
+
+// ============================================================
+// 16. CUSTOMIZATION TAB
+// ============================================================
+function renderCustomization() {
+  const sel = $('custom-org-select');
+  const orgs = visibleOrgs();
+  sel.innerHTML = orgs.map(o => `<option value="${o.id}">${o.title}</option>`).join('');
+  if (!sel.value && orgs.length) sel.value = orgs[0].id;
+  const orgId = sel.value;
+  const items = DB.customizations.filter(c => c.orgId === orgId);
+
+  // Group by category
+  const catOrder = ['agenda','sections','modules','ui','nav'];
+  let html = `<table class="custom-table"><thead><tr><th>${t('col.key')}</th><th>${t('col.defaultLabel')}</th><th>${t('col.customLabel')}</th></tr></thead><tbody>`;
+  let globalIdx = 0;
+  catOrder.forEach(cat => {
+    const catItems = items.filter(i => i.category === cat);
+    if (catItems.length === 0) return;
+    const catLabel = CUSTOM_CATEGORIES[cat] ? CUSTOM_CATEGORIES[cat][currentLang] || CUSTOM_CATEGORIES[cat]['sv'] : cat;
+    html += `<tr class="custom-cat-header"><td colspan="3">${catLabel}</td></tr>`;
+    catItems.forEach(item => {
+      html += `<tr><td style="font-family:monospace;font-size:12px;">${item.key}</td><td>${item.defaultLabel}</td><td><input value="${item.customLabel||''}" data-custom-idx="${globalIdx}" placeholder="${t('custom.placeholder')}"></td></tr>`;
+      globalIdx++;
+    });
+  });
+  html += '</tbody></table>';
+  html += `<div style="margin-top:var(--lg);"><button class="btn btn--hi" id="btn-save-custom">${t('btn.saveCustom')}</button></div>`;
+  $('custom-table-wrap').innerHTML = html;
+}
+
+$('custom-org-select').addEventListener('change', renderCustomization);
+
+document.addEventListener('click', e => {
+  if (e.target.matches('#btn-save-custom')) {
+    const orgId = $('custom-org-select').value;
+    const items = DB.customizations.filter(c => c.orgId === orgId);
+    document.querySelectorAll('[data-custom-idx]').forEach(input => {
+      const idx = parseInt(input.dataset.customIdx);
+      if (items[idx]) items[idx].customLabel = input.value.trim();
+    });
+    showToast(t('toast.customSaved'));
+  }
+});
+
+// ============================================================
+// 17. RENDER ALL
+// ============================================================
+function renderAll() {
+  renderTabs();
+  renderOrgSelector();
+  renderFilters();
+  renderUsers();
+  renderTeams();
+  renderOrgs();
+  renderCustomization();
+}
+
+// ============================================================
+// 18. INIT
+// ============================================================
+updateStaticText();
+setRole(S.role);
+</script>
+</body>
+</html>

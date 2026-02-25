@@ -63,7 +63,7 @@ Allt användargränssnitt ska vara på **svenska**. Undantag: tekniska termer so
 
 ## 3. Självständiga filer
 
-Varje HTML-prototyp ska vara en **fristående fil** med inline CSS och JS. Inga externa beroenden förutom Google Fonts (om tillämpligt).
+Varje HTML-prototyp ska vara **fristående** utan externa CDN-beroenden förutom Google Fonts (om tillämpligt). Lokala JS-filer i samma prototypkatalog är tillåtna för struktur och underhållbarhet (t.ex. översättningsfiler, mock-data).
 
 # Baskrav för systemet
 

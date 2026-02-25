@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard v5 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); padding-bottom: 64px;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- TOP NAV --- */
+.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--hi); padding: 0 var(--lg); }
+.top-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; }
+.top-nav__logo { display: flex; align-items: center; gap: var(--sm); padding: var(--md) var(--lg) var(--md) 0; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; white-space: nowrap; border-right: 2px solid #333; margin-right: var(--sm); }
+.top-nav__link { display: flex; align-items: center; gap: var(--xs); padding: 0 var(--md); color: #ccc; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; transition: color .15s, border-color .15s; }
+.top-nav__link:hover { color: #fff; }
+.top-nav__link--active { color: var(--hi); border-bottom-color: var(--hi); }
+.top-nav__spacer { flex: 1; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: 0 var(--md); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- NAV SELECTORS (org + team in topnav) --- */
+.nav-selector { display: flex; align-items: center; padding: 0 var(--sm); }
+.nav-selector select { background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.nav-selector select:focus { outline: 2px solid var(--hi); }
+.nav-selector__label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-right: var(--xs); white-space: nowrap; }
+
+/* --- SUB NAV --- */
+.sub-nav { background: var(--bg); border-bottom: 2px solid var(--border-strong); padding: 0 var(--lg); }
+.sub-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; gap: 0; overflow-x: auto; }
+.sub-nav__link { display: flex; align-items: center; padding: var(--sm) var(--md); color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color .15s, border-color .15s; }
+.sub-nav__link:hover { color: var(--text); }
+.sub-nav__link--active { color: var(--text); font-weight: 900; border-bottom-color: var(--hi); background: var(--hi-soft); }
+.sub-nav__divider { width: 1px; background: var(--border); margin: 8px 4px; }
+.sub-nav__mobile { display: none; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); }
+
+/* --- HERO --- */
+.hero { padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+.hero__welcome { display: flex; align-items: center; gap: var(--md); font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; flex-wrap: wrap; }
+
+/* --- BADGES --- */
+.badge { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
+.badge--super { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.badge--integ { background: #e0e0ff; color: #3030a0; border-color: #3030a0; }
+.badge--admin { background: var(--accent); color: var(--accent-inv); border-color: var(--accent); }
+.badge--leader { background: var(--hi-soft); color: var(--text); border-color: var(--hi); }
+.badge--user { background: var(--bg-alt); color: var(--text-muted); border-color: var(--border); }
+
+/* --- STAT CARDS --- */
+.stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sm); margin-bottom: var(--xl); }
+.stat-card { display: flex; align-items: center; gap: var(--md); border: 2px solid var(--border-strong); padding: var(--sm) var(--md); transition: box-shadow .15s, transform .15s; text-decoration: none; color: var(--text); cursor: pointer; }
+.stat-card:hover { box-shadow: 4px 4px 0 var(--hi); transform: translate(-2px, -2px); }
+.stat-card__value { font-size: 24px; font-weight: 900; line-height: 1; white-space: nowrap; }
+.stat-card__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); white-space: nowrap; }
+.stat-card--ok { border-left: 5px solid var(--ok); }
+.stat-card--warn { border-left: 5px solid var(--warn); }
+.stat-card--err { border-left: 5px solid var(--err); }
+.stat-card--hi { border-left: 5px solid var(--hi); }
+
+/* --- SECTION --- */
+.section { margin-bottom: var(--xl); }
+.section__header { display: flex; align-items: center; justify-content: space-between; padding-bottom: var(--md); border-bottom: 3px solid var(--border-strong); margin-bottom: var(--md); }
+.section__title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.section__title a { color: var(--text); text-decoration: none; transition: color .15s; }
+.section__title a:hover { color: var(--hi); }
+
+/* --- TABLE --- */
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border: 2px solid var(--border-strong); padding: var(--sm) var(--md); text-align: left; vertical-align: middle; }
+.data-table thead th { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+.data-table tbody tr { transition: background .1s; }
+.data-table tbody tr:hover { background: var(--hi-soft); }
+
+/* --- STATUS BADGES --- */
+.status { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; }
+.status--not_started { background: var(--bg-alt); color: var(--text-muted); border-color: var(--border); }
+.status--in_progress { background: var(--hi-soft); color: var(--bg-dark); border-color: var(--hi); }
+.status--overdue { background: #fff1f0; color: #a8071a; border-color: var(--err); }
+.status--done { background: #e6f7ee; color: #006d36; border-color: var(--ok); }
+
+/* --- TEXT PREVIEW --- */
+.text-preview { display: grid; grid-template-columns: 1fr 1fr; gap: var(--lg); }
+.text-preview__block { border: 2px solid var(--border); padding: var(--lg); }
+.text-preview__label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: var(--sm); }
+.text-preview__text { font-size: 13px; line-height: 1.6; color: var(--text); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* --- SPARKLINE CHART --- */
+.spark { border: 2px solid var(--border-strong); padding: var(--md) var(--lg); }
+.spark__legend { display: flex; flex-wrap: wrap; gap: var(--md); margin-bottom: var(--md); }
+.spark__legend-item { display: flex; align-items: center; gap: var(--xs); font-size: 11px; font-weight: 700; }
+.spark__swatch { width: 12px; height: 3px; }
+.spark__svg { width: 100%; height: 150px; }
+.spark__x-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: var(--xs); }
+
+/* --- TIMELINE --- */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.timeline__item { display: flex; gap: var(--md); padding: var(--md) 0; border-bottom: 1px solid var(--border); }
+.timeline__item:last-child { border-bottom: none; }
+.timeline__date { min-width: 80px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); padding-top: 2px; }
+.timeline__text { font-size: 13px; line-height: 1.5; }
+
+/* --- NEWS --- */
+.news-card { border: 2px solid var(--border-strong); padding: var(--md) var(--lg); margin-bottom: var(--sm); }
+.news-card__date { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+.news-card__title { font-size: 14px; font-weight: 900; margin: var(--xs) 0; }
+.news-card__text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .sub-nav__inner { display: none; }
+  .sub-nav__mobile { display: block; }
+}
+@media (max-width: 900px) {
+  .stat-cards { grid-template-columns: repeat(2, 1fr); }
+  .text-preview { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .stat-cards { grid-template-columns: 1fr; }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="top-nav" aria-label="Huvudnavigering">
+  <div class="top-nav__inner">
+    <a href="#" class="top-nav__logo">ITT</a>
+    <div class="nav-selector" id="org-selector-wrap">
+      <span class="nav-selector__label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="nav-selector" id="team-selector-wrap">
+      <span class="nav-selector__label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+    <a href="#" class="top-nav__link top-nav__link--active" aria-current="page" id="nav-dashboard">Dashboard</a>
+    <a href="agenda.html" class="top-nav__link" id="nav-agenda">Agenda</a>
+    <a href="admin.html" class="top-nav__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="top-nav__spacer"></div>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== SUB NAV ===== -->
+<nav class="sub-nav" aria-label="Modulnavigering">
+  <div class="sub-nav__inner" id="sub-nav-inner"></div>
+  <select class="sub-nav__mobile" id="sub-nav-mobile" aria-label="Välj modul"></select>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1 class="hero__welcome" id="hero-welcome">Välkommen tillbaka, Håkan <span id="hero-role"></span></h1>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stat-cards" id="stat-cards">
+    <a href="attendance.html" class="stat-card" id="card-meetings">
+      <div class="stat-card__value" id="stat-meetings">12</div>
+      <div class="stat-card__label" id="stat-meetings-label">Min närvaro</div>
+    </a>
+    <a href="action-plan.html" class="stat-card" id="card-done">
+      <div class="stat-card__value" id="stat-done">8</div>
+      <div class="stat-card__label" id="stat-done-label">Åtgärder slutförda</div>
+    </a>
+    <a href="action-plan.html" class="stat-card" id="card-ongoing">
+      <div class="stat-card__value" id="stat-ongoing">3</div>
+      <div class="stat-card__label" id="stat-ongoing-label">Pågående åtgärder</div>
+    </a>
+    <a href="goals-metrics.html" class="stat-card" id="card-progress">
+      <div class="stat-card__value" id="stat-progress">74%</div>
+      <div class="stat-card__label" id="stat-progress-label">Teamframsteg</div>
+    </a>
+  </div>
+
+  <!-- MY ACTIONS -->
+  <div class="section" id="section-actions">
+    <div class="section__header">
+      <h2 class="section__title"><a href="action-plan.html" id="title-my-actions">Mina åtgärder</a></h2>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="actions-table">
+        <thead>
+          <tr>
+            <th id="col-action">Åtgärd</th>
+            <th id="col-deadline">Deadline</th>
+            <th id="col-status">Status</th>
+            <th id="col-bc">Bästa bidrag</th>
+          </tr>
+        </thead>
+        <tbody id="actions-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DESIRED STATE PREVIEW -->
+  <div class="section" id="section-desired">
+    <div class="section__header">
+      <h2 class="section__title"><a href="desired-state.html" id="title-desired">Önskat läge</a></h2>
+    </div>
+    <div class="text-preview" id="desired-preview"></div>
+  </div>
+
+  <!-- GOALS & METRICS MINI CHART -->
+  <div class="section" id="section-goals">
+    <div class="section__header">
+      <h2 class="section__title"><a href="goals-metrics.html" id="title-goals">Mål &amp; Mätetal</a></h2>
+    </div>
+    <div class="spark" id="goals-chart"></div>
+  </div>
+
+  <!-- RECENT ACTIVITY -->
+  <div class="section" id="section-activity">
+    <div class="section__header">
+      <h2 class="section__title" id="title-activity">Senaste aktivitet</h2>
+    </div>
+    <div class="timeline" id="activity-timeline"></div>
+  </div>
+
+  <!-- NEWS -->
+  <div class="section" id="section-news">
+    <div class="section__header">
+      <h2 class="section__title"><a href="newsflash.html" id="title-news">Nyhetsflash</a></h2>
+    </div>
+    <div id="news-list"></div>
+  </div>
+
+
+</main>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  updateStaticText();
+  renderAll();
+}
+
+// Language switcher events
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+
+// ============================================================
+// 1. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  teamId: localStorage.getItem('itt-team') || 'alpha',
+};
+
+const ROLE_HIERARCHY = ['user','team-leader','org-admin','integ-admin','super-admin'];
+const ROLE_NAMES = {
+  'super-admin': 'role.superAdmin',
+  'integ-admin': 'role.integAdmin',
+  'org-admin': 'role.orgAdmin',
+  'team-leader': 'role.teamLeader',
+  'user': 'role.user',
+};
+
+
+// ============================================================
+// 2. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const userById = id => DB.users.find(u => u.id === id);
+const teamById = id => DB.teams.find(t => t.id === id);
+const actor = () => ACTORS[S.role];
+const actorUser = () => userById(actor().userId);
+const fullName = u => `${u.firstName} ${u.lastName}`;
+
+function roleBadgeClass(role) {
+  if (role === 'super-admin') return 'badge--super';
+  if (role === 'integ-admin') return 'badge--integ';
+  if (role === 'org-admin') return 'badge--admin';
+  if (role === 'team-leader') return 'badge--leader';
+  return 'badge--user';
+}
+
+function statusLabel(status) {
+  const map = { not_started: 'ap.notStarted', in_progress: 'ap.inProgress', overdue: 'ap.overdue', done: 'ap.done' };
+  return t(map[status] || status);
+}
+
+function bcTitleById(bcId) {
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  return bc ? bc.title : '';
+}
+
+function toast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function orgsForActor() {
+  const a = actor();
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function teamsForActor() {
+  const a = actor();
+  const u = actorUser();
+  // Super-admin, integ-admin, org-admin: filter by selected org
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  // Team-leader sees their teams
+  if (S.role === 'team-leader') {
+    if (a.teams) return DB.teams.filter(t => a.teams.includes(t.id));
+    return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+  }
+  // User sees teams they are member of
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+
+// ============================================================
+// 3. ORG + TEAM SELECTORS
+// ============================================================
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  // Hide if not high enough role or only 1 org
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  // Ensure valid orgId
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  // Reset team when org changes
+  const teams = teamsForActor();
+  if (teams.length > 0) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+  renderAll();
+});
+
+function renderTeamSelector() {
+  const teams = teamsForActor();
+  const sel = $('team-select');
+  const wrap = $('team-selector-wrap');
+
+  // Hide selector if only 1 team
+  if (teams.length <= 1) {
+    wrap.style.display = 'none';
+    if (teams.length === 1) S.teamId = teams[0].id;
+  } else {
+    wrap.style.display = '';
+    sel.innerHTML = teams.map(t =>
+      `<option value="${t.id}" ${t.id === S.teamId ? 'selected' : ''}>${t.title}</option>`
+    ).join('');
+  }
+
+  // Ensure valid team
+  if (!teams.find(t => t.id === S.teamId) && teams.length > 0) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+}
+
+$('team-select').addEventListener('change', e => {
+  S.teamId = e.target.value;
+  localStorage.setItem('itt-team', S.teamId);
+  renderAll();
+});
+
+
+// ============================================================
+// 3b. SUB-NAV
+// ============================================================
+const MODULES = [
+  { key: 'strategic',     file: 'strategic.html',     section: 1, shortKey: 'mod.short.strategic',    fullKey: 'mod.strategic' },
+  { key: 'newsflash',     file: 'newsflash.html',     section: 1, shortKey: 'mod.short.newsflash',    fullKey: 'mod.newsflash' },
+  { key: 'desiredState',  file: 'desired-state.html', section: 2, shortKey: 'mod.short.desiredState', fullKey: 'mod.desiredState' },
+  { key: 'goalsMetrics',  file: 'goals-metrics.html', section: 2, shortKey: 'mod.short.goalsMetrics', fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan',    file: 'action-plan.html',   section: 3, shortKey: 'mod.short.actionPlan',   fullKey: 'mod.actionPlan' },
+  { key: 'documents',     file: 'documents.html',     section: 3, shortKey: 'mod.short.documents',    fullKey: 'mod.documents' },
+  { key: 'ideas',         file: 'ideas.html',         section: 3, shortKey: 'mod.short.ideas',        fullKey: 'mod.ideas' },
+  { key: 'attendance',    file: 'attendance.html',     section: 4, shortKey: 'mod.short.attendance',   fullKey: 'mod.attendance' },
+  { key: 'reflections',   file: 'reflections.html',   section: 4, shortKey: 'mod.short.reflections',  fullKey: 'mod.reflections' },
+];
+
+const SECTION_LABELS = {
+  1: { sv: '1. Vart är vi på väg?', en: '1. Where are we headed?' },
+  2: { sv: '2. Vad siktar vi på?', en: '2. What are we aiming for?' },
+  3: { sv: '3. Tar vi steg framåt?', en: '3. Are we taking steps?' },
+  4: { sv: '4. Lär vi oss?', en: '4. Are we learning?' },
+};
+
+function getVisibleModules() {
+  const stored = localStorage.getItem('itt-agenda-visibility-' + S.teamId);
+  if (stored) {
+    try { const vis = JSON.parse(stored); return MODULES.filter(m => vis[m.key] !== false); } catch(e) {}
+  }
+  return MODULES;
+}
+
+function renderSubNav() {
+  const mods = getVisibleModules();
+  let lastSection = 0;
+  let desktopHtml = '';
+  mods.forEach(m => {
+    if (m.section !== lastSection && lastSection !== 0) desktopHtml += '<div class="sub-nav__divider"></div>';
+    lastSection = m.section;
+    desktopHtml += `<a href="${m.file}" class="sub-nav__link">${t(m.shortKey)}</a>`;
+  });
+  $('sub-nav-inner').innerHTML = desktopHtml;
+
+  let mobileHtml = '';
+  let currentSection = 0;
+  let optgroupOpen = false;
+  mods.forEach(m => {
+    if (m.section !== currentSection) {
+      if (optgroupOpen) mobileHtml += '</optgroup>';
+      const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
+      mobileHtml += `<optgroup label="${l}">`;
+      optgroupOpen = true;
+      currentSection = m.section;
+    }
+    mobileHtml += `<option value="${m.file}">${t(m.fullKey)}</option>`;
+  });
+  if (optgroupOpen) mobileHtml += '</optgroup>';
+  $('sub-nav-mobile').innerHTML = mobileHtml;
+}
+
+$('sub-nav-mobile').addEventListener('change', e => { window.location.href = e.target.value; });
+
+
+// ============================================================
+// 4. RENDER FUNCTIONS
+// ============================================================
+
+function renderHero() {
+  const u = actorUser();
+  $('hero-welcome').childNodes[0].textContent = t('dash.welcome', { name: u.firstName }) + ' ';
+  $('hero-role').innerHTML = `<span class="badge ${roleBadgeClass(S.role)}">${t(ROLE_NAMES[S.role])}</span>`;
+}
+
+function renderStats() {
+  const u = actorUser();
+  const teamActions = WS.actions.filter(a => a.teamId === S.teamId);
+  const teamMeetings = WS.meetings.filter(m => m.teamId === S.teamId);
+
+  // Meetings attended by current user
+  const attended = teamMeetings.filter(m => m.attendees.includes(u.id)).length;
+  $('stat-meetings').textContent = attended;
+
+  // Actions done in team
+  const done = teamActions.filter(a => a.status === 'done').length;
+  $('stat-done').textContent = done;
+
+  // Team progress = tracked contributions average (currentValue / targetValue)
+  const tracked = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  let progress = 0;
+  if (tracked.length > 0) {
+    progress = Math.round(tracked.reduce((sum, tc) => sum + (tc.currentValue / tc.targetValue) * 100, 0) / tracked.length);
+  }
+  $('stat-progress').textContent = progress + '%';
+  $('card-progress').className = 'stat-card ' + (progress >= 70 ? 'stat-card--ok' : progress >= 40 ? 'stat-card--warn' : 'stat-card--err');
+
+  // Ongoing actions (in_progress)
+  const ongoing = teamActions.filter(a => a.status === 'in_progress').length;
+  $('stat-ongoing').textContent = ongoing;
+  $('card-ongoing').className = 'stat-card ' + (ongoing === 0 ? 'stat-card--ok' : 'stat-card--hi');
+
+  // Color for done
+  $('card-done').className = 'stat-card stat-card--ok';
+
+  // Color for meetings - warn if low attendance
+  const totalMeetings = teamMeetings.length;
+  const attendPct = totalMeetings > 0 ? attended / totalMeetings : 1;
+  $('card-meetings').className = 'stat-card ' + (attendPct >= 0.7 ? 'stat-card--ok' : attendPct >= 0.4 ? 'stat-card--warn' : 'stat-card--err');
+}
+
+function renderMyActions() {
+  const u = actorUser();
+  const now = new Date('2026-02-24');
+  const in14 = new Date(now); in14.setDate(in14.getDate() + 14);
+
+  // Filter: actions in this team where user is responsible or support, deadline within 14 days or overdue
+  const relevant = WS.actions.filter(a => {
+    if (a.teamId !== S.teamId) return false;
+    if (a.responsibleId !== u.id && a.supportId !== u.id) return false;
+    if (a.status === 'done') return false;
+    const dl = new Date(a.deadline);
+    return a.status === 'overdue' || dl <= in14;
+  });
+
+  // Sort: overdue first, then by deadline
+  relevant.sort((a, b) => {
+    if (a.status === 'overdue' && b.status !== 'overdue') return -1;
+    if (b.status === 'overdue' && a.status !== 'overdue') return 1;
+    return new Date(a.deadline) - new Date(b.deadline);
+  });
+
+  const rows = relevant.slice(0, 5);
+  const tbody = $('actions-tbody');
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:var(--xl);">Inga aktuella åtgärder</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(a => `
+    <tr style="cursor:pointer" onclick="window.location.href='action-plan.html'">
+      <td>${a.title}</td>
+      <td>${a.deadline}</td>
+      <td><span class="status status--${a.status}">${statusLabel(a.status)}</span></td>
+      <td>${bcTitleById(a.bcId)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderDesiredState() {
+  const tm = WS.textModules[S.teamId];
+  const container = $('desired-preview');
+
+  if (!tm) {
+    container.innerHTML = '<div style="color:var(--text-muted);">Ingen data tillgänglig</div>';
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="text-preview__block">
+      <div class="text-preview__label" id="lbl-current-state">${t('dash.currentState')}</div>
+      <div class="text-preview__text">${tm.currentState || '—'}</div>
+    </div>
+    <div class="text-preview__block">
+      <div class="text-preview__label" id="lbl-desired-state">${t('dash.desiredState')}</div>
+      <div class="text-preview__text">${tm.desiredState || '—'}</div>
+    </div>
+  `;
+}
+
+const SPARK_COLORS = ['#0a0a0a','#e6001a','#00a854','#fa8c16','#3030a0'];
+
+function renderGoalsChart() {
+  const tracked = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  const container = $('goals-chart');
+
+  if (tracked.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-muted);">Inga mätetal tillgängliga</div>';
+    return;
+  }
+
+  // Collect all dates & find value range
+  const allDates = [...new Set(tracked.flatMap(tc => tc.measurements.map(m => m.date)))].sort();
+  let maxVal = 0;
+  tracked.forEach(tc => tc.measurements.forEach(m => { if (m.value > maxVal) maxVal = m.value; }));
+  if (maxVal === 0) maxVal = 1;
+
+  const W = 500, H = 150, PAD = 4;
+
+  // Build SVG lines
+  let lines = '';
+  let dots = '';
+  tracked.forEach((tc, idx) => {
+    const color = SPARK_COLORS[idx % SPARK_COLORS.length];
+    const points = allDates.map((date, i) => {
+      const m = tc.measurements.find(m => m.date === date);
+      const val = m ? m.value : 0;
+      const x = PAD + (i / (allDates.length - 1)) * (W - PAD * 2);
+      const y = H - PAD - (val / maxVal) * (H - PAD * 2);
+      return { x, y, val };
+    });
+    const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+    lines += `<polyline points="${points.map(p => p.x+','+p.y).join(' ')}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    points.forEach(p => {
+      dots += `<circle cx="${p.x}" cy="${p.y}" r="3" fill="${color}"><title>${tc.title}: ${p.val} ${tc.unit}</title></circle>`;
+    });
+  });
+
+  // Legend
+  const legend = tracked.map((tc, idx) => {
+    const color = SPARK_COLORS[idx % SPARK_COLORS.length];
+    return `<span class="spark__legend-item"><span class="spark__swatch" style="background:${color}"></span>${tc.title}</span>`;
+  }).join('');
+
+  // X-axis labels
+  const xLabels = allDates.map(d => `<span>${d.substring(5)}</span>`).join('');
+
+  container.innerHTML = `
+    <div class="spark__legend">${legend}</div>
+    <svg class="spark__svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      ${lines}${dots}
+    </svg>
+    <div class="spark__x-labels">${xLabels}</div>
+  `;
+}
+
+function renderActivity() {
+  const entries = WS.activityLog.slice(0, 5);
+  const container = $('activity-timeline');
+
+  container.innerHTML = entries.map(e => `
+    <div class="timeline__item">
+      <div class="timeline__date">${e.date}</div>
+      <div class="timeline__text">${e.text}</div>
+    </div>
+  `).join('');
+}
+
+function renderNews() {
+  const news = WS.newsflashes.filter(n => n.teamId === S.teamId).slice(0, 3);
+  const container = $('news-list');
+  if (news.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-muted);padding:var(--md) 0;">Inga nyheter</div>';
+    return;
+  }
+  container.innerHTML = news.map(n => `
+    <div class="news-card">
+      <div class="news-card__date">${n.date}</div>
+      <div class="news-card__title">${n.title}</div>
+      <div class="news-card__text">${n.content}</div>
+    </div>
+  `).join('');
+}
+
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-dashboard').textContent = t('nav.dashboard');
+  $('nav-agenda').textContent = t('nav.agenda');
+  $('nav-admin').textContent = t('nav.admin');
+  $('stat-meetings-label').textContent = t('dash.statMeetings');
+  $('stat-done-label').textContent = t('dash.statActionsDone');
+  $('stat-progress-label').textContent = t('dash.statProgress');
+  $('stat-ongoing-label').textContent = t('dash.statOngoing');
+  $('title-my-actions').textContent = t('dash.myActions');
+  $('title-desired').textContent = t('dash.desiredState');
+  $('title-goals').textContent = t('dash.goalsPreview');
+  $('title-activity').textContent = t('dash.recentActivity');
+  $('col-action').textContent = t('ap.action');
+  $('col-deadline').textContent = t('ap.deadline');
+  $('col-status').textContent = t('lbl.status');
+  $('col-bc').textContent = t('ap.bcLabel');
+}
+
+
+// ============================================================
+// 5. RENDER ALL
+// ============================================================
+function renderAll() {
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSubNav();
+  renderHero();
+  renderStats();
+  renderMyActions();
+  renderDesiredState();
+  renderGoalsChart();
+  renderActivity();
+  renderNews();
+}
+
+
+// ============================================================
+// 6. ROLE SWITCHING
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  // Reset org to first available
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  // Reset team to first available
+  const teams = teamsForActor();
+  if (teams.length > 0 && !teams.find(t => t.id === S.teamId)) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+
+  updateStaticText();
+  renderAll();
+}
+
+// Role button click handlers
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+
+// ============================================================
+// 7. INIT
+// ============================================================
+(function init() {
+  // Restore role from localStorage
+  const saved = localStorage.getItem('itt-role');
+  if (saved && ACTORS[saved]) {
+    S.role = saved;
+  }
+  document.body.className = 'role-' + S.role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === S.role));
+
+  // Restore language
+  const savedLang = localStorage.getItem('itt-lang');
+  if (savedLang) {
+    currentLang = savedLang;
+    document.documentElement.lang = currentLang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === currentLang));
+  }
+
+  updateStaticText();
+  renderAll();
+})();
+</script>
+</body>
+</html>

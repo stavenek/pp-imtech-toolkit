@@ -13,6 +13,8 @@ Specifikation för administrationsdelen (nav Admin) i Integral Teamwork Toolkit.
 | 01 | `reqs/01-old-system-analysis.md` | Fullt inkorporerad | 2026-01 | Systemanalys av gamla Web Toolkit — domänmodell, roller, behörigheter, entiteter, affärsregler |
 | 02 | `reqs/02-gui-gap-analysis.md` | Fullt inkorporerad | 2026-02 | Sammanställning av Codex/Gemini/UX-granskningar — ett-klick-flöde, laddningstillstånd, paginering, ARIA, avvikelsesektion |
 | 03 | `reqs/03-admin-feedback-lasse.md` | Fullt inkorporerad | 2026-02-17 | Lasses feedback: 5 rollnivåer (inkl. Integ Customer Admin), anpassningsbar terminologi, abonnemangsstruktur, aktions-notifieringar, agenda-synlighet per möte |
+| 04 | `reqs/04-admi-feedback-lasse-19-feb.md` | Fullt inkorporerad | 2026-02-21 | Lasses feedback (9 punkter): hybrid Blaze Lynx-struktur + Sprint Falcon-stil, mini-nav-panel, dynamisk rollrubrik, språkväxling SV/EN, "Chattroll" → "Accessnivå", utökad Anpassa-sida, å/ä/ö-fix, admin-navigering |
+| 05 | `reqs/old/old-system/Web Toolkit Adminstrator Manual.docx` | Granskad, luckor inkorporerade | 2026-02-24 | Granskning av gamla admin-manualen — lagt till: gemensam org-väljare (2.3), org-kolumn i team-tabell (4.3), sök/filter och paginering på team-flik (4.3) |
 
 ### Originalkällor (i `reqs/old/`)
 
@@ -30,8 +32,14 @@ Specifikation för administrationsdelen (nav Admin) i Integral Teamwork Toolkit.
 | v2 | `prototypes/v2/claude-c-boldness/admin.html` | Claude-genererad — fullständig klickbar prototyp med slide-overs, filter, paginering |
 | v2 | `prototypes/v2/codex-c-boldness/index.html` | Codex-genererad admin-prototyp |
 | v2 | `prototypes/v2/gemini-admin/index.html` | Gemini-genererad admin — **vald som design-riktning** (ren, översiktlig, lättarbetad) |
+| v3 | `prototypes/v3/sprint-falcon-b.html` | Sprint Falcon — skarp, hög kontrast, svarta tabellhuvuden, offset-skuggor |
+| v3 | `prototypes/v3/drift-otter-b.html` | Drift Otter — mjukare, rundade hörn, pill-badges |
+| v3 | `prototypes/v3/blaze-lynx-b.html` | Blaze Lynx — gul-accent, tab-pills, card-sektioner |
+| v4 | `prototypes/v4/admin.html` | **Hybrid**: Blaze Lynx-struktur + Sprint Falcon-stil. Språkväxling SV/EN, dynamisk rollrubrik, Accessnivå, mini-nav, utökad Anpassa-sida |
 
 **Design-beslut (från 03):** Geminis UI valdes som riktning för sin renhet och överskådlighet. Funktionalitet från Claude/Codex-prototyperna inkorporeras i Gemini-stilen.
+
+**Design-beslut (från 04):** v4 kombinerar Blaze Lynx-strukturen (logik, flikar, slide-overs) med Sprint Falcon-stilen (skarpa kanter, svarta tabellhuvuden, offset-skuggor). Nya features: språkväxling (SV/EN), dynamisk rollrubrik, "Accessnivå" istället för "Chattroll", mini-nav-panel, utökade anpassningsmöjligheter med kategorigruppering.
 
 ---
 
@@ -232,6 +240,21 @@ Horisontella tabs direkt under sidrubriken "ADMINISTRATION":
 └────────────┘ └──────────┘ └──────────────┘ └─────────────┘
 ```
 
+### 2.3 Gemensam organisationsväljare
+
+Organisationsväljaren är ett **sidnivå-element** som delas av flikarna Användare, Team och Organisation. Den placeras överst på admin-sidan, ovanför flikarna, och behåller sitt val vid flikbyte.
+
+| Roll | Organisationer i dropdown | Beteende |
+|---|---|---|
+| Super Admin | "Alla organisationer" (default) + alla organisationer i systemet | Dropdown alltid synlig |
+| Integ Admin | Sina organisationer (via UserOrganization). Om fler än en: dropdown. Om bara en: dold. | Dropdown eller dold |
+| Org Admin | Sina organisationer (via UserOrganization). Om fler än en: dropdown. Om bara en: dold. | Dropdown eller dold |
+| Team Leader | Dold (ser bara sina team direkt) | Dold |
+
+Om systemet har fler än 10 organisationer bör dropdownen vara sökbar (combobox-mönster).
+
+Vid "Alla organisationer" visas en extra kolumn "Organisation" i tabeller som listar objekt över flera organisationer (användare, team).
+
 #### Synlighet per roll
 
 | Flik | Super Admin | Integ Admin | Org Admin | Team Leader |
@@ -261,16 +284,7 @@ Horisontella tabs direkt under sidrubriken "ADMINISTRATION":
 
 ### 3.1 Organisationsväljare
 
-Överst på sidan finns en dropdown som filtrerar användarlistan till en specifik organisation.
-
-| Roll | Organisationer i dropdown |
-|---|---|
-| Super Admin | "Alla organisationer" (default) + alla organisationer i systemet |
-| Integ Admin | Sina organisationer (via UserOrganization). Om fler än en: dropdown. Om bara en: dold. |
-| Org Admin | Sina organisationer (via UserOrganization). Om fler än en: dropdown. Om bara en: dold. |
-| Team Leader | Dold (ser bara sina team direkt) |
-
-Vid "Alla organisationer" visas en extra kolumn "Organisation" i användartabellen. Om systemet har fler än 10 organisationer bör dropdownen vara sökbar (combobox-mönster).
+Använder den gemensamma organisationsväljaren (se 2.3). Filtrerar användarlistan till vald organisation.
 
 Filtret: `users WHERE organization = vald org` (eller alla om "Alla organisationer" är valt)
 
@@ -539,28 +553,56 @@ Stegbaserat flöde:
 | Org Admin | Ja | Alla team i sina organisationer |
 | Team Leader | Nej | — |
 
-### 4.2 Team-listan
+### 4.2 Organisationsväljare
+
+Använder den gemensamma organisationsväljaren (se 2.3). Filtrerar team-listan till vald organisation.
+
+Filtret: `teams WHERE organization = vald org` (eller alla om "Alla organisationer" är valt)
+
+### 4.3 Team-listan (tabell)
 
 ```
-┌─────────┬──────────┬──────────────┬───────┐
-│ TITEL   │ MEDLEMMAR│ TEAM LEADER  │ ÅTGÄRD│
-├─────────┼──────────┼──────────────┼───────┤
-│ Alpha   │ 8        │ Anna A.      │ ✏️ 🗑  │
-│ Beta    │ 5        │ Erik S.      │ ✏️ 🗑  │
-│ Gamma   │ 3        │ (ingen)      │ ✏️ 🗑  │
-└─────────┴──────────┴──────────────┴───────┘
+┌─────────┬──────────────┬──────────┬──────────────┬───────┐
+│ TITEL   │ ORGANISATION │ MEDLEMMAR│ TEAM LEADER  │ ÅTGÄRD│
+├─────────┼──────────────┼──────────┼──────────────┼───────┤
+│ Alpha   │ Företag AB   │ 8        │ Anna A.      │ ✏️ 🗑  │
+│ Beta    │ Företag AB   │ 5        │ Erik S.      │ ✏️ 🗑  │
+│ Gamma   │ Bolaget HB   │ 3        │ (ingen)      │ ✏️ 🗑  │
+└─────────┴──────────────┴──────────┴──────────────┴───────┘
 ```
 
-Kolumner:
+#### Kolumner
 
 | # | Kolumn | Sorterbar | Beskrivning |
 |---|---|---|---|
 | 1 | **Titel** | Ja | Teamnamn |
-| 2 | **Medlemmar** | Ja | Antal TeamMembership |
-| 3 | **Team Leader** | Nej | Namn på användare med teamRole=team_leader (kan vara flera) |
-| 4 | **Åtgärder** | Nej | Redigera / Radera |
+| 2 | **Organisation** | Ja | Organisationsnamn. **Visas enbart vid "Alla organisationer"** i org-väljaren (samma mönster som användartabellen, se 2.3). Dold när en specifik org är vald. |
+| 3 | **Medlemmar** | Ja | Antal TeamMembership |
+| 4 | **Team Leader** | Nej | Namn på användare med teamRole=team_leader (kan vara flera) |
+| 5 | **Åtgärder** | Nej | Redigera / Radera |
 
-### 4.3 Skapa team
+#### Sök och filter
+
+```
+┌───────────────────────────────────────────┐
+│ Sök teamnamn...                           │
+└───────────────────────────────────────────┘
+```
+
+- Sökfältet filtrerar på teamnamn med realtidsfiltrering (debounce 300ms)
+- Sökning återställer till sida 1
+
+#### Paginering
+
+```
+Visar 1–25 av 42 team    [< Föregående]  1  2  [Nästa >]
+```
+
+- Server-side paginering, 25 poster per sida
+- Visar alltid totalt antal
+- Döljs om totalt antal team ≤ 25
+
+### 4.4 Skapa team
 
 Knappen "+ SKAPA TEAM" ovanför listan. Öppnar slide-over.
 
@@ -571,7 +613,7 @@ Knappen "+ SKAPA TEAM" ovanför listan. Öppnar slide-over.
 
 Vid skapande: default-agenda med sektioner och moduler auto-genereras.
 
-### 4.4 Redigera team (slide-over)
+### 4.5 Redigera team (slide-over)
 
 ```
 ╔══════════════════════════════════╗
@@ -606,7 +648,7 @@ Från team-redigering kan man:
 - Lägga till befintlig användare (från samma org) via dropdown
 - Klicka på medlemsnamn → öppnar redigera-användare-panelen
 
-### 4.5 Radera team
+### 4.6 Radera team
 
 Kan bara raderas om teamet har 0 medlemmar.
 
@@ -989,3 +1031,62 @@ Denna specifikation är en **moderniserad målarkitektur**, inte en 1:1-kopia av
 | **Navigationsflöde** | Separat detalj-modal + redigerings-formulär | En slide-over-panel som är både detalj- och redigeringsvy | Färre klick, snabbare arbetsflöde |
 | **Anpassningsbar terminologi** | Inga anpassningsmöjligheter | Integ Admin kan anpassa etiketter per organisation | Kunder får terminologi som passar deras verksamhet (ref. krav 03) |
 | **Aktions-notifieringar** | Inga automatiska notifieringar | Team Leader kan aktivera auto-notifieringar per team | Snabbare spridning av åtgärder (ref. krav 03) |
+
+---
+
+## 16. Funktioner tillagda i v4 (krav 04)
+
+### 16.1 Språkväxling (SV/EN)
+
+- **Översättningssystem**: `TRANSLATIONS`-objekt med nycklar för alla UI-strängar, `sv` och `en`
+- **Hjälpfunktion**: `t(key, params)` med stöd för parametrar (`{name}`, `{count}`)
+- **Språkväxlare**: `[SV] [EN]` knappar i top-nav, synliga för `integ-admin`+ (`data-min-role="integ-admin"`)
+- **Persistens**: Sparas i `localStorage('itt-lang')`, default `sv`
+- **Separata filer**: Översättningar i `i18n-sv.js` och `i18n-en.js` — underlättar tillägg av nya språk
+- **Extensibilitet**: Nytt språk läggs till genom att skapa `i18n-XX.js` och lägga till en knapp
+
+### 16.2 Dynamisk rollrubrik
+
+- `<h1>` ändras från "Administration" till "Administration för [rollnamn]"
+- Uppdateras automatiskt vid rollbyte i debug-baren
+- Rollnamn anpassas till valt språk
+
+### 16.3 "Chattroll" → "Accessnivå"
+
+- Kolumnrubrik i användarlistan ändrad från "Chattroll" till "Accessnivå"
+- Sektionstitel i användar-slide-over ändrad till "Accessnivå"
+- Båda visas enbart för `integ-admin`+
+
+### 16.4 Mini-nav-panel
+
+- Liten fixed panel nere till höger (ovanför rollväljaren)
+- Visar sidnummer för aktuell paginering
+- Klick byter sida och scrollar upp
+- Synlig enbart för `org-admin`+ (`data-min-role="org-admin"`)
+- Döljs automatiskt när det bara finns 1 sida
+- Sprint Falcon-stil: svart bakgrund, 2px ram, offset-skugga
+
+### 16.5 Utökad Anpassa-sida
+
+- Fler anpassningsbara nycklar: UI-etiketter, navigering, knappar (utöver agenda/sektioner/moduler)
+- Grupperad tabell med kategori-rubriker: Agenda, Sektioner, Moduler, UI-etiketter, Navigering
+- Informationstext: "Alla rubriker och etiketter kan anpassas per organisation"
+
+### 16.6 Sprint Falcon-stil (visuella ändringar)
+
+- Alla `border-radius` → 0 (skarpa kanter)
+- Knappar: offset-skugga `4px 4px 0 var(--hi)` vid hover
+- Formulärfält: `border: 2px solid var(--border-strong); background: var(--bg-alt)`, focus via outline
+- Admin-tabs: underline-stil med `border-bottom: 3px solid`
+- Tabell-headers: `background: var(--accent); color: var(--accent-inv)` (svart)
+- Tabellceller: `border: 2px solid var(--border-strong)` (full grid)
+- Badges: `border: 2px solid`, ingen rundning
+- Paginering: ihopsatta knappar, `margin-left: -2px`
+- Slide-over: `border-left: 3px solid`, ingen skugga/rundning
+- Overlay: ingen blur, opacity 0.5
+- Dialoger/toasts: Sprint Falcon-mönster med offset-skugga
+
+### 16.7 Korrigeringar
+
+- Å, ä, ö: `'Hakan'` → `'Håkan'`, `'Nils Aberg'` → `'Nils Åberg'`, `'Smaland'` → `'Småland'`, `'Mal & Mätetal'` → `'Mål & Mätetal'`, `'Atgärdslista'` → `'Åtgärdslista'`
+- Konsekvent användning av svenska tecken i alla bekräftelsemeddelanden (`ångras`, `åtkomst`, `måste`, `Åtgärder`)
