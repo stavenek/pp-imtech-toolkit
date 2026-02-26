@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handlingsplan v6:4 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+  --sidebar-w: 240px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); display: flex; min-height: 100vh;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- SIDEBAR --- */
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--sm) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: var(--sm) var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
+.sidebar__section-label { padding: var(--md) var(--lg) var(--xs); color: #888; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- PAGE WRAP --- */
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); padding-bottom: 80px; }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0 var(--md); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; border-style: dashed; }
+
+/* --- FORMS --- */
+.form-group { margin-bottom: var(--md); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--xs); display: block; }
+.form-input, .form-select { width: 100%; padding: var(--sm) var(--md); border: 2px solid var(--border-strong); background: var(--bg-alt); color: var(--text); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-input:focus, .form-select:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%230a0a0a' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+/* --- BADGES --- */
+.badge { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
+.badge--not-started { background: #e8e8e8; color: #555; border-color: #999; }
+.badge--in-progress { background: #ffcc00; color: #000; border-color: #0a0a0a; }
+.badge--overdue { background: #fff1f0; color: #a8071a; border-color: var(--err); }
+.badge--done { background: #e6f7ee; color: #006d36; border-color: var(--ok); }
+
+/* --- VARIANT SWITCHER --- */
+.variant-switcher { display: flex; align-items: center; gap: var(--sm); margin-bottom: var(--lg); flex-wrap: wrap; }
+.variant-switcher__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-right: var(--sm); }
+.variant-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 var(--sm); border: 2px solid var(--border-strong); background: transparent; color: var(--text); font-family: inherit; font-size: 11px; font-weight: 900; text-decoration: none; cursor: pointer; transition: background .15s, color .15s; }
+.variant-pill:hover { background: var(--bg-alt); }
+.variant-pill--active { background: var(--hi); color: var(--bg-dark); pointer-events: none; }
+
+/* --- STICKY FILTER BAR --- */
+.filter-bar { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: var(--sm) 0; margin-bottom: var(--lg); display: flex; flex-wrap: wrap; align-items: center; gap: var(--sm); }
+.filter-bar__search { padding: 6px 10px 6px 28px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: inherit; font-size: 13px; min-width: 180px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='6' cy='6' r='4'/%3E%3Cpath d='M9 9l3.5 3.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 8px center; }
+.filter-bar__search:focus { outline: 2px solid var(--hi); border-color: var(--hi); }
+.filter-bar__select { padding: 6px 28px 6px 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: inherit; font-size: 13px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; cursor: pointer; }
+.status-dots { display: flex; align-items: center; gap: 6px; }
+.status-dot-btn { width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform .15s, opacity .15s; }
+.status-dot-btn:hover { transform: scale(1.2); }
+.status-dot-btn--inactive { opacity: 0.3; }
+.status-dot-btn--not_started { background: #999; }
+.status-dot-btn--in_progress { background: #e6ac00; }
+.status-dot-btn--overdue { background: #e6001a; }
+.status-dot-btn--done { background: #00a854; }
+.filter-bar__new-bc { padding: 6px 12px; border: 2px solid var(--border-strong); background: var(--hi); color: var(--bg-dark); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; margin-left: auto; }
+.filter-bar__new-bc:hover { box-shadow: 2px 2px 0 var(--border-strong); }
+
+/* --- BC SECTION --- */
+.bc-section { margin-bottom: var(--2xl); }
+.bc-heading { display: flex; align-items: center; gap: var(--md); padding-bottom: var(--sm); border-bottom: 2px solid var(--border-strong); margin-bottom: var(--md); position: relative; }
+.bc-heading__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; flex-shrink: 1; min-width: 0; }
+.bc-heading__title:hover { color: var(--accent-hover); }
+.bc-heading__pct { display: inline-block; padding: 2px 8px; background: var(--hi); font-size: 11px; font-weight: 900; white-space: nowrap; flex-shrink: 0; }
+.bc-heading__actions { display: flex; gap: var(--xs); margin-left: auto; opacity: 0; transition: opacity .15s; flex-shrink: 0; }
+.bc-section:hover .bc-heading__actions { opacity: 1; }
+.bc-heading__btn { background: none; border: 1px solid var(--border); padding: 2px 8px; font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; color: var(--text-muted); white-space: nowrap; }
+.bc-heading__btn:hover { background: var(--bg-alt); color: var(--text); }
+.bc-heading__btn--delete { color: var(--err); }
+.bc-heading__btn--delete:hover { background: #fff1f0; }
+
+/* --- AOI LABEL --- */
+.aoi-group { margin-bottom: var(--md); }
+.aoi-label-row { display: flex; align-items: center; gap: var(--sm); margin-top: var(--md); margin-bottom: var(--sm); }
+.aoi-label-row:first-child { margin-top: 0; }
+.aoi-label__text { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #666; cursor: pointer; }
+.aoi-label__text:hover { color: var(--text); }
+.aoi-label__actions { display: flex; gap: var(--xs); opacity: 0; transition: opacity .15s; }
+.aoi-group:hover .aoi-label__actions { opacity: 1; }
+.aoi-label__btn { background: none; border: 1px solid var(--border); padding: 1px 6px; font-family: inherit; font-size: 10px; font-weight: 700; cursor: pointer; color: var(--text-muted); white-space: nowrap; }
+.aoi-label__btn:hover { background: var(--bg-alt); color: var(--text); }
+.aoi-label__btn--delete { color: var(--err); }
+.aoi-label__btn--delete:hover { background: #fff1f0; }
+
+/* --- CLEAN TABLE --- */
+.clean-table { width: 100%; border-collapse: collapse; }
+.clean-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); text-align: left; padding: 4px var(--sm); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; white-space: nowrap; }
+.clean-table th:hover { color: var(--text); }
+.clean-table th .sort-indicator { font-size: 9px; margin-left: 2px; }
+.clean-table td { padding: var(--sm); border-bottom: 1px solid var(--border); vertical-align: middle; }
+.clean-table tbody tr { transition: background .1s; }
+.clean-table tbody tr:hover { background: var(--hi-soft); }
+.clean-table .col-status { width: 30px; text-align: center; }
+.clean-table .col-action { min-width: 180px; }
+.clean-table .col-person { white-space: nowrap; }
+.clean-table .col-deadline { white-space: nowrap; }
+.clean-table .col-delete { width: 30px; text-align: center; }
+
+/* --- STATUS DOT --- */
+.status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; cursor: pointer; transition: transform .15s; }
+.status-dot:hover { transform: scale(1.3); }
+.status-dot--not_started { background: #999; }
+.status-dot--in_progress { background: #e6ac00; }
+.status-dot--overdue { background: #e6001a; }
+.status-dot--done { background: #00a854; }
+
+/* --- INLINE EDITING --- */
+.inline-edit { background: none; border: none; border-bottom: 1px dashed transparent; font-family: inherit; font-size: inherit; font-weight: inherit; color: inherit; padding: 0; cursor: text; outline: none; width: 100%; }
+.inline-edit:hover { border-bottom-color: var(--border); }
+.inline-edit:focus { border-bottom-color: var(--hi); background: var(--hi-soft); }
+.inline-edit--select { appearance: none; cursor: pointer; padding-right: 12px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M1 2l3 3 3-3' stroke='%23999' stroke-width='1' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0 center; }
+.inline-edit--date { cursor: pointer; }
+
+/* --- ADD ACTION ROW --- */
+.add-action-row { cursor: pointer; }
+.add-action-row td { border-bottom: 1px dashed var(--border); color: var(--text-muted); font-size: 12px; padding: var(--sm); }
+.add-action-row:hover td { background: var(--hi-soft); color: var(--text); }
+
+/* --- ROW DELETE --- */
+.row-delete-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 14px; opacity: 0; transition: opacity .15s, color .15s; padding: 2px; }
+.clean-table tbody tr:hover .row-delete-btn { opacity: 1; }
+.row-delete-btn:hover { color: var(--err); }
+
+/* --- COMPLETED SECTION --- */
+.completed-section { border: 1px solid var(--border); margin-top: var(--xl); }
+.completed-header { display: flex; align-items: center; gap: var(--md); padding: var(--md) var(--lg); background: var(--bg-alt); cursor: pointer; user-select: none; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.completed-body { display: none; padding: var(--lg); }
+.completed-section--open .completed-body { display: block; }
+.completed-section .clean-table tbody tr { opacity: 0.6; }
+.completed-section .clean-table tbody tr:hover { opacity: 1; }
+.completed-chevron { transition: transform .2s; font-size: 12px; }
+.completed-section--open .completed-chevron { transform: rotate(180deg); }
+
+/* --- EMPTY STATE --- */
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+
+/* --- CONFIRM DIALOG --- */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) { .col-hide-sm { display: none; } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header">
+    <a href="dashboard.html" class="sidebar__logo" id="nav-logo">ITT</a>
+  </div>
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap">
+      <span class="sidebar__selector-label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="sidebar__selector" id="team-selector-wrap">
+      <span class="sidebar__selector-label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== PAGE WRAP ===== -->
+<div class="page-wrap">
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Handlingsplan</h1>
+
+  <!-- VARIANT SWITCHER -->
+  <div class="variant-switcher">
+    <span class="variant-switcher__label">Designvarianter:</span>
+    <a href="action-plan.html" class="variant-pill">Original</a>
+    <a href="action-plan-1.html" class="variant-pill">1</a>
+    <a href="action-plan-2.html" class="variant-pill">2</a>
+    <a href="action-plan-3.html" class="variant-pill">3</a>
+    <a href="action-plan-4.html" class="variant-pill variant-pill--active">4</a>
+    <a href="action-plan-5.html" class="variant-pill">5</a>
+    <a href="action-plan-6.html" class="variant-pill">6</a>
+  </div>
+
+  <!-- STICKY FILTER BAR -->
+  <div class="filter-bar" id="filter-bar">
+    <input type="search" class="filter-bar__search" placeholder="Sök åtgärd..." id="action-search" aria-label="Sök åtgärd">
+    <select class="filter-bar__select" id="filter-person" aria-label="Filtrera på person"></select>
+    <div class="status-dots" id="status-dots">
+      <button class="status-dot-btn status-dot-btn--not_started" data-status-toggle="not_started" title="Ej startad"></button>
+      <button class="status-dot-btn status-dot-btn--in_progress" data-status-toggle="in_progress" title="Pågående"></button>
+      <button class="status-dot-btn status-dot-btn--overdue" data-status-toggle="overdue" title="Försenad"></button>
+      <button class="status-dot-btn status-dot-btn--done" data-status-toggle="done" title="Klar"></button>
+    </div>
+    <button class="filter-bar__new-bc" id="btn-new-bc" data-min-role="team-leader">+ Nytt bästa bidrag</button>
+  </div>
+
+  <!-- BC SECTIONS (continuous scroll) -->
+  <div id="bc-container"></div>
+
+  <!-- COMPLETED STEPS -->
+  <div class="completed-section" id="completed-section">
+    <div class="completed-header" id="completed-toggle">
+      <span class="completed-chevron" id="completed-chevron">&#9660;</span>
+      <span id="completed-title">Avklarade steg</span>
+      <span id="completed-count" style="margin-left:auto;font-size:11px;"></span>
+    </div>
+    <div class="completed-body" id="completed-body"></div>
+  </div>
+</main>
+</div>
+
+<!-- ===== CONFIRM DIALOG ===== -->
+<div class="dialog-overlay" id="confirm-dialog">
+  <div class="dialog">
+    <div class="dialog__title" id="dialog-title">Bekräfta</div>
+    <div class="dialog__text" id="dialog-text"></div>
+    <div class="dialog__actions">
+      <button class="btn btn--outline" id="dialog-cancel">Avbryt</button>
+      <button class="btn btn--danger" id="dialog-confirm">Bekräfta</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  updateStaticText();
+  renderSidebar();
+  renderAll();
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 1. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const userById = id => DB.users.find(u => u.id === id);
+const teamById = id => DB.teams.find(t => t.id === id);
+const fullName = u => u ? `${u.firstName} ${u.lastName}` : '—';
+const shortName = u => u ? `${u.firstName} ${u.lastName[0]}.` : '—';
+
+// ============================================================
+// 2. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  teamId: '',
+  personFilter: 'all',
+  statusFilters: { not_started: true, in_progress: true, overdue: true, done: true },
+  search: '',
+  sortCol: 'title',
+  sortDir: 'asc',
+};
+
+const ACTIVE_MODULE = 'actionPlan';
+
+const STATUS_ORDER = ['not_started', 'in_progress', 'overdue', 'done'];
+
+// ============================================================
+// 3. TEAM SELECTOR
+// ============================================================
+function getTeamId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('teamId')) return urlParams.get('teamId');
+  return localStorage.getItem('itt-team') || 'alpha';
+}
+
+function orgsForActor() {
+  const a = ACTORS[S.role];
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function getUserTeams() {
+  const a = ACTORS[S.role];
+  const u = DB.users.find(u => u.id === a.userId);
+  if (!u) return DB.teams;
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = getUserTeams();
+  if (teams.length > 0) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+  renderAll();
+});
+
+function renderTeamSelector() {
+  const sel = $('team-select');
+  const teams = getUserTeams();
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) { wrap.style.display = 'none'; } else { wrap.style.display = ''; }
+  S.teamId = getTeamId();
+  if (!teams.find(t => t.id === S.teamId)) S.teamId = teams[0]?.id || 'alpha';
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === S.teamId ? 'selected' : ''}>${t.title}</option>`).join('');
+}
+
+$('team-select').addEventListener('change', e => {
+  S.teamId = e.target.value;
+  localStorage.setItem('itt-team', S.teamId);
+  renderAll();
+});
+
+// ============================================================
+// 4. TEAM MEMBERS FOR CURRENT TEAM
+// ============================================================
+function getTeamMembers() {
+  return DB.users.filter(u => u.memberships.some(m => m.teamId === S.teamId) && u.registerStatus !== 'soft_deleted');
+}
+
+// ============================================================
+// 5. SIDEBAR
+// ============================================================
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, shortKey: 'mod.short.strategic', fullKey: 'mod.strategic' },
+  { key: 'newsflash', file: 'newsflash.html', section: 1, shortKey: 'mod.short.newsflash', fullKey: 'mod.newsflash' },
+  { key: 'desiredState', file: 'desired-state.html', section: 2, shortKey: 'mod.short.desiredState', fullKey: 'mod.desiredState' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, shortKey: 'mod.short.goalsMetrics', fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, shortKey: 'mod.short.actionPlan', fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, shortKey: 'mod.short.documents', fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, shortKey: 'mod.short.ideas', fullKey: 'mod.ideas' },
+  { key: 'attendance', file: 'attendance.html', section: 4, shortKey: 'mod.short.attendance', fullKey: 'mod.attendance' },
+  { key: 'reflections', file: 'reflections.html', section: 4, shortKey: 'mod.short.reflections', fullKey: 'mod.reflections' },
+];
+
+const SECTION_LABELS = {
+  1: { sv: '1. Vart är vi på väg?', en: '1. Where are we headed?' },
+  2: { sv: '2. Vad siktar vi på?', en: '2. What are we aiming for?' },
+  3: { sv: '3. Tar vi steg framåt?', en: '3. Are we taking steps?' },
+  4: { sv: '4. Lär vi oss?', en: '4. Are we learning?' },
+};
+
+function getVisibleModules() {
+  const stored = localStorage.getItem('itt-agenda-visibility-' + S.teamId);
+  if (stored) {
+    try {
+      const vis = JSON.parse(stored);
+      return MODULES.filter(m => vis[m.key] !== false);
+    } catch(e) {}
+  }
+  return MODULES;
+}
+
+function renderSidebar() {
+  const mods = getVisibleModules();
+  let html = '';
+  const dashActive = ACTIVE_MODULE === 'dashboard' ? ' sidebar__link--active' : '';
+  html += `<a href="dashboard.html" class="sidebar__link${dashActive}" id="nav-dashboard">${t('nav.dashboard')}</a>`;
+  html += '<div class="sidebar__divider"></div>';
+  let lastSection = 0;
+  mods.forEach(m => {
+    if (m.section !== lastSection) {
+      const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
+      html += `<div class="sidebar__section-label">${l}</div>`;
+      lastSection = m.section;
+    }
+    const isActive = m.key === ACTIVE_MODULE;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}</a>`;
+  });
+  html += `<a href="#" class="sidebar__link sidebar__link--disabled">Integ Chat</a>`;
+  $('sidebar-nav').innerHTML = html;
+}
+
+// ============================================================
+// 6. TOAST
+// ============================================================
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 7. CONFIRM DIALOG
+// ============================================================
+let confirmCallback = null;
+function showConfirm(title, text, label, cb) {
+  $('dialog-title').textContent = title;
+  $('dialog-text').textContent = text;
+  const btn = $('dialog-confirm');
+  btn.textContent = t('btn.wait'); btn.disabled = true;
+  confirmCallback = cb;
+  $('confirm-dialog').classList.add('dialog-overlay--visible');
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 1000);
+}
+function closeConfirm() { $('confirm-dialog').classList.remove('dialog-overlay--visible'); confirmCallback = null; }
+$('dialog-cancel').onclick = closeConfirm;
+$('dialog-confirm').onclick = () => { if (confirmCallback) confirmCallback(); closeConfirm(); };
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('confirm-dialog').classList.contains('dialog-overlay--visible')) closeConfirm();
+});
+
+// ============================================================
+// 8. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderAll();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 9. DATA ACCESS
+// ============================================================
+function getTeamBCs() {
+  return WS.bestContributions.filter(bc => bc.teamId === S.teamId);
+}
+
+function getTeamActions() {
+  return WS.actions.filter(a => a.teamId === S.teamId);
+}
+
+function getActiveActions() {
+  return getTeamActions().filter(a => a.status !== 'done');
+}
+
+function getDoneActions() {
+  return getTeamActions().filter(a => a.status === 'done');
+}
+
+function getFilteredActions() {
+  let actions = getTeamActions();
+  // Status filter via dots
+  actions = actions.filter(a => S.statusFilters[a.status]);
+  if (S.personFilter !== 'all') {
+    actions = actions.filter(a => a.responsibleId === S.personFilter || a.supportId === S.personFilter);
+  }
+  if (S.search.trim()) {
+    const q = S.search.toLowerCase();
+    actions = actions.filter(a => a.title.toLowerCase().includes(q) || (a.description || '').toLowerCase().includes(q));
+  }
+  return actions;
+}
+
+function getBCCompletionPct(bcId) {
+  const bcActions = getTeamActions().filter(a => a.bcId === bcId);
+  if (bcActions.length === 0) return 0;
+  const done = bcActions.filter(a => a.status === 'done').length;
+  return Math.round((done / bcActions.length) * 100);
+}
+
+function statusLabel(status) {
+  const map = { not_started: t('ap.notStarted'), in_progress: t('ap.inProgress'), overdue: t('ap.overdue'), done: t('ap.done') };
+  return map[status] || status;
+}
+
+// ============================================================
+// 10. SORTING
+// ============================================================
+function sortActions(actions) {
+  const col = S.sortCol;
+  const dir = S.sortDir === 'asc' ? 1 : -1;
+  return [...actions].sort((a, b) => {
+    let va, vb;
+    switch (col) {
+      case 'title': va = a.title.toLowerCase(); vb = b.title.toLowerCase(); break;
+      case 'responsible':
+        va = (userById(a.responsibleId) ? shortName(userById(a.responsibleId)) : '').toLowerCase();
+        vb = (userById(b.responsibleId) ? shortName(userById(b.responsibleId)) : '').toLowerCase();
+        break;
+      case 'support':
+        va = (a.supportId && userById(a.supportId) ? shortName(userById(a.supportId)) : '').toLowerCase();
+        vb = (b.supportId && userById(b.supportId) ? shortName(userById(b.supportId)) : '').toLowerCase();
+        break;
+      case 'deadline': va = a.deadline || '9999'; vb = b.deadline || '9999'; break;
+      case 'status':
+        va = STATUS_ORDER.indexOf(a.status);
+        vb = STATUS_ORDER.indexOf(b.status);
+        break;
+      default: va = a.title.toLowerCase(); vb = b.title.toLowerCase();
+    }
+    if (va < vb) return -1 * dir;
+    if (va > vb) return 1 * dir;
+    return 0;
+  });
+}
+
+function sortIndicator(col) {
+  if (S.sortCol !== col) return '';
+  return `<span class="sort-indicator">${S.sortDir === 'asc' ? '&#9650;' : '&#9660;'}</span>`;
+}
+
+// ============================================================
+// 11. FILTERS
+// ============================================================
+function renderFilters() {
+  const members = getTeamMembers();
+  let personHtml = `<option value="all">${t('ap.filterPerson')}</option>`;
+  members.forEach(u => { personHtml += `<option value="${u.id}" ${S.personFilter === u.id ? 'selected' : ''}>${fullName(u)}</option>`; });
+  $('filter-person').innerHTML = personHtml;
+
+  // Update status dot styling
+  document.querySelectorAll('[data-status-toggle]').forEach(btn => {
+    const st = btn.dataset.statusToggle;
+    btn.classList.toggle('status-dot-btn--inactive', !S.statusFilters[st]);
+  });
+}
+
+$('filter-person').addEventListener('change', e => { S.personFilter = e.target.value; renderContent(); });
+
+document.addEventListener('click', e => {
+  const dotBtn = e.target.closest('[data-status-toggle]');
+  if (dotBtn) {
+    const st = dotBtn.dataset.statusToggle;
+    S.statusFilters[st] = !S.statusFilters[st];
+    renderFilters();
+    renderContent();
+  }
+});
+
+let searchTimer;
+$('action-search').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { S.search = e.target.value; renderContent(); }, 300);
+});
+
+// ============================================================
+// 12. INLINE EDITING HELPERS
+// ============================================================
+function startInlineEdit(el, value, onSave, type, options) {
+  if (el.querySelector('input, select')) return; // already editing
+  const originalText = el.textContent;
+
+  let input;
+  if (type === 'select' && options) {
+    input = document.createElement('select');
+    input.className = 'inline-edit inline-edit--select';
+    options.forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt.value;
+      o.textContent = opt.label;
+      if (opt.value === value) o.selected = true;
+      input.appendChild(o);
+    });
+  } else if (type === 'date') {
+    input = document.createElement('input');
+    input.type = 'date';
+    input.className = 'inline-edit inline-edit--date';
+    input.value = value || '';
+  } else {
+    input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'inline-edit';
+    input.value = value;
+  }
+
+  el.textContent = '';
+  el.appendChild(input);
+  input.focus();
+  if (input.select) input.select();
+
+  function save() {
+    const newVal = input.value;
+    cleanup();
+    onSave(newVal);
+  }
+
+  function cancel() {
+    cleanup();
+    el.textContent = originalText;
+  }
+
+  function cleanup() {
+    input.removeEventListener('blur', onBlur);
+    input.removeEventListener('keydown', onKey);
+  }
+
+  function onBlur() { save(); }
+  function onKey(e) {
+    if (e.key === 'Enter') { e.preventDefault(); save(); }
+    if (e.key === 'Escape') { e.preventDefault(); input.removeEventListener('blur', onBlur); cancel(); }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      save();
+      // Move to next editable cell in the same row
+      const td = el.closest('td');
+      if (td) {
+        const row = td.parentElement;
+        const cells = Array.from(row.querySelectorAll('[data-editable]'));
+        const idx = cells.indexOf(el.closest('[data-editable]') || el);
+        if (idx >= 0 && idx < cells.length - 1) {
+          cells[idx + 1].click();
+        }
+      }
+    }
+  }
+
+  input.addEventListener('blur', onBlur);
+  input.addEventListener('keydown', onKey);
+}
+
+// ============================================================
+// 13. RENDER: BC SECTIONS
+// ============================================================
+function renderContent() {
+  const bcs = getTeamBCs();
+  const filteredActions = getFilteredActions();
+  const container = $('bc-container');
+
+  if (bcs.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>Inga bästa bidrag har skapats ännu.</p></div>';
+    renderCompletedSection();
+    return;
+  }
+
+  let html = '';
+  bcs.forEach(bc => {
+    const bcFilteredActions = filteredActions.filter(a => a.bcId === bc.id && a.status !== 'done');
+    const pct = getBCCompletionPct(bc.id);
+    const aois = bc.areaOfImprovement || [];
+
+    html += `<div class="bc-section" data-bc-id="${bc.id}">`;
+
+    // BC Heading
+    html += `<div class="bc-heading">`;
+    html += `<span class="bc-heading__title" data-edit-bc-title="${bc.id}">${bc.title}</span>`;
+    html += `<span class="bc-heading__pct">${pct}%</span>`;
+    html += `<div class="bc-heading__actions" data-min-role="team-leader">`;
+    html += `<button class="bc-heading__btn" data-add-aoi="${bc.id}">+FO</button>`;
+    html += `<button class="bc-heading__btn bc-heading__btn--delete" data-delete-bc="${bc.id}">&times;</button>`;
+    html += `</div>`;
+    html += `</div>`;
+
+    // AoI groups
+    aois.forEach(aoi => {
+      const aoiActions = bcFilteredActions.filter(a => a.aiId === aoi.id);
+      const allAoiActions = getTeamActions().filter(a => a.bcId === bc.id && a.aiId === aoi.id);
+      const sorted = sortActions(aoiActions);
+
+      html += `<div class="aoi-group" data-aoi-id="${aoi.id}" data-bc-id="${bc.id}">`;
+      html += `<div class="aoi-label-row">`;
+      html += `<span class="aoi-label__text" data-edit-aoi-title="${aoi.id}" data-bc-id="${bc.id}">${aoi.title}</span>`;
+      html += `<div class="aoi-label__actions" data-min-role="team-leader">`;
+      html += `<button class="aoi-label__btn" data-add-action-aoi="${aoi.id}" data-bc-id="${bc.id}">+Åtgärd</button>`;
+      html += `<button class="aoi-label__btn aoi-label__btn--delete" data-delete-aoi="${aoi.id}" data-bc-id="${bc.id}">&times;</button>`;
+      html += `</div>`;
+      html += `</div>`;
+
+      if (sorted.length > 0 || allAoiActions.length > 0) {
+        html += `<table class="clean-table">`;
+        html += `<thead><tr>`;
+        html += `<th class="col-status" data-sort-col="status">${sortIndicator('status')}</th>`;
+        html += `<th class="col-action" data-sort-col="title">${t('ap.action')}${sortIndicator('title')}</th>`;
+        html += `<th class="col-person" data-sort-col="responsible">${t('ap.responsible')}${sortIndicator('responsible')}</th>`;
+        html += `<th class="col-person col-hide-sm" data-sort-col="support">${t('ap.support')}${sortIndicator('support')}</th>`;
+        html += `<th class="col-deadline" data-sort-col="deadline">${t('ap.deadline')}${sortIndicator('deadline')}</th>`;
+        html += `<th class="col-delete"></th>`;
+        html += `</tr></thead>`;
+        html += `<tbody>`;
+
+        sorted.forEach(a => {
+          const resp = userById(a.responsibleId);
+          const supp = a.supportId ? userById(a.supportId) : null;
+          html += `<tr data-action-id="${a.id}">`;
+          html += `<td class="col-status"><span class="status-dot status-dot--${a.status}" data-cycle-status="${a.id}" title="${statusLabel(a.status)}"></span></td>`;
+          html += `<td class="col-action" data-editable data-field="title" data-action-id="${a.id}"><strong>${a.title}</strong></td>`;
+          html += `<td class="col-person" data-editable data-field="responsible" data-action-id="${a.id}">${shortName(resp)}</td>`;
+          html += `<td class="col-person col-hide-sm" data-editable data-field="support" data-action-id="${a.id}">${supp ? shortName(supp) : '—'}</td>`;
+          html += `<td class="col-deadline" data-editable data-field="deadline" data-action-id="${a.id}">${a.deadline || '—'}</td>`;
+          html += `<td class="col-delete"><button class="row-delete-btn" data-delete-action="${a.id}" data-min-role="team-leader" title="Radera">&times;</button></td>`;
+          html += `</tr>`;
+        });
+
+        // Add action row
+        html += `<tr class="add-action-row" data-add-action-row="${aoi.id}" data-bc-id="${bc.id}" data-min-role="team-leader">`;
+        html += `<td></td><td colspan="4">+ Ny åtgärd</td><td></td>`;
+        html += `</tr>`;
+
+        html += `</tbody></table>`;
+      } else {
+        // Show add action row even with no actions
+        html += `<table class="clean-table"><tbody>`;
+        html += `<tr class="add-action-row" data-add-action-row="${aoi.id}" data-bc-id="${bc.id}" data-min-role="team-leader">`;
+        html += `<td colspan="6" style="text-align:center;">+ Ny åtgärd</td>`;
+        html += `</tr>`;
+        html += `</tbody></table>`;
+      }
+
+      html += `</div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  container.innerHTML = html;
+  renderCompletedSection();
+}
+
+// ============================================================
+// 14. RENDER: COMPLETED SECTION
+// ============================================================
+function renderCompletedSection() {
+  const doneActions = getDoneActions();
+  if (doneActions.length === 0) {
+    $('completed-section').style.display = 'none';
+    return;
+  }
+  $('completed-section').style.display = '';
+  $('completed-count').textContent = `(${doneActions.length})`;
+
+  let html = '<table class="clean-table"><thead><tr>';
+  html += `<th class="col-status"></th>`;
+  html += `<th>${t('ap.action')}</th>`;
+  html += `<th>${t('ap.bcLabel')}</th>`;
+  html += `<th>${t('ap.responsible')}</th>`;
+  html += `<th>${t('ap.deadline')}</th>`;
+  html += '</tr></thead><tbody>';
+  doneActions.forEach(a => {
+    const bc = WS.bestContributions.find(bc => bc.id === a.bcId);
+    const resp = userById(a.responsibleId);
+    html += `<tr data-action-id="${a.id}">`;
+    html += `<td class="col-status"><span class="status-dot status-dot--done" data-cycle-status="${a.id}" title="${statusLabel('done')}"></span></td>`;
+    html += `<td><strong>${a.title}</strong></td>`;
+    html += `<td>${bc ? bc.title : '—'}</td>`;
+    html += `<td>${shortName(resp)}</td>`;
+    html += `<td>${a.deadline || '—'}</td>`;
+    html += `</tr>`;
+  });
+  html += '</tbody></table>';
+  $('completed-body').innerHTML = html;
+}
+
+$('completed-toggle').addEventListener('click', () => {
+  $('completed-section').classList.toggle('completed-section--open');
+});
+
+// ============================================================
+// 15. EVENT HANDLERS: INLINE EDITING
+// ============================================================
+
+// Click on editable cell
+document.addEventListener('click', e => {
+  const cell = e.target.closest('[data-editable]');
+  if (!cell) return;
+  const actionId = cell.dataset.actionId;
+  const field = cell.dataset.field;
+  const action = WS.actions.find(a => a.id === actionId);
+  if (!action) return;
+
+  const members = getTeamMembers();
+  const memberOptions = [{ value: '', label: '—' }, ...members.map(u => ({ value: u.id, label: fullName(u) }))];
+
+  switch (field) {
+    case 'title':
+      startInlineEdit(cell, action.title, val => {
+        if (val.trim()) { action.title = val.trim(); showToast('Åtgärd uppdaterad'); }
+        renderContent();
+      }, 'text');
+      break;
+    case 'responsible':
+      startInlineEdit(cell, action.responsibleId, val => {
+        action.responsibleId = val;
+        showToast('Ansvarig uppdaterad');
+        renderContent();
+      }, 'select', memberOptions);
+      break;
+    case 'support':
+      startInlineEdit(cell, action.supportId || '', val => {
+        action.supportId = val || '';
+        showToast('Stöd uppdaterad');
+        renderContent();
+      }, 'select', memberOptions);
+      break;
+    case 'deadline':
+      startInlineEdit(cell, action.deadline || '', val => {
+        action.deadline = val;
+        showToast('Deadline uppdaterad');
+        renderContent();
+      }, 'date');
+      break;
+  }
+});
+
+// Cycle status dot
+document.addEventListener('click', e => {
+  const dot = e.target.closest('[data-cycle-status]');
+  if (!dot) return;
+  e.stopPropagation();
+  const actionId = dot.dataset.cycleStatus;
+  const action = WS.actions.find(a => a.id === actionId);
+  if (!action) return;
+  const idx = STATUS_ORDER.indexOf(action.status);
+  action.status = STATUS_ORDER[(idx + 1) % STATUS_ORDER.length];
+  showToast(`Status: ${statusLabel(action.status)}`);
+  renderContent();
+});
+
+// Sort column click
+document.addEventListener('click', e => {
+  const th = e.target.closest('[data-sort-col]');
+  if (!th) return;
+  const col = th.dataset.sortCol;
+  if (S.sortCol === col) {
+    S.sortDir = S.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    S.sortCol = col;
+    S.sortDir = 'asc';
+  }
+  renderContent();
+});
+
+// Edit BC title inline
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-edit-bc-title]');
+  if (!el) return;
+  const bcId = el.dataset.editBcTitle;
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  startInlineEdit(el, bc.title, val => {
+    if (val.trim()) { bc.title = val.trim(); showToast('Bästa bidrag uppdaterat'); }
+    renderContent();
+  }, 'text');
+});
+
+// Edit AoI title inline
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-edit-aoi-title]');
+  if (!el) return;
+  const aoiId = el.dataset.editAoiTitle;
+  const bcId = el.dataset.bcId;
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const aoi = bc.areaOfImprovement.find(a => a.id === aoiId);
+  if (!aoi) return;
+  startInlineEdit(el, aoi.title, val => {
+    if (val.trim()) { aoi.title = val.trim(); showToast('Förbättringsområde uppdaterat'); }
+    renderContent();
+  }, 'text');
+});
+
+// ============================================================
+// 16. EVENT HANDLERS: ADD / DELETE
+// ============================================================
+
+// Add new action via dashed row
+document.addEventListener('click', e => {
+  const row = e.target.closest('[data-add-action-row]');
+  if (!row) return;
+  const aoiId = row.dataset.addActionRow;
+  const bcId = row.dataset.bcId;
+  const newAction = {
+    id: 'a_' + Math.random().toString(36).slice(2, 7),
+    teamId: S.teamId,
+    bcId: bcId,
+    aiId: aoiId,
+    title: '',
+    description: '',
+    responsibleId: '',
+    supportId: '',
+    deadline: '',
+    status: 'not_started',
+    comment: '',
+  };
+  WS.actions.push(newAction);
+  renderContent();
+  // Focus the new title cell for editing
+  requestAnimationFrame(() => {
+    const cell = document.querySelector(`[data-field="title"][data-action-id="${newAction.id}"]`);
+    if (cell) cell.click();
+  });
+});
+
+// Add AoI
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-add-aoi]');
+  if (!btn) return;
+  const bcId = btn.dataset.addAoi;
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const newAoi = { id: 'ai_' + Math.random().toString(36).slice(2, 7), title: '' };
+  bc.areaOfImprovement.push(newAoi);
+  renderContent();
+  // Focus new AoI for editing
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`[data-edit-aoi-title="${newAoi.id}"]`);
+    if (el) el.click();
+  });
+});
+
+// Delete action
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-delete-action]');
+  if (!btn) return;
+  e.stopPropagation();
+  const actionId = btn.dataset.deleteAction;
+  const action = WS.actions.find(a => a.id === actionId);
+  if (!action) return;
+  showConfirm(
+    'Radera åtgärd',
+    `Radera "${action.title}" permanent?`,
+    'Radera',
+    () => {
+      WS.actions = WS.actions.filter(a => a.id !== actionId);
+      renderContent();
+      showToast('Åtgärd raderad');
+    }
+  );
+});
+
+// Delete AoI (moves actions to "Inget förbättringsområde")
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-delete-aoi]');
+  if (!btn) return;
+  const aoiId = btn.dataset.deleteAoi;
+  const bcId = btn.dataset.bcId;
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const aoi = bc.areaOfImprovement.find(a => a.id === aoiId);
+  if (!aoi) return;
+
+  // Find or create the "Inget förbättringsområde" AoI
+  let noAoi = bc.areaOfImprovement.find(a => a.title === 'Inget förbättringsområde');
+  const aoiActions = WS.actions.filter(a => a.bcId === bcId && a.aiId === aoiId);
+
+  showConfirm(
+    'Radera förbättringsområde',
+    aoiActions.length > 0
+      ? `Radera "${aoi.title}"? ${aoiActions.length} åtgärd(er) flyttas till "Inget förbättringsområde".`
+      : `Radera "${aoi.title}" permanent?`,
+    'Radera',
+    () => {
+      if (aoiActions.length > 0) {
+        if (!noAoi) {
+          noAoi = { id: 'ai_' + Math.random().toString(36).slice(2, 7), title: 'Inget förbättringsområde' };
+          bc.areaOfImprovement.push(noAoi);
+        }
+        aoiActions.forEach(a => { a.aiId = noAoi.id; });
+      }
+      bc.areaOfImprovement = bc.areaOfImprovement.filter(a => a.id !== aoiId);
+      renderContent();
+      showToast('Förbättringsområde raderat');
+    }
+  );
+});
+
+// Delete BC (only if no actions)
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-delete-bc]');
+  if (!btn) return;
+  const bcId = btn.dataset.deleteBc;
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const actionCount = WS.actions.filter(a => a.bcId === bcId).length;
+  if (actionCount > 0) {
+    showConfirm(
+      'Kan inte radera',
+      `Detta bästa bidrag har ${actionCount} åtgärder. Ta bort alla åtgärder först.`,
+      'OK',
+      () => {}
+    );
+  } else {
+    showConfirm(
+      'Radera bästa bidrag',
+      `Radera "${bc.title}" permanent?`,
+      'Radera',
+      () => {
+        WS.bestContributions = WS.bestContributions.filter(b => b.id !== bcId);
+        renderContent();
+        showToast('Bästa bidrag raderat');
+      }
+    );
+  }
+});
+
+// New BC button
+$('btn-new-bc').addEventListener('click', () => {
+  const defaultAoi = { id: 'ai_' + Math.random().toString(36).slice(2, 7), title: 'Inget förbättringsområde' };
+  const newBc = {
+    id: 'bc_' + Math.random().toString(36).slice(2, 7),
+    teamId: S.teamId,
+    title: '',
+    areaOfImprovement: [defaultAoi],
+  };
+  WS.bestContributions.push(newBc);
+  renderContent();
+  // Focus the new BC title for editing
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`[data-edit-bc-title="${newBc.id}"]`);
+    if (el) el.click();
+  });
+});
+
+// ============================================================
+// 17. STATIC TEXT
+// ============================================================
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-logo').textContent = 'ITT';
+  $('page-title').textContent = t('ap.title');
+  $('btn-new-bc').textContent = t('ap.newBc');
+  $('completed-title').textContent = t('ap.completedSteps');
+  $('dialog-cancel').textContent = t('btn.cancel');
+  $('action-search').placeholder = currentLang === 'en' ? 'Search action...' : 'Sök åtgärd...';
+}
+
+// ============================================================
+// 18. RENDER ALL
+// ============================================================
+function renderAll() {
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSidebar();
+  renderFilters();
+  renderContent();
+}
+
+// ============================================================
+// 19. INIT
+// ============================================================
+updateStaticText();
+setRole(S.role);
+</script>
+</body>
+</html>

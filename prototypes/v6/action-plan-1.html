@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handlingsplan v6:1 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+  --sidebar-w: 240px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); display: flex; min-height: 100vh;
+  padding-bottom: 64px;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- SIDEBAR --- */
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--sm) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: var(--sm) var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
+.sidebar__section-label { padding: var(--md) var(--lg) var(--xs); color: #888; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- PAGE WRAP --- */
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--lg); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; border-style: dashed; }
+
+/* --- FORMS --- */
+.form-group { margin-bottom: var(--md); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--xs); display: block; }
+.form-input, .form-select { width: 100%; padding: var(--sm) var(--md); border: 2px solid var(--border-strong); background: var(--bg-alt); color: var(--text); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-input:focus, .form-select:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%230a0a0a' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+/* --- TABLE --- */
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border: 2px solid var(--border-strong); padding: var(--sm) var(--md); text-align: left; vertical-align: middle; }
+.data-table thead th { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; cursor: pointer; user-select: none; }
+.data-table thead th:hover { background: #333; }
+.data-table tbody tr { transition: background .1s; }
+.data-table tbody tr:hover { background: var(--hi-soft); }
+
+/* --- VARIANT SWITCHER --- */
+.variant-switcher { display: flex; align-items: center; gap: var(--sm); margin-bottom: var(--lg); flex-wrap: wrap; }
+.variant-switcher__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-right: var(--sm); }
+.variant-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 var(--sm); border: 2px solid var(--border-strong); background: transparent; color: var(--text); font-family: inherit; font-size: 11px; font-weight: 900; text-decoration: none; cursor: pointer; transition: background .15s, color .15s; }
+.variant-pill:hover { background: var(--bg-alt); }
+.variant-pill--active { background: var(--hi); color: var(--bg-dark); pointer-events: none; }
+
+/* --- BC HEADER ROW --- */
+.bc-row td { background: var(--hi); font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; font-size: 13px; padding: var(--sm) var(--md); }
+.bc-row td .bc-row-inner { display: flex; align-items: center; gap: var(--sm); }
+.bc-row td .bc-title-text { flex: 1; cursor: pointer; }
+.bc-row td .bc-title-text:hover { text-decoration: underline; }
+.bc-row .bc-actions { display: flex; align-items: center; gap: var(--xs); }
+.bc-row .bc-actions button, .bc-row .bc-actions a { font-size: 11px; font-weight: 700; background: none; border: none; cursor: pointer; padding: 2px 6px; color: var(--bg-dark); text-decoration: none; white-space: nowrap; }
+.bc-row .bc-actions button:hover, .bc-row .bc-actions a:hover { text-decoration: underline; }
+
+/* --- AOI HEADER ROW --- */
+.aoi-row td { background: var(--bg-alt); font-style: italic; font-size: 13px; padding: var(--sm) var(--md); }
+.aoi-row td .aoi-row-inner { display: flex; align-items: center; gap: var(--sm); }
+.aoi-row td .aoi-title-text { flex: 1; cursor: pointer; }
+.aoi-row td .aoi-title-text:hover { text-decoration: underline; }
+.aoi-row .aoi-actions { display: flex; align-items: center; gap: var(--xs); }
+.aoi-row .aoi-actions button { font-size: 11px; font-weight: 700; background: none; border: none; cursor: pointer; padding: 2px 6px; color: var(--text); white-space: nowrap; }
+.aoi-row .aoi-actions button:hover { text-decoration: underline; }
+
+/* --- NEW ACTION ROW --- */
+.new-action-row td { border-style: dashed; color: var(--text-muted); cursor: pointer; font-size: 12px; padding: var(--sm) var(--md); }
+.new-action-row:hover td { background: var(--hi-soft); color: var(--text); }
+
+/* --- STATUS DOT --- */
+.status-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; cursor: pointer; vertical-align: middle; transition: transform .15s; border: 1px solid rgba(0,0,0,0.15); }
+.status-dot:hover { transform: scale(1.3); }
+.status-dot--not_started { background: #999; }
+.status-dot--in_progress { background: #e6ac00; }
+.status-dot--overdue { background: #e6001a; }
+.status-dot--done { background: #00a854; }
+
+/* --- INLINE EDITING --- */
+.cell-editing input, .cell-editing select { width: 100%; padding: 2px 4px; border: 2px solid var(--hi); background: var(--bg); font-family: inherit; font-size: 13px; min-height: 28px; outline: none; }
+.cell-editing select { min-height: 28px; }
+
+/* --- ACTION ROW DELETE --- */
+.action-row .delete-cell { opacity: 0; transition: opacity .15s; text-align: center; }
+.action-row:hover .delete-cell { opacity: 1; }
+.delete-btn { background: none; border: none; cursor: pointer; color: var(--err); font-size: 14px; font-weight: 900; padding: 2px 6px; line-height: 1; }
+.delete-btn:hover { background: rgba(230,0,26,0.1); }
+
+/* --- COMPLETED SECTION --- */
+.completed-section { border: 2px solid var(--border); margin-top: var(--xl); }
+.completed-header { display: flex; align-items: center; gap: var(--md); padding: var(--md) var(--lg); background: var(--bg-alt); cursor: pointer; user-select: none; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.completed-body { display: none; padding: var(--lg); }
+.completed-section--open .completed-body { display: block; }
+.completed-section .data-table tbody tr { opacity: 0.6; }
+.completed-section .data-table tbody tr:hover { opacity: 1; }
+
+/* --- CONFIRM DIALOG --- */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- EMPTY STATE --- */
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) { .col-hide-sm { display: none; } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+
+/* --- SORT INDICATOR --- */
+.sort-arrow { font-size: 10px; margin-left: 4px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header">
+    <a href="dashboard.html" class="sidebar__logo" id="nav-logo">ITT</a>
+  </div>
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap">
+      <span class="sidebar__selector-label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="sidebar__selector" id="team-selector-wrap">
+      <span class="sidebar__selector-label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== PAGE WRAP ===== -->
+<div class="page-wrap">
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Handlingsplan</h1>
+
+  <!-- VARIANT SWITCHER -->
+  <div class="variant-switcher">
+    <span class="variant-switcher__label">Designvarianter:</span>
+    <a href="action-plan.html" class="variant-pill">Original</a>
+    <a href="action-plan-1.html" class="variant-pill variant-pill--active">1</a>
+    <a href="action-plan-2.html" class="variant-pill">2</a>
+    <a href="action-plan-3.html" class="variant-pill">3</a>
+    <a href="action-plan-4.html" class="variant-pill">4</a>
+    <a href="action-plan-5.html" class="variant-pill">5</a>
+    <a href="action-plan-6.html" class="variant-pill">6</a>
+  </div>
+
+  <!-- NEW BC BUTTON -->
+  <div style="margin-bottom: var(--lg);" data-min-role="team-leader">
+    <button class="btn btn--hi" id="btn-new-bc">+ Nytt bästa bidrag</button>
+  </div>
+
+  <!-- FLAT TABLE -->
+  <div class="table-wrap" id="flat-table-wrap"></div>
+
+  <!-- COMPLETED STEPS -->
+  <div class="completed-section" id="completed-section">
+    <div class="completed-header" id="completed-toggle">
+      <span class="bc-chevron" id="completed-chevron">&#9660;</span>
+      <span id="completed-title">Avklarade steg</span>
+      <span id="completed-count" style="margin-left:auto;font-size:11px;"></span>
+    </div>
+    <div class="completed-body" id="completed-body"></div>
+  </div>
+</main>
+</div>
+
+<!-- ===== CONFIRM DIALOG ===== -->
+<div class="dialog-overlay" id="confirm-dialog">
+  <div class="dialog">
+    <div class="dialog__title" id="dialog-title">Bekräfta</div>
+    <div class="dialog__text" id="dialog-text"></div>
+    <div class="dialog__actions">
+      <button class="btn btn--outline" id="dialog-cancel">Avbryt</button>
+      <button class="btn btn--danger" id="dialog-confirm">Bekräfta</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  updateStaticText();
+  renderSidebar();
+  renderAll();
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 1. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const userById = id => DB.users.find(u => u.id === id);
+const teamById = id => DB.teams.find(t => t.id === id);
+const fullName = u => u ? `${u.firstName} ${u.lastName}` : '—';
+const shortName = u => u ? `${u.firstName} ${u.lastName[0]}.` : '—';
+
+// ============================================================
+// 2. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  teamId: '',
+  sortCol: null,   // 'title', 'responsible', 'support', 'deadline'
+  sortDir: 'asc',  // 'asc' or 'desc'
+};
+
+const ACTIVE_MODULE = 'actionPlan';
+
+// ============================================================
+// 3. TEAM SELECTOR
+// ============================================================
+function getTeamId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('teamId')) return urlParams.get('teamId');
+  return localStorage.getItem('itt-team') || 'alpha';
+}
+
+function orgsForActor() {
+  const a = ACTORS[S.role];
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function getUserTeams() {
+  const a = ACTORS[S.role];
+  const u = DB.users.find(u => u.id === a.userId);
+  if (!u) return DB.teams;
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = getUserTeams();
+  if (teams.length > 0) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+  renderAll();
+});
+
+function renderTeamSelector() {
+  const sel = $('team-select');
+  const teams = getUserTeams();
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) { wrap.style.display = 'none'; } else { wrap.style.display = ''; }
+  S.teamId = getTeamId();
+  if (!teams.find(t => t.id === S.teamId)) S.teamId = teams[0]?.id || 'alpha';
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === S.teamId ? 'selected' : ''}>${t.title}</option>`).join('');
+}
+
+$('team-select').addEventListener('change', e => {
+  S.teamId = e.target.value;
+  localStorage.setItem('itt-team', S.teamId);
+  renderAll();
+});
+
+// ============================================================
+// 4. TEAM MEMBERS FOR CURRENT TEAM
+// ============================================================
+function getTeamMembers() {
+  return DB.users.filter(u => u.memberships.some(m => m.teamId === S.teamId) && u.registerStatus !== 'soft_deleted');
+}
+
+// ============================================================
+// 5. SIDEBAR
+// ============================================================
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, shortKey: 'mod.short.strategic', fullKey: 'mod.strategic' },
+  { key: 'newsflash', file: 'newsflash.html', section: 1, shortKey: 'mod.short.newsflash', fullKey: 'mod.newsflash' },
+  { key: 'desiredState', file: 'desired-state.html', section: 2, shortKey: 'mod.short.desiredState', fullKey: 'mod.desiredState' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, shortKey: 'mod.short.goalsMetrics', fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, shortKey: 'mod.short.actionPlan', fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, shortKey: 'mod.short.documents', fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, shortKey: 'mod.short.ideas', fullKey: 'mod.ideas' },
+  { key: 'attendance', file: 'attendance.html', section: 4, shortKey: 'mod.short.attendance', fullKey: 'mod.attendance' },
+  { key: 'reflections', file: 'reflections.html', section: 4, shortKey: 'mod.short.reflections', fullKey: 'mod.reflections' },
+];
+
+const SECTION_LABELS = {
+  1: { sv: '1. Vart är vi på väg?', en: '1. Where are we headed?' },
+  2: { sv: '2. Vad siktar vi på?', en: '2. What are we aiming for?' },
+  3: { sv: '3. Tar vi steg framåt?', en: '3. Are we taking steps?' },
+  4: { sv: '4. Lär vi oss?', en: '4. Are we learning?' },
+};
+
+function getVisibleModules() {
+  const stored = localStorage.getItem('itt-agenda-visibility-' + S.teamId);
+  if (stored) {
+    try {
+      const vis = JSON.parse(stored);
+      return MODULES.filter(m => vis[m.key] !== false);
+    } catch(e) {}
+  }
+  return MODULES;
+}
+
+function renderSidebar() {
+  const mods = getVisibleModules();
+  let html = '';
+  const dashActive = ACTIVE_MODULE === 'dashboard' ? ' sidebar__link--active' : '';
+  html += `<a href="dashboard.html" class="sidebar__link${dashActive}" id="nav-dashboard">${t('nav.dashboard')}</a>`;
+  html += '<div class="sidebar__divider"></div>';
+  let lastSection = 0;
+  mods.forEach(m => {
+    if (m.section !== lastSection) {
+      const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
+      html += `<div class="sidebar__section-label">${l}</div>`;
+      lastSection = m.section;
+    }
+    const isActive = m.key === ACTIVE_MODULE;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}</a>`;
+  });
+  html += `<a href="#" class="sidebar__link sidebar__link--disabled">Integ Chat</a>`;
+  $('sidebar-nav').innerHTML = html;
+}
+
+// ============================================================
+// 6. TOAST
+// ============================================================
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 7. CONFIRM DIALOG
+// ============================================================
+let confirmCallback = null;
+function showConfirm(title, text, label, cb) {
+  $('dialog-title').textContent = title;
+  $('dialog-text').textContent = text;
+  const btn = $('dialog-confirm');
+  btn.textContent = t('btn.wait'); btn.disabled = true;
+  confirmCallback = cb;
+  $('confirm-dialog').classList.add('dialog-overlay--visible');
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 1000);
+}
+function closeConfirm() { $('confirm-dialog').classList.remove('dialog-overlay--visible'); confirmCallback = null; }
+$('dialog-cancel').onclick = closeConfirm;
+$('dialog-confirm').onclick = () => { if (confirmCallback) confirmCallback(); closeConfirm(); };
+
+// ============================================================
+// 8. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderAll();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 9. DATA ACCESS
+// ============================================================
+function getTeamBCs() {
+  return WS.bestContributions.filter(bc => bc.teamId === S.teamId);
+}
+
+function getTeamActions() {
+  return WS.actions.filter(a => a.teamId === S.teamId);
+}
+
+function getActiveActions() {
+  return getTeamActions().filter(a => a.status !== 'done');
+}
+
+function getDoneActions() {
+  return getTeamActions().filter(a => a.status === 'done');
+}
+
+function statusLabel(status) {
+  const map = { not_started: t('ap.notStarted'), in_progress: t('ap.inProgress'), overdue: t('ap.overdue'), done: t('ap.done') };
+  return map[status] || status;
+}
+
+// ============================================================
+// 10. SORTING
+// ============================================================
+function sortActions(actions) {
+  if (!S.sortCol) return actions;
+  const sorted = [...actions];
+  sorted.sort((a, b) => {
+    let va, vb;
+    switch (S.sortCol) {
+      case 'title':
+        va = a.title.toLowerCase();
+        vb = b.title.toLowerCase();
+        break;
+      case 'responsible':
+        va = (fullName(userById(a.responsibleId)) || '').toLowerCase();
+        vb = (fullName(userById(b.responsibleId)) || '').toLowerCase();
+        break;
+      case 'support':
+        va = (a.supportId ? fullName(userById(a.supportId)) : '').toLowerCase();
+        vb = (b.supportId ? fullName(userById(b.supportId)) : '').toLowerCase();
+        break;
+      case 'deadline':
+        va = a.deadline || '9999-99-99';
+        vb = b.deadline || '9999-99-99';
+        break;
+      default: return 0;
+    }
+    if (va < vb) return S.sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return S.sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  return sorted;
+}
+
+function toggleSort(col) {
+  if (S.sortCol === col) {
+    if (S.sortDir === 'asc') { S.sortDir = 'desc'; }
+    else { S.sortCol = null; S.sortDir = 'asc'; }
+  } else {
+    S.sortCol = col;
+    S.sortDir = 'asc';
+  }
+  renderFlatTable();
+}
+
+function sortArrow(col) {
+  if (S.sortCol !== col) return '';
+  return `<span class="sort-arrow">${S.sortDir === 'asc' ? '&#9650;' : '&#9660;'}</span>`;
+}
+
+// ============================================================
+// 11. INLINE EDITING
+// ============================================================
+let editingCell = null;
+
+function startEdit(td, actionId, field) {
+  if (td.querySelector('input, select')) return; // already editing this cell
+  if (editingCell) {
+    saveEdit(); // save + re-render
+    // Re-query td from fresh DOM since re-render rebuilt everything
+    td = document.querySelector(`tr[data-action-id="${actionId}"] td[data-field="${field}"]`);
+    if (!td) return;
+  }
+  editingCell = { td, actionId, field };
+  const action = WS.actions.find(a => a.id === actionId);
+  if (!action) return;
+
+  td.classList.add('cell-editing');
+  const original = td.textContent;
+
+  if (field === 'title') {
+    td.innerHTML = `<input type="text" value="${action.title}">`;
+    const input = td.querySelector('input');
+    input.focus();
+    input.select();
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { saveEdit(); }
+      else if (e.key === 'Escape') { cancelEdit(); }
+      else if (e.key === 'Tab') { e.preventDefault(); saveEdit(); moveToNextCell(td, actionId); }
+    });
+    input.addEventListener('blur', () => { setTimeout(() => { if (editingCell && editingCell.td === td) saveEdit(); }, 100); });
+  } else if (field === 'responsible' || field === 'support') {
+    const members = getTeamMembers();
+    const currentVal = field === 'responsible' ? action.responsibleId : action.supportId;
+    let html = `<select>`;
+    if (field === 'support') html += `<option value="">—</option>`;
+    members.forEach(u => { html += `<option value="${u.id}" ${u.id === currentVal ? 'selected' : ''}>${fullName(u)}</option>`; });
+    html += `</select>`;
+    td.innerHTML = html;
+    const select = td.querySelector('select');
+    select.focus();
+    select.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { saveEdit(); }
+      else if (e.key === 'Escape') { cancelEdit(); }
+      else if (e.key === 'Tab') { e.preventDefault(); saveEdit(); moveToNextCell(td, actionId); }
+    });
+    select.addEventListener('blur', () => { setTimeout(() => { if (editingCell && editingCell.td === td) saveEdit(); }, 100); });
+  } else if (field === 'deadline') {
+    td.innerHTML = `<input type="date" value="${action.deadline || ''}">`;
+    const input = td.querySelector('input');
+    input.focus();
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { saveEdit(); }
+      else if (e.key === 'Escape') { cancelEdit(); }
+      else if (e.key === 'Tab') { e.preventDefault(); saveEdit(); moveToNextCell(td, actionId); }
+    });
+    input.addEventListener('blur', () => { setTimeout(() => { if (editingCell && editingCell.td === td) saveEdit(); }, 100); });
+  }
+}
+
+function saveEdit() {
+  if (!editingCell) return;
+  const { td, actionId, field } = editingCell;
+  const action = WS.actions.find(a => a.id === actionId);
+  if (!action) { cancelEdit(); return; }
+
+  const input = td.querySelector('input, select');
+  if (!input) { cancelEdit(); return; }
+  const val = input.value;
+
+  if (field === 'title') { action.title = val || action.title; }
+  else if (field === 'responsible') { action.responsibleId = val; }
+  else if (field === 'support') { action.supportId = val; }
+  else if (field === 'deadline') { action.deadline = val; }
+
+  editingCell = null;
+  renderFlatTable();
+  showToast('Sparat');
+}
+
+function cancelEdit() {
+  if (!editingCell) return;
+  editingCell = null;
+  renderFlatTable();
+}
+
+function moveToNextCell(currentTd, actionId) {
+  const fields = ['title', 'responsible', 'support', 'deadline'];
+  const currentField = currentTd.dataset.field;
+  const currentIdx = fields.indexOf(currentField);
+  if (currentIdx < fields.length - 1) {
+    // Move to next field in same row
+    const nextField = fields[currentIdx + 1];
+    requestAnimationFrame(() => {
+      const nextTd = document.querySelector(`tr[data-action-id="${actionId}"] td[data-field="${nextField}"]`);
+      if (nextTd) startEdit(nextTd, actionId, nextField);
+    });
+  }
+}
+
+// ============================================================
+// 12. INLINE EDIT: BC & AOI TITLES
+// ============================================================
+function startEditBCTitle(span, bcId) {
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = bc.title;
+  input.style.cssText = 'font-weight:900; text-transform:uppercase; font-size:13px; border:2px solid #000; padding:2px 6px; background:#fff; font-family:inherit; width:60%;';
+  span.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function save() {
+    const val = input.value.trim();
+    if (val) bc.title = val;
+    renderFlatTable();
+    showToast('Bästa bidrag uppdaterat');
+  }
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') save();
+    else if (e.key === 'Escape') renderFlatTable();
+  });
+  input.addEventListener('blur', () => setTimeout(save, 100));
+}
+
+function startEditAOITitle(span, bcId, aoiId) {
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const aoi = bc.areaOfImprovement.find(a => a.id === aoiId);
+  if (!aoi) return;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = aoi.title;
+  input.style.cssText = 'font-style:italic; font-size:13px; border:2px solid #000; padding:2px 6px; background:#fff; font-family:inherit; width:60%;';
+  span.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function save() {
+    const val = input.value.trim();
+    if (val) aoi.title = val;
+    renderFlatTable();
+    showToast('Förbättringsområde uppdaterat');
+  }
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') save();
+    else if (e.key === 'Escape') renderFlatTable();
+  });
+  input.addEventListener('blur', () => setTimeout(save, 100));
+}
+
+// ============================================================
+// 13. STATUS DOT CYCLING
+// ============================================================
+function cycleStatus(actionId) {
+  const action = WS.actions.find(a => a.id === actionId);
+  if (!action) return;
+  const cycle = ['not_started', 'in_progress', 'done'];
+  const currentIdx = cycle.indexOf(action.status === 'overdue' ? 'not_started' : action.status);
+  const nextIdx = (currentIdx + 1) % cycle.length;
+  action.status = cycle[nextIdx];
+  renderFlatTable();
+  renderCompletedSection();
+  showToast(`Status: ${statusLabel(action.status)}`);
+}
+
+// ============================================================
+// 14. CREATE: BC, AOI, ACTION
+// ============================================================
+function createNewBC() {
+  const newBcId = 'bc_' + Math.random().toString(36).slice(2, 7);
+  const newAoiId = 'ai_' + Math.random().toString(36).slice(2, 7);
+  WS.bestContributions.push({
+    id: newBcId,
+    teamId: S.teamId,
+    title: 'Nytt bästa bidrag',
+    areaOfImprovement: [{ id: newAoiId, title: 'Inget förbättringsområde' }],
+  });
+  renderFlatTable();
+  // Enter edit mode on the new BC title
+  requestAnimationFrame(() => {
+    const span = document.querySelector(`[data-bc-title="${newBcId}"]`);
+    if (span) startEditBCTitle(span, newBcId);
+  });
+  showToast('Bästa bidrag skapat');
+}
+
+function createNewAOI(bcId) {
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const newAoiId = 'ai_' + Math.random().toString(36).slice(2, 7);
+  bc.areaOfImprovement.push({ id: newAoiId, title: 'Nytt förbättringsområde' });
+  renderFlatTable();
+  // Enter edit mode on the new AOI title
+  requestAnimationFrame(() => {
+    const span = document.querySelector(`[data-aoi-title="${newAoiId}"]`);
+    if (span) startEditAOITitle(span, bcId, newAoiId);
+  });
+  showToast('Förbättringsområde tillagt');
+}
+
+function createNewAction(bcId, aoiId) {
+  const newActionId = 'a_' + Math.random().toString(36).slice(2, 7);
+  WS.actions.push({
+    id: newActionId,
+    teamId: S.teamId,
+    bcId: bcId,
+    aiId: aoiId,
+    title: '',
+    description: '',
+    responsibleId: '',
+    supportId: '',
+    deadline: '',
+    status: 'not_started',
+    comment: '',
+  });
+  renderFlatTable();
+  // Enter edit mode on the new action title
+  requestAnimationFrame(() => {
+    const td = document.querySelector(`tr[data-action-id="${newActionId}"] td[data-field="title"]`);
+    if (td) startEdit(td, newActionId, 'title');
+  });
+}
+
+// ============================================================
+// 15. DELETE: BC, AOI, ACTION
+// ============================================================
+function deleteAction(actionId) {
+  const action = WS.actions.find(a => a.id === actionId);
+  if (!action) return;
+  showConfirm(
+    'Radera åtgärd',
+    `Radera "${action.title || 'Namnlös åtgärd'}" permanent?`,
+    'Radera',
+    () => {
+      WS.actions = WS.actions.filter(a => a.id !== actionId);
+      renderFlatTable();
+      renderCompletedSection();
+      showToast('Åtgärd raderad');
+    }
+  );
+}
+
+function deleteBC(bcId) {
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const actionCount = WS.actions.filter(a => a.bcId === bcId).length;
+  if (actionCount > 0) {
+    showConfirm(
+      'Kan inte radera',
+      `Detta bästa bidrag har ${actionCount} åtgärder. Ta bort alla åtgärder först.`,
+      'OK',
+      () => {}
+    );
+  } else {
+    showConfirm(
+      'Radera bästa bidrag',
+      `Radera "${bc.title}" permanent?`,
+      'Radera',
+      () => {
+        WS.bestContributions = WS.bestContributions.filter(b => b.id !== bcId);
+        renderFlatTable();
+        showToast('Bästa bidrag raderat');
+      }
+    );
+  }
+}
+
+function deleteAOI(bcId, aoiId) {
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  if (!bc) return;
+  const aoi = bc.areaOfImprovement.find(a => a.id === aoiId);
+  if (!aoi) return;
+  const aoiActions = WS.actions.filter(a => a.bcId === bcId && a.aiId === aoiId).length;
+  if (aoiActions > 0) {
+    showConfirm(
+      'Kan inte radera',
+      `Detta förbättringsområde har ${aoiActions} åtgärder. Ta bort alla åtgärder först.`,
+      'OK',
+      () => {}
+    );
+  } else {
+    showConfirm(
+      'Radera förbättringsområde',
+      `Radera "${aoi.title}" permanent?`,
+      'Radera',
+      () => {
+        bc.areaOfImprovement = bc.areaOfImprovement.filter(a => a.id !== aoiId);
+        renderFlatTable();
+        showToast('Förbättringsområde raderat');
+      }
+    );
+  }
+}
+
+// ============================================================
+// 16. RENDER: FLAT TABLE
+// ============================================================
+function renderFlatTable() {
+  const bcs = getTeamBCs();
+  const activeActions = getActiveActions();
+  const wrap = $('flat-table-wrap');
+
+  if (bcs.length === 0) {
+    wrap.innerHTML = '<div class="empty-state"><p>Inga bästa bidrag har skapats ännu.</p></div>';
+    renderCompletedSection();
+    return;
+  }
+
+  let html = '<table class="data-table"><thead><tr>';
+  html += `<th style="width:30px;">&bull;</th>`;
+  html += `<th onclick="toggleSort('title')">${t('ap.action')} ${sortArrow('title')}</th>`;
+  html += `<th onclick="toggleSort('responsible')">${t('ap.responsible')} ${sortArrow('responsible')}</th>`;
+  html += `<th onclick="toggleSort('support')" class="col-hide-sm">${t('ap.support')} ${sortArrow('support')}</th>`;
+  html += `<th onclick="toggleSort('deadline')">${t('ap.deadline')} ${sortArrow('deadline')}</th>`;
+  html += `<th style="width:36px;" data-min-role="team-leader"></th>`;
+  html += '</tr></thead><tbody>';
+
+  bcs.forEach(bc => {
+    // BC header row
+    html += `<tr class="bc-row"><td colspan="6"><div class="bc-row-inner">`;
+    html += `<span class="bc-title-text" data-bc-title="${bc.id}">${bc.title}</span>`;
+    html += `<span class="bc-actions" data-min-role="team-leader">`;
+    html += `<button onclick="createNewAOI('${bc.id}')" title="Nytt förbättringsområde">+ FO</button>`;
+    html += `<button onclick="event.stopPropagation(); startEditBCTitle(document.querySelector('[data-bc-title=\\'${bc.id}\\']'), '${bc.id}')">[Redigera]</button>`;
+    html += `<button onclick="deleteBC('${bc.id}')" style="color:var(--err);">[Radera]</button>`;
+    html += `</span>`;
+    html += `</div></td></tr>`;
+
+    const aois = bc.areaOfImprovement || [];
+    aois.forEach(aoi => {
+      // AOI header row
+      html += `<tr class="aoi-row"><td colspan="6"><div class="aoi-row-inner">`;
+      html += `<span class="aoi-title-text" data-aoi-title="${aoi.id}">${t('ap.aoi')}: ${aoi.title}</span>`;
+      html += `<span class="aoi-actions" data-min-role="team-leader">`;
+      html += `<button onclick="createNewAction('${bc.id}', '${aoi.id}')" title="Ny åtgärd">+ Åtgärd</button>`;
+      html += `<button onclick="event.stopPropagation(); startEditAOITitle(document.querySelector('[data-aoi-title=\\'${aoi.id}\\']'), '${bc.id}', '${aoi.id}')">[Redigera]</button>`;
+      html += `<button onclick="deleteAOI('${bc.id}', '${aoi.id}')" style="color:var(--err);">[Radera]</button>`;
+      html += `</span>`;
+      html += `</div></td></tr>`;
+
+      // Action rows for this AOI (only active)
+      let aoiActions = activeActions.filter(a => a.bcId === bc.id && a.aiId === aoi.id);
+      aoiActions = sortActions(aoiActions);
+
+      aoiActions.forEach(a => {
+        const resp = userById(a.responsibleId);
+        const supp = a.supportId ? userById(a.supportId) : null;
+        html += `<tr class="action-row" data-action-id="${a.id}">`;
+        html += `<td style="text-align:center;"><span class="status-dot status-dot--${a.status}" onclick="cycleStatus('${a.id}')" title="${statusLabel(a.status)}"></span></td>`;
+        html += `<td data-field="title" onclick="startEdit(this, '${a.id}', 'title')"><strong>${a.title || '(namnlös)'}</strong></td>`;
+        html += `<td data-field="responsible" onclick="startEdit(this, '${a.id}', 'responsible')">${shortName(resp)}</td>`;
+        html += `<td data-field="support" class="col-hide-sm" onclick="startEdit(this, '${a.id}', 'support')">${supp ? shortName(supp) : '—'}</td>`;
+        html += `<td data-field="deadline" onclick="startEdit(this, '${a.id}', 'deadline')">${a.deadline || '—'}</td>`;
+        html += `<td class="delete-cell" data-min-role="team-leader"><button class="delete-btn" onclick="deleteAction('${a.id}')" title="Radera">&times;</button></td>`;
+        html += `</tr>`;
+      });
+
+      // "+ Ny åtgärd" row
+      html += `<tr class="new-action-row" data-min-role="team-leader" onclick="createNewAction('${bc.id}', '${aoi.id}')"><td colspan="6">+ Ny åtgärd</td></tr>`;
+    });
+  });
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+  renderCompletedSection();
+}
+
+// ============================================================
+// 17. RENDER: COMPLETED SECTION
+// ============================================================
+function renderCompletedSection() {
+  const doneActions = getDoneActions();
+  if (doneActions.length === 0) {
+    $('completed-section').style.display = 'none';
+    return;
+  }
+  $('completed-section').style.display = '';
+  $('completed-count').textContent = `(${doneActions.length})`;
+
+  let html = '<div class="table-wrap"><table class="data-table"><thead><tr>';
+  html += `<th style="width:30px;">&bull;</th>`;
+  html += `<th>${t('ap.action')}</th>`;
+  html += `<th>${t('ap.bcLabel')}</th>`;
+  html += `<th>${t('ap.responsible')}</th>`;
+  html += `<th>${t('ap.deadline')}</th>`;
+  html += '</tr></thead><tbody>';
+  doneActions.forEach(a => {
+    const bc = WS.bestContributions.find(bc => bc.id === a.bcId);
+    const resp = userById(a.responsibleId);
+    html += `<tr>`;
+    html += `<td style="text-align:center;"><span class="status-dot status-dot--done"></span></td>`;
+    html += `<td><strong>${a.title}</strong></td>`;
+    html += `<td>${bc ? bc.title : '—'}</td>`;
+    html += `<td>${shortName(resp)}</td>`;
+    html += `<td>${a.deadline || '—'}</td>`;
+    html += `</tr>`;
+  });
+  html += '</tbody></table></div>';
+  $('completed-body').innerHTML = html;
+}
+
+$('completed-toggle').addEventListener('click', () => {
+  $('completed-section').classList.toggle('completed-section--open');
+});
+
+// ============================================================
+// 18. STATIC TEXT
+// ============================================================
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-logo').textContent = 'ITT';
+  $('nav-admin').textContent = '⚙ ' + t('nav.admin');
+  $('page-title').textContent = t('ap.title');
+  $('btn-new-bc').textContent = t('ap.newBc');
+  $('completed-title').textContent = t('ap.completedSteps');
+  $('dialog-cancel').textContent = t('btn.cancel');
+}
+
+// ============================================================
+// 19. NEW BC BUTTON
+// ============================================================
+$('btn-new-bc').addEventListener('click', () => createNewBC());
+
+// ============================================================
+// 20. BC TITLE CLICK-TO-EDIT DELEGATION
+// ============================================================
+document.addEventListener('click', e => {
+  const bcTitle = e.target.closest('[data-bc-title]');
+  if (bcTitle && !e.target.closest('input')) {
+    startEditBCTitle(bcTitle, bcTitle.dataset.bcTitle);
+  }
+  const aoiTitle = e.target.closest('[data-aoi-title]');
+  if (aoiTitle && !e.target.closest('input') && !e.target.closest('button')) {
+    const row = aoiTitle.closest('.aoi-row');
+    // Find BC id from previous bc-row
+    let bcRow = row.previousElementSibling;
+    while (bcRow && !bcRow.classList.contains('bc-row')) bcRow = bcRow.previousElementSibling;
+    if (bcRow) {
+      const bcTitleSpan = bcRow.querySelector('[data-bc-title]');
+      if (bcTitleSpan) startEditAOITitle(aoiTitle, bcTitleSpan.dataset.bcTitle, aoiTitle.dataset.aoiTitle);
+    }
+  }
+});
+
+// ============================================================
+// 21. ESCAPE KEY
+// ============================================================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if ($('confirm-dialog').classList.contains('dialog-overlay--visible')) closeConfirm();
+    else if (editingCell) cancelEdit();
+  }
+});
+
+// ============================================================
+// 22. RENDER ALL
+// ============================================================
+function renderAll() {
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSidebar();
+  renderFlatTable();
+}
+
+// ============================================================
+// 23. INIT
+// ============================================================
+updateStaticText();
+setRole(S.role);
+</script>
+</body>
+</html>

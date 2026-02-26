@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard v5 — Integral Teamwork Toolkit</title>
+<title>Dashboard v6 — Integral Teamwork Toolkit</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,55 +15,52 @@
   --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
   --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
   --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
-  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+  --xs: 4px; --sm: 8px; --md: 12px; --lg: 18px; --xl: 24px; --2xl: 36px;
+  --sidebar-w: 240px;
 }
 body {
-  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.45;
   color: var(--text); background: var(--bg); padding-bottom: 64px;
+  display: flex; min-height: 100vh;
 }
 
 /* --- SKIP LINK --- */
 .skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
 .skip-link:focus { top: var(--md); }
 
-/* --- TOP NAV --- */
-.top-nav { position: sticky; top: 0; z-index: 1000; background: var(--bg-dark); border-bottom: 3px solid var(--hi); padding: 0 var(--lg); }
-.top-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; }
-.top-nav__logo { display: flex; align-items: center; gap: var(--sm); padding: var(--md) var(--lg) var(--md) 0; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; white-space: nowrap; border-right: 2px solid #333; margin-right: var(--sm); }
-.top-nav__link { display: flex; align-items: center; gap: var(--xs); padding: 0 var(--md); color: #ccc; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -3px; min-height: 48px; transition: color .15s, border-color .15s; }
-.top-nav__link:hover { color: #fff; }
-.top-nav__link--active { color: var(--hi); border-bottom-color: var(--hi); }
-.top-nav__spacer { flex: 1; }
-.lang-switcher { display: flex; align-items: center; gap: 2px; padding: 0 var(--md); }
+/* --- SIDEBAR --- */
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--sm) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: var(--sm) var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
+.sidebar__section-label { padding: var(--md) var(--lg) var(--xs); color: #888; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
 .lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
 .lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
 .lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
 
-/* --- NAV SELECTORS (org + team in topnav) --- */
-.nav-selector { display: flex; align-items: center; padding: 0 var(--sm); }
-.nav-selector select { background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
-.nav-selector select:focus { outline: 2px solid var(--hi); }
-.nav-selector__label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-right: var(--xs); white-space: nowrap; }
-
-/* --- SUB NAV --- */
-.sub-nav { background: var(--bg); border-bottom: 2px solid var(--border-strong); padding: 0 var(--lg); }
-.sub-nav__inner { display: flex; align-items: stretch; max-width: 1400px; margin: 0 auto; gap: 0; overflow-x: auto; }
-.sub-nav__link { display: flex; align-items: center; padding: var(--sm) var(--md); color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color .15s, border-color .15s; }
-.sub-nav__link:hover { color: var(--text); }
-.sub-nav__link--active { color: var(--text); font-weight: 900; border-bottom-color: var(--hi); background: var(--hi-soft); }
-.sub-nav__divider { width: 1px; background: var(--border); margin: 8px 4px; }
-.sub-nav__mobile { display: none; }
+/* --- PAGE WRAPPER --- */
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; }
 
 /* --- MAIN --- */
-.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--lg); }
+.main { max-width: 1720px; margin: 0 auto; padding: 0 var(--sm) var(--2xl); }
 
 /* --- HERO --- */
-.hero { padding: var(--xs) 0; border-bottom: 2px solid var(--border-strong); margin-bottom: var(--sm); }
-.hero__welcome { display: flex; align-items: center; gap: var(--sm); font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; flex-wrap: wrap; }
-
-/* --- DASHBOARD GRID --- */
-.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sm); margin-bottom: var(--sm); }
-.dash-grid--top { align-items: start; }
+.hero { padding: var(--md) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--md); }
+.hero__welcome { display: flex; align-items: center; gap: var(--sm); font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; flex-wrap: wrap; }
 
 /* --- BADGES --- */
 .badge { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
@@ -74,28 +71,34 @@ body {
 .badge--user { background: var(--bg-alt); color: var(--text-muted); border-color: var(--border); }
 
 /* --- STAT CARDS --- */
-.stat-cards { display: grid; grid-template-columns: 1fr 1fr; gap: var(--xs); }
-.stat-card { display: flex; align-items: center; gap: var(--sm); border: 2px solid var(--border-strong); padding: var(--xs) var(--sm); transition: box-shadow .15s, transform .15s; text-decoration: none; color: var(--text); cursor: pointer; }
-.stat-card:hover { box-shadow: 3px 3px 0 var(--hi); transform: translate(-1px, -1px); }
-.stat-card__value { font-size: 18px; font-weight: 900; line-height: 1; white-space: nowrap; }
-.stat-card__label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); white-space: nowrap; }
+.top-overview { display: flex; align-items: stretch; gap: var(--md); margin-bottom: var(--md); }
+.stat-cards { display: inline-grid; grid-template-columns: repeat(2, max-content); gap: 6px; margin-bottom: 0; align-self: flex-start; }
+.stat-card { display: flex; align-items: center; gap: var(--sm); border: 2px solid var(--border-strong); padding: 6px 10px; min-height: 0; transition: box-shadow .15s, transform .15s; text-decoration: none; color: var(--text); cursor: pointer; }
+.stat-card:hover { box-shadow: 4px 4px 0 var(--hi); transform: translate(-2px, -2px); }
+.stat-card__value { font-size: 20px; font-weight: 900; line-height: 1; white-space: nowrap; }
+.stat-card__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); white-space: nowrap; }
 .stat-card--ok { border-left: 5px solid var(--ok); }
 .stat-card--warn { border-left: 5px solid var(--warn); }
 .stat-card--err { border-left: 5px solid var(--err); }
 .stat-card--hi { border-left: 5px solid var(--hi); }
+.top-desired { flex: 1; min-width: 0; }
+.top-overview .section { margin-bottom: 0; }
 
 /* --- SECTION --- */
-.section { min-width: 0; }
-.section__header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 2px; border-bottom: 2px solid var(--border-strong); margin-bottom: var(--xs); }
-.section__title { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--md); align-items: start; }
+.dashboard-col { display: flex; flex-direction: column; gap: var(--md); }
+.section { margin-bottom: var(--md); }
+.dashboard-col .section { margin-bottom: 0; }
+.section__header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 6px; border-bottom: 3px solid var(--border-strong); margin-bottom: 6px; }
+.section__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
 .section__title a { color: var(--text); text-decoration: none; transition: color .15s; }
 .section__title a:hover { color: var(--hi); }
 
 /* --- TABLE --- */
 .table-wrap { overflow-x: auto; }
 .data-table { width: 100%; border-collapse: collapse; }
-.data-table th, .data-table td { border: 1px solid var(--border-strong); padding: var(--xs) var(--sm); text-align: left; vertical-align: middle; font-size: 12px; }
-.data-table thead th { background: var(--accent); color: var(--accent-inv); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+.data-table th, .data-table td { border: 2px solid var(--border-strong); padding: 5px 7px; text-align: left; vertical-align: middle; font-size: 12px; }
+.data-table thead th { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
 .data-table tbody tr { transition: background .1s; }
 .data-table tbody tr:hover { background: var(--hi-soft); }
 
@@ -107,31 +110,31 @@ body {
 .status--done { background: #e6f7ee; color: #006d36; border-color: var(--ok); }
 
 /* --- TEXT PREVIEW --- */
-.text-preview { display: flex; flex-direction: column; gap: var(--xs); }
-.text-preview__block { border: 1px solid var(--border); padding: var(--xs) var(--sm); }
-.text-preview__label { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 2px; }
-.text-preview__text { font-size: 11px; line-height: 1.3; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.text-preview { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sm); }
+.text-preview__block { border: 2px solid var(--border); padding: var(--md); }
+.text-preview__label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: var(--sm); }
+.text-preview__text { font-size: 13px; line-height: 1.4; color: var(--text); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* --- SPARKLINE CHART --- */
-.spark { border: 1px solid var(--border-strong); padding: var(--sm); }
-.spark__legend { display: flex; flex-wrap: wrap; gap: var(--sm); margin-bottom: var(--xs); }
-.spark__legend-item { display: flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; }
-.spark__swatch { width: 10px; height: 2px; }
-.spark__svg { width: 100%; height: 100px; }
-.spark__x-labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); font-weight: 700; margin-top: 2px; }
+.spark { border: 2px solid var(--border-strong); padding: 7px var(--sm); }
+.spark__legend { display: flex; flex-wrap: wrap; gap: var(--sm); margin-bottom: var(--sm); }
+.spark__legend-item { display: flex; align-items: center; gap: var(--xs); font-size: 11px; font-weight: 700; }
+.spark__swatch { width: 12px; height: 3px; }
+.spark__svg { width: 100%; height: 115px; }
+.spark__x-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: var(--xs); }
 
 /* --- TIMELINE --- */
 .timeline { display: flex; flex-direction: column; gap: 0; }
-.timeline__item { display: flex; gap: var(--sm); padding: var(--xs) 0; border-bottom: 1px solid var(--border); }
+.timeline__item { display: flex; gap: var(--sm); padding: var(--sm) 0; border-bottom: 1px solid var(--border); }
 .timeline__item:last-child { border-bottom: none; }
-.timeline__date { min-width: 70px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); padding-top: 1px; }
-.timeline__text { font-size: 12px; line-height: 1.4; }
+.timeline__date { min-width: 80px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); padding-top: 2px; }
+.timeline__text { font-size: 13px; line-height: 1.4; }
 
 /* --- NEWS --- */
-.news-card { border: 1px solid var(--border-strong); padding: var(--xs) var(--sm); margin-bottom: var(--xs); }
-.news-card__date { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
-.news-card__title { font-size: 12px; font-weight: 900; margin: 1px 0; }
-.news-card__text { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
+.news-card { border: 2px solid var(--border-strong); padding: var(--sm) var(--md); margin-bottom: var(--sm); }
+.news-card__date { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+.news-card__title { font-size: 14px; font-weight: 900; margin: var(--xs) 0; }
+.news-card__text { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
 /* --- TOAST --- */
 .toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
@@ -159,13 +162,12 @@ body {
 .role-integ-admin [data-min-role="super-admin"] { display: none !important; }
 
 /* --- RESPONSIVE --- */
-@media (max-width: 1024px) {
-  .sub-nav__inner { display: none; }
-  .sub-nav__mobile { display: block; }
-}
 @media (max-width: 900px) {
-  .dash-grid { grid-template-columns: 1fr; }
-  .dash-grid__full { grid-column: 1; }
+  .top-overview { flex-direction: column; }
+  .stat-cards { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .stat-cards { grid-template-columns: repeat(2, 1fr); }
+  .text-preview { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .stat-cards { grid-template-columns: 1fr; }
@@ -178,36 +180,33 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 <body class="role-super-admin">
 <a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
 
-<!-- ===== TOP NAV ===== -->
-<nav class="top-nav" aria-label="Huvudnavigering">
-  <div class="top-nav__inner">
-    <a href="#" class="top-nav__logo">ITT</a>
-    <div class="nav-selector" id="org-selector-wrap">
-      <span class="nav-selector__label">Org</span>
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header">
+    <a href="dashboard.html" class="sidebar__logo" id="nav-logo">ITT</a>
+  </div>
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap">
+      <span class="sidebar__selector-label">Org</span>
       <select id="org-select" aria-label="Välj organisation"></select>
     </div>
-    <div class="nav-selector" id="team-selector-wrap">
-      <span class="nav-selector__label">Team</span>
+    <div class="sidebar__selector" id="team-selector-wrap">
+      <span class="sidebar__selector-label">Team</span>
       <select id="team-select" aria-label="Välj team"></select>
     </div>
-    <a href="#" class="top-nav__link top-nav__link--active" aria-current="page" id="nav-dashboard">Dashboard</a>
-    <a href="agenda.html" class="top-nav__link" id="nav-agenda">Agenda</a>
-    <a href="admin.html" class="top-nav__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
-    <div class="top-nav__spacer"></div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
     <div class="lang-switcher" id="lang-switcher">
       <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
       <button class="lang-btn" data-lang="en">EN</button>
     </div>
   </div>
-</nav>
+</aside>
 
-<!-- ===== SUB NAV ===== -->
-<nav class="sub-nav" aria-label="Modulnavigering">
-  <div class="sub-nav__inner" id="sub-nav-inner"></div>
-  <select class="sub-nav__mobile" id="sub-nav-mobile" aria-label="Välj modul"></select>
-</nav>
-
-<!-- ===== MAIN ===== -->
+<!-- ===== PAGE WRAPPER ===== -->
+<div class="page-wrap">
 <main class="main" id="main-content">
 
   <!-- HERO -->
@@ -215,8 +214,8 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
     <h1 class="hero__welcome" id="hero-welcome">Välkommen tillbaka, Håkan <span id="hero-role"></span></h1>
   </div>
 
-  <!-- ROW 1: Stats 2x2 + Actions -->
-  <div class="dash-grid dash-grid--top">
+  <div class="top-overview">
+    <!-- STAT CARDS -->
     <div class="stat-cards" id="stat-cards">
       <a href="attendance.html" class="stat-card" id="card-meetings">
         <div class="stat-card__value" id="stat-meetings">12</div>
@@ -235,59 +234,67 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
         <div class="stat-card__label" id="stat-progress-label">Teamframsteg</div>
       </a>
     </div>
-    <div class="section" id="section-actions">
-      <div class="section__header">
-        <h2 class="section__title"><a href="action-plan.html" id="title-my-actions">Mina åtgärder</a></h2>
-      </div>
-      <div class="table-wrap">
-        <table class="data-table" id="actions-table">
-          <thead>
-            <tr>
-              <th id="col-action">Åtgärd</th>
-              <th id="col-deadline">Deadline</th>
-              <th id="col-status">Status</th>
-              <th id="col-bc">Bästa bidrag</th>
-            </tr>
-          </thead>
-          <tbody id="actions-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ROW 2: Desired State + Goals Chart -->
-  <div class="dash-grid">
-    <div class="section" id="section-desired">
+    <!-- DESIRED STATE PREVIEW -->
+    <div class="section top-desired" id="section-desired">
       <div class="section__header">
         <h2 class="section__title"><a href="desired-state.html" id="title-desired">Önskat läge</a></h2>
       </div>
       <div class="text-preview" id="desired-preview"></div>
     </div>
-    <div class="section" id="section-goals">
-      <div class="section__header">
-        <h2 class="section__title"><a href="goals-metrics.html" id="title-goals">Mål &amp; Mätetal</a></h2>
-      </div>
-      <div class="spark" id="goals-chart"></div>
-    </div>
   </div>
 
-  <!-- ROW 3: Activity + News -->
-  <div class="dash-grid">
-    <div class="section" id="section-activity">
-      <div class="section__header">
-        <h2 class="section__title" id="title-activity">Senaste aktivitet</h2>
+  <div class="dashboard-grid">
+    <div class="dashboard-col">
+      <!-- MY ACTIONS -->
+      <div class="section" id="section-actions">
+        <div class="section__header">
+          <h2 class="section__title"><a href="action-plan.html" id="title-my-actions">Mina åtgärder</a></h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="actions-table">
+            <thead>
+              <tr>
+                <th id="col-action">Åtgärd</th>
+                <th id="col-deadline">Deadline</th>
+                <th id="col-status">Status</th>
+                <th id="col-bc">Bästa bidrag</th>
+              </tr>
+            </thead>
+            <tbody id="actions-tbody"></tbody>
+          </table>
+        </div>
       </div>
-      <div class="timeline" id="activity-timeline"></div>
+
+      <!-- GOALS & METRICS MINI CHART -->
+      <div class="section" id="section-goals">
+        <div class="section__header">
+          <h2 class="section__title"><a href="goals-metrics.html" id="title-goals">Mål &amp; Mätetal</a></h2>
+        </div>
+        <div class="spark" id="goals-chart"></div>
+      </div>
+
+      <!-- RECENT ACTIVITY -->
+      <div class="section" id="section-activity">
+        <div class="section__header">
+          <h2 class="section__title" id="title-activity">Senaste aktivitet</h2>
+        </div>
+        <div class="timeline" id="activity-timeline"></div>
+      </div>
     </div>
-    <div class="section" id="section-news">
-      <div class="section__header">
-        <h2 class="section__title"><a href="newsflash.html" id="title-news">Nyhetsflash</a></h2>
+
+    <div class="dashboard-col">
+      <!-- NEWS -->
+      <div class="section" id="section-news">
+        <div class="section__header">
+          <h2 class="section__title"><a href="newsflash.html" id="title-news">Nyhetsflash</a></h2>
+        </div>
+        <div id="news-list"></div>
       </div>
-      <div id="news-list"></div>
     </div>
   </div>
 
 </main>
+</div>
 
 <!-- ===== TOAST CONTAINER ===== -->
 <div class="toast-container" id="toast-container"></div>
@@ -330,11 +337,9 @@ function setLang(lang) {
   renderAll();
 }
 
-// Language switcher events
 document.addEventListener('click', e => {
   if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
 });
-
 
 // ============================================================
 // 1. STATE
@@ -353,7 +358,6 @@ const ROLE_NAMES = {
   'team-leader': 'role.teamLeader',
   'user': 'role.user',
 };
-
 
 // ============================================================
 // 2. HELPERS
@@ -401,21 +405,17 @@ function orgsForActor() {
 function teamsForActor() {
   const a = actor();
   const u = actorUser();
-  // Super-admin, integ-admin, org-admin: filter by selected org
   if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
     let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
     if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
     return teams;
   }
-  // Team-leader sees their teams
   if (S.role === 'team-leader') {
     if (a.teams) return DB.teams.filter(t => a.teams.includes(t.id));
     return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
   }
-  // User sees teams they are member of
   return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
 }
-
 
 // ============================================================
 // 3. ORG + TEAM SELECTORS
@@ -426,7 +426,6 @@ function renderOrgSelector() {
   const wrap = $('org-selector-wrap');
   const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
 
-  // Hide if not high enough role or only 1 org
   if (!isHighRole || orgs.length <= 1) {
     wrap.style.display = 'none';
     if (orgs.length === 1) S.orgId = orgs[0].id;
@@ -435,7 +434,6 @@ function renderOrgSelector() {
   }
 
   wrap.style.display = '';
-  // Ensure valid orgId
   if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
     S.orgId = orgs[0].id;
     localStorage.setItem('itt-org', S.orgId);
@@ -448,7 +446,6 @@ function renderOrgSelector() {
 $('org-select').addEventListener('change', e => {
   S.orgId = e.target.value;
   localStorage.setItem('itt-org', S.orgId);
-  // Reset team when org changes
   const teams = teamsForActor();
   if (teams.length > 0) {
     S.teamId = teams[0].id;
@@ -462,7 +459,6 @@ function renderTeamSelector() {
   const sel = $('team-select');
   const wrap = $('team-selector-wrap');
 
-  // Hide selector if only 1 team
   if (teams.length <= 1) {
     wrap.style.display = 'none';
     if (teams.length === 1) S.teamId = teams[0].id;
@@ -473,7 +469,6 @@ function renderTeamSelector() {
     ).join('');
   }
 
-  // Ensure valid team
   if (!teams.find(t => t.id === S.teamId) && teams.length > 0) {
     S.teamId = teams[0].id;
     localStorage.setItem('itt-team', S.teamId);
@@ -486,9 +481,8 @@ $('team-select').addEventListener('change', e => {
   renderAll();
 });
 
-
 // ============================================================
-// 3b. SUB-NAV
+// 3b. SIDEBAR NAVIGATION
 // ============================================================
 const MODULES = [
   { key: 'strategic',     file: 'strategic.html',     section: 1, shortKey: 'mod.short.strategic',    fullKey: 'mod.strategic' },
@@ -509,6 +503,8 @@ const SECTION_LABELS = {
   4: { sv: '4. Lär vi oss?', en: '4. Are we learning?' },
 };
 
+const ACTIVE_MODULE = 'dashboard';
+
 function getVisibleModules() {
   const stored = localStorage.getItem('itt-agenda-visibility-' + S.teamId);
   if (stored) {
@@ -517,36 +513,29 @@ function getVisibleModules() {
   return MODULES;
 }
 
-function renderSubNav() {
+function renderSidebar() {
   const mods = getVisibleModules();
+  let html = '';
+
+  const dashActive = ACTIVE_MODULE === 'dashboard' ? ' sidebar__link--active' : '';
+  html += `<a href="dashboard.html" class="sidebar__link${dashActive}" id="nav-dashboard">${t('nav.dashboard')}</a>`;
+  html += '<div class="sidebar__divider"></div>';
+
   let lastSection = 0;
-  let desktopHtml = '';
   mods.forEach(m => {
-    if (m.section !== lastSection && lastSection !== 0) desktopHtml += '<div class="sub-nav__divider"></div>';
-    lastSection = m.section;
-    desktopHtml += `<a href="${m.file}" class="sub-nav__link">${t(m.shortKey)}</a>`;
-  });
-  $('sub-nav-inner').innerHTML = desktopHtml;
-
-  let mobileHtml = '';
-  let currentSection = 0;
-  let optgroupOpen = false;
-  mods.forEach(m => {
-    if (m.section !== currentSection) {
-      if (optgroupOpen) mobileHtml += '</optgroup>';
+    if (m.section !== lastSection) {
       const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
-      mobileHtml += `<optgroup label="${l}">`;
-      optgroupOpen = true;
-      currentSection = m.section;
+      html += `<div class="sidebar__section-label">${l}</div>`;
+      lastSection = m.section;
     }
-    mobileHtml += `<option value="${m.file}">${t(m.fullKey)}</option>`;
+    const isActive = m.key === ACTIVE_MODULE;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}</a>`;
   });
-  if (optgroupOpen) mobileHtml += '</optgroup>';
-  $('sub-nav-mobile').innerHTML = mobileHtml;
+
+  html += `<a href="#" class="sidebar__link sidebar__link--disabled">Integ Chat</a>`;
+
+  $('sidebar-nav').innerHTML = html;
 }
-
-$('sub-nav-mobile').addEventListener('change', e => { window.location.href = e.target.value; });
-
 
 // ============================================================
 // 4. RENDER FUNCTIONS
@@ -563,15 +552,12 @@ function renderStats() {
   const teamActions = WS.actions.filter(a => a.teamId === S.teamId);
   const teamMeetings = WS.meetings.filter(m => m.teamId === S.teamId);
 
-  // Meetings attended by current user
   const attended = teamMeetings.filter(m => m.attendees.includes(u.id)).length;
   $('stat-meetings').textContent = attended;
 
-  // Actions done in team
   const done = teamActions.filter(a => a.status === 'done').length;
   $('stat-done').textContent = done;
 
-  // Team progress = tracked contributions average (currentValue / targetValue)
   const tracked = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
   let progress = 0;
   if (tracked.length > 0) {
@@ -580,15 +566,12 @@ function renderStats() {
   $('stat-progress').textContent = progress + '%';
   $('card-progress').className = 'stat-card ' + (progress >= 70 ? 'stat-card--ok' : progress >= 40 ? 'stat-card--warn' : 'stat-card--err');
 
-  // Ongoing actions (in_progress)
   const ongoing = teamActions.filter(a => a.status === 'in_progress').length;
   $('stat-ongoing').textContent = ongoing;
   $('card-ongoing').className = 'stat-card ' + (ongoing === 0 ? 'stat-card--ok' : 'stat-card--hi');
 
-  // Color for done
   $('card-done').className = 'stat-card stat-card--ok';
 
-  // Color for meetings - warn if low attendance
   const totalMeetings = teamMeetings.length;
   const attendPct = totalMeetings > 0 ? attended / totalMeetings : 1;
   $('card-meetings').className = 'stat-card ' + (attendPct >= 0.7 ? 'stat-card--ok' : attendPct >= 0.4 ? 'stat-card--warn' : 'stat-card--err');
@@ -599,7 +582,6 @@ function renderMyActions() {
   const now = new Date('2026-02-24');
   const in14 = new Date(now); in14.setDate(in14.getDate() + 14);
 
-  // Filter: actions in this team where user is responsible or support, deadline within 14 days or overdue
   const relevant = WS.actions.filter(a => {
     if (a.teamId !== S.teamId) return false;
     if (a.responsibleId !== u.id && a.supportId !== u.id) return false;
@@ -608,7 +590,6 @@ function renderMyActions() {
     return a.status === 'overdue' || dl <= in14;
   });
 
-  // Sort: overdue first, then by deadline
   relevant.sort((a, b) => {
     if (a.status === 'overdue' && b.status !== 'overdue') return -1;
     if (b.status === 'overdue' && a.status !== 'overdue') return 1;
@@ -665,15 +646,13 @@ function renderGoalsChart() {
     return;
   }
 
-  // Collect all dates & find value range
   const allDates = [...new Set(tracked.flatMap(tc => tc.measurements.map(m => m.date)))].sort();
   let maxVal = 0;
   tracked.forEach(tc => tc.measurements.forEach(m => { if (m.value > maxVal) maxVal = m.value; }));
   if (maxVal === 0) maxVal = 1;
 
-  const W = 500, H = 100, PAD = 4;
+  const W = 500, H = 150, PAD = 4;
 
-  // Build SVG lines
   let lines = '';
   let dots = '';
   tracked.forEach((tc, idx) => {
@@ -685,20 +664,17 @@ function renderGoalsChart() {
       const y = H - PAD - (val / maxVal) * (H - PAD * 2);
       return { x, y, val };
     });
-    const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
     lines += `<polyline points="${points.map(p => p.x+','+p.y).join(' ')}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>`;
     points.forEach(p => {
       dots += `<circle cx="${p.x}" cy="${p.y}" r="3" fill="${color}"><title>${tc.title}: ${p.val} ${tc.unit}</title></circle>`;
     });
   });
 
-  // Legend
   const legend = tracked.map((tc, idx) => {
     const color = SPARK_COLORS[idx % SPARK_COLORS.length];
     return `<span class="spark__legend-item"><span class="spark__swatch" style="background:${color}"></span>${tc.title}</span>`;
   }).join('');
 
-  // X-axis labels
   const xLabels = allDates.map(d => `<span>${d.substring(5)}</span>`).join('');
 
   container.innerHTML = `
@@ -740,8 +716,6 @@ function renderNews() {
 
 function updateStaticText() {
   $('skip-link').textContent = t('skip');
-  $('nav-dashboard').textContent = t('nav.dashboard');
-  $('nav-agenda').textContent = t('nav.agenda');
   $('nav-admin').textContent = t('nav.admin');
   $('stat-meetings-label').textContent = t('dash.statMeetings');
   $('stat-done-label').textContent = t('dash.statActionsDone');
@@ -757,14 +731,13 @@ function updateStaticText() {
   $('col-bc').textContent = t('ap.bcLabel');
 }
 
-
 // ============================================================
 // 5. RENDER ALL
 // ============================================================
 function renderAll() {
   renderOrgSelector();
   renderTeamSelector();
-  renderSubNav();
+  renderSidebar();
   renderHero();
   renderStats();
   renderMyActions();
@@ -773,7 +746,6 @@ function renderAll() {
   renderActivity();
   renderNews();
 }
-
 
 // ============================================================
 // 6. ROLE SWITCHING
@@ -784,14 +756,12 @@ function setRole(role) {
   document.body.className = 'role-' + role;
   document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
 
-  // Reset org to first available
   const orgs = orgsForActor();
   if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
     S.orgId = orgs[0].id;
     localStorage.setItem('itt-org', S.orgId);
   }
 
-  // Reset team to first available
   const teams = teamsForActor();
   if (teams.length > 0 && !teams.find(t => t.id === S.teamId)) {
     S.teamId = teams[0].id;
@@ -802,17 +772,14 @@ function setRole(role) {
   renderAll();
 }
 
-// Role button click handlers
 document.querySelectorAll('.role-btn').forEach(b => {
   b.addEventListener('click', () => setRole(b.dataset.role));
 });
-
 
 // ============================================================
 // 7. INIT
 // ============================================================
 (function init() {
-  // Restore role from localStorage
   const saved = localStorage.getItem('itt-role');
   if (saved && ACTORS[saved]) {
     S.role = saved;
@@ -820,7 +787,6 @@ document.querySelectorAll('.role-btn').forEach(b => {
   document.body.className = 'role-' + S.role;
   document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === S.role));
 
-  // Restore language
   const savedLang = localStorage.getItem('itt-lang');
   if (savedLang) {
     currentLang = savedLang;

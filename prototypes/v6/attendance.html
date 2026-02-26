@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Närvaro v6 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+  --sidebar-w: 240px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); display: flex; min-height: 100vh;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- SIDEBAR --- */
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--sm) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: var(--sm) var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
+.sidebar__section-label { padding: var(--md) var(--lg) var(--xs); color: #888; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- PAGE WRAPPER --- */
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); padding-bottom: 64px; }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+
+/* --- TOOLBAR --- */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); margin-bottom: var(--lg); }
+.toolbar__left { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); flex: 1; }
+.toolbar__right { display: flex; gap: var(--sm); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; border-style: dashed; }
+
+/* --- FORMS --- */
+.form-group { margin-bottom: var(--md); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--xs); display: block; }
+.form-input, .form-select { width: 100%; padding: var(--sm) var(--md); border: 2px solid var(--border-strong); background: var(--bg-alt); color: var(--text); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-input:focus, .form-select:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+textarea.form-input { min-height: 80px; resize: vertical; }
+
+/* --- BADGES --- */
+.badge { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
+.badge--leader { background: var(--hi-soft); color: var(--text); border-color: var(--hi); }
+
+/* --- ATTENDANCE GRID --- */
+.att-grid { width: 100%; border-collapse: collapse; }
+.att-grid th, .att-grid td { border: 2px solid var(--border-strong); padding: var(--sm) var(--md); text-align: center; font-size: 13px; }
+.att-grid thead th { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+.att-grid .att-name { text-align: left; font-weight: 600; white-space: nowrap; }
+.att-check { color: var(--ok); font-weight: 900; font-size: 16px; }
+.att-cross { color: var(--err); font-weight: 900; font-size: 16px; }
+.att-pct { font-weight: 900; }
+.att-pct--good { background: var(--hi-soft); }
+.att-footer td { background: var(--bg-alt); font-weight: 900; font-size: 11px; text-transform: uppercase; }
+
+/* --- TREND CHART --- */
+.trend-chart { border: 2px solid var(--border-strong); padding: var(--lg); margin-top: var(--xl); }
+.trend-chart__title { font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: var(--lg); }
+.trend-chart__area { position: relative; height: 150px; border-bottom: 2px solid var(--border); border-left: 2px solid var(--border); margin-left: 30px; }
+.trend-chart__point { position: absolute; width: 10px; height: 10px; background: var(--hi); border: 2px solid var(--border-strong); border-radius: 50%; transform: translate(-50%, 50%); z-index: 2; }
+.trend-chart__line { position: absolute; background: var(--hi); height: 2px; transform-origin: left center; z-index: 1; }
+.trend-chart__labels { display: flex; justify-content: space-between; padding-top: var(--sm); margin-left: 30px; font-size: 10px; color: var(--text-muted); font-weight: 700; }
+.trend-chart__y-axis { position: absolute; left: 0; top: 0; bottom: 0; width: 30px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: var(--text-muted); text-align: right; padding-right: var(--xs); }
+
+/* --- MEETING LIST --- */
+.meeting-item { border: 2px solid var(--border); margin-bottom: var(--sm); }
+.meeting-header { display: flex; align-items: center; gap: var(--md); padding: var(--sm) var(--md); cursor: pointer; font-size: 13px; user-select: none; }
+.meeting-header__date { font-weight: 900; }
+.meeting-header__count { color: var(--text-muted); }
+.meeting-header__arrow { margin-left: auto; font-size: 12px; transition: transform .2s; }
+.meeting-item--open .meeting-header__arrow { transform: rotate(180deg); }
+.meeting-body { padding: var(--sm) var(--md) var(--md); border-top: 1px solid var(--border); display: none; font-size: 13px; }
+.meeting-item--open .meeting-body { display: block; }
+.meeting-body__note { color: var(--text-muted); margin-bottom: var(--sm); font-style: italic; }
+.meeting-body__attendees { list-style: none; }
+.meeting-body__attendees li { padding: 2px 0; display: flex; align-items: center; gap: var(--sm); }
+
+/* --- OVERLAY + SLIDE-OVER --- */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; }
+.overlay--visible { display: block; }
+.slide-over { position: fixed; top: 0; right: -540px; width: 520px; max-width: 100vw; height: 100vh; background: var(--bg); border-left: 3px solid var(--border-strong); z-index: 2001; overflow-y: auto; transition: right .25s ease; display: flex; flex-direction: column; }
+.slide-over--open { right: 0; }
+.so-header { display: flex; justify-content: space-between; align-items: flex-start; padding: var(--xl); padding-bottom: var(--md); border-bottom: 3px solid var(--border-strong); flex-shrink: 0; }
+.so-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.so-close { background: none; border: 2px solid var(--border-strong); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: 900; color: var(--text); }
+.so-close:hover { background: var(--bg-alt); }
+.so-body { flex: 1; overflow-y: auto; padding: var(--xl); }
+.so-footer { padding: var(--lg) var(--xl); border-top: 2px solid var(--border); display: flex; gap: var(--md); flex-shrink: 0; }
+.so-danger { padding: var(--lg) var(--xl); border-top: 3px solid var(--err); flex-shrink: 0; }
+
+.check-list { list-style: none; }
+.check-item { display: flex; align-items: center; gap: var(--sm); padding: var(--sm) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.check-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+
+/* --- CONFIRM DIALOG --- */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- EMPTY STATE --- */
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) { .slide-over { width: 100vw; } }
+@media (max-width: 768px) {
+  .att-grid { font-size: 11px; }
+  .att-grid th, .att-grid td { padding: var(--xs) var(--sm); }
+}
+@media (max-width: 480px) {
+  .main { padding: 0 var(--md) var(--2xl); }
+  .page-title { font-size: 24px; padding: var(--lg) 0; }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header">
+    <a href="dashboard.html" class="sidebar__logo" id="nav-logo">ITT</a>
+  </div>
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap">
+      <span class="sidebar__selector-label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="sidebar__selector" id="team-selector-wrap">
+      <span class="sidebar__selector-label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</aside>
+
+<div class="page-wrap">
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Närvaro</h1>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar__left"></div>
+    <div class="toolbar__right">
+      <button class="btn btn--hi" id="btn-new-meeting">+ Nytt möte</button>
+    </div>
+  </div>
+
+  <!-- Attendance Grid -->
+  <div style="overflow-x:auto;" id="grid-wrap">
+    <table class="att-grid" id="att-grid" aria-label="Närvaroöversikt"></table>
+  </div>
+
+  <!-- Trend Chart -->
+  <div class="trend-chart" id="trend-chart">
+    <div class="trend-chart__title" id="trend-title">Närvarotrend</div>
+    <div style="position:relative;">
+      <div class="trend-chart__y-axis" id="trend-y"></div>
+      <div class="trend-chart__area" id="trend-area"></div>
+    </div>
+    <div class="trend-chart__labels" id="trend-labels"></div>
+  </div>
+
+  <!-- Meeting List -->
+  <h2 style="font-size:14px;font-weight:900;text-transform:uppercase;margin-top:var(--xl);margin-bottom:var(--md);" id="meeting-list-title">Möteslista</h2>
+  <div id="meeting-list"></div>
+</main>
+</div>
+
+<!-- ===== OVERLAY ===== -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ===== SLIDE-OVER: NEW/EDIT MEETING ===== -->
+<div class="slide-over" id="so-meeting" role="dialog" aria-modal="true" aria-label="Möte">
+  <div class="so-header">
+    <div class="so-title" id="so-meeting-title">Nytt möte</div>
+    <button class="so-close" aria-label="Stäng" id="so-meeting-close">&times;</button>
+  </div>
+  <div class="so-body" id="so-meeting-body"></div>
+  <div class="so-footer" id="so-meeting-footer"></div>
+  <div class="so-danger" id="so-meeting-danger" style="display:none;"></div>
+</div>
+
+<!-- ===== CONFIRM DIALOG ===== -->
+<div class="dialog-overlay" id="dialog-overlay">
+  <div class="dialog">
+    <h2 class="dialog__title" id="dialog-title"></h2>
+    <p class="dialog__text" id="dialog-text"></p>
+    <div class="dialog__actions">
+      <button class="btn btn--outline" id="dialog-cancel">Avbryt</button>
+      <button class="btn btn--danger" id="dialog-confirm"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script>
+// ============================================================
+// 0. CONSTANTS
+// ============================================================
+const ACTIVE_MODULE = 'attendance';
+
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, shortKey: 'mod.short.strategic', fullKey: 'mod.strategic' },
+  { key: 'newsflash', file: 'newsflash.html', section: 1, shortKey: 'mod.short.newsflash', fullKey: 'mod.newsflash' },
+  { key: 'desiredState', file: 'desired-state.html', section: 2, shortKey: 'mod.short.desiredState', fullKey: 'mod.desiredState' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, shortKey: 'mod.short.goalsMetrics', fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, shortKey: 'mod.short.actionPlan', fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, shortKey: 'mod.short.documents', fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, shortKey: 'mod.short.ideas', fullKey: 'mod.ideas' },
+  { key: 'attendance', file: 'attendance.html', section: 4, shortKey: 'mod.short.attendance', fullKey: 'mod.attendance' },
+  { key: 'reflections', file: 'reflections.html', section: 4, shortKey: 'mod.short.reflections', fullKey: 'mod.reflections' },
+];
+
+const SECTION_LABELS = {
+  1: { sv: '1. Vart är vi på väg?', en: '1. Where are we headed?' },
+  2: { sv: '2. Vad siktar vi på?', en: '2. What are we aiming for?' },
+  3: { sv: '3. Tar vi steg framåt?', en: '3. Are we taking steps?' },
+  4: { sv: '4. Lär vi oss?', en: '4. Are we learning?' },
+};
+
+const MODULE_KEYS = MODULES.map(m => m.key);
+
+// ============================================================
+// 1. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  renderAll();
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 2. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  editingMeetingId: null,
+};
+
+// ============================================================
+// 3. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const actor = () => ACTORS[S.role];
+
+function getTeamId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('teamId')) return urlParams.get('teamId');
+  return localStorage.getItem('itt-team') || '';
+}
+
+function orgsForActor() {
+  const a = actor();
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function getUserTeams() {
+  const a = actor();
+  const u = DB.users.find(u => u.id === a.userId);
+  if (!u) return DB.teams;
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function getCurrentTeamId() {
+  const teams = getUserTeams();
+  const stored = getTeamId();
+  if (stored && teams.some(t => t.id === stored)) return stored;
+  return teams[0]?.id || 'alpha';
+}
+
+function getTeamMembers(teamId) {
+  return DB.users.filter(u =>
+    u.registerStatus !== 'soft_deleted' &&
+    u.memberships.some(m => m.teamId === teamId)
+  );
+}
+
+function isTeamLeader(user, teamId) {
+  return user.memberships.some(m => m.teamId === teamId && m.teamRole === 'team_leader');
+}
+
+function getTeamMeetings(teamId) {
+  return WS.meetings
+    .filter(m => m.teamId === teamId)
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const day = d.getDate();
+  const months = currentLang === 'sv'
+    ? ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec']
+    : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${day} ${months[d.getMonth()]}`;
+}
+
+function formatDateFull(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString(currentLang === 'sv' ? 'sv-SE' : 'en-US', { year:'numeric', month:'long', day:'numeric' });
+}
+
+function todayStr() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
+
+function getVisibility(teamId) {
+  const key = `itt-agenda-visibility-${teamId}`;
+  const stored = localStorage.getItem(key);
+  if (stored) { try { return JSON.parse(stored); } catch(e) {} }
+  const def = {};
+  MODULE_KEYS.forEach(k => { def[k] = true; });
+  return def;
+}
+
+function getVisibleModules() {
+  const teamId = getCurrentTeamId();
+  const vis = getVisibility(teamId);
+  return MODULES.filter(m => vis[m.key] !== false);
+}
+
+// ============================================================
+// 4. TOAST
+// ============================================================
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 5. ORG + TEAM SELECTORS
+// ============================================================
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = getUserTeams();
+  if (teams.length > 0) {
+    localStorage.setItem('itt-team', teams[0].id);
+  }
+  renderAll();
+});
+
+function renderTeamSelector() {
+  const sel = $('team-select');
+  if (!sel) return;
+  const teams = getUserTeams();
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  const currentTeam = getCurrentTeamId();
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === currentTeam ? 'selected' : ''}>${t.title}</option>`).join('');
+}
+
+$('team-select')?.addEventListener('change', e => {
+  localStorage.setItem('itt-team', e.target.value);
+  renderAll();
+});
+
+// ============================================================
+// 6. SIDEBAR
+// ============================================================
+function renderSidebar() {
+  const mods = getVisibleModules();
+  let html = '';
+  const dashActive = ACTIVE_MODULE === 'dashboard' ? ' sidebar__link--active' : '';
+  html += `<a href="dashboard.html" class="sidebar__link${dashActive}" id="nav-dashboard">${t('nav.dashboard')}</a>`;
+  html += '<div class="sidebar__divider"></div>';
+  let lastSection = 0;
+  mods.forEach(m => {
+    if (m.section !== lastSection) {
+      const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
+      html += `<div class="sidebar__section-label">${l}</div>`;
+      lastSection = m.section;
+    }
+    const isActive = m.key === ACTIVE_MODULE;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}</a>`;
+  });
+  html += `<a href="#" class="sidebar__link sidebar__link--disabled">Integ Chat</a>`;
+  $('sidebar-nav').innerHTML = html;
+}
+
+// ============================================================
+// 7. ATTENDANCE GRID
+// ============================================================
+function renderGrid() {
+  const teamId = getCurrentTeamId();
+  const members = getTeamMembers(teamId);
+  const meetings = getTeamMeetings(teamId);
+  const grid = $('att-grid');
+
+  if (meetings.length === 0) {
+    grid.innerHTML = '';
+    $('grid-wrap').innerHTML = '<div class="empty-state"><p>Inga möten registrerade.</p></div>';
+    return;
+  }
+
+  if (!document.querySelector('.att-grid')) {
+    $('grid-wrap').innerHTML = '<table class="att-grid" id="att-grid" aria-label="Närvaroöversikt"></table>';
+  }
+  const table = $('att-grid');
+
+  let thead = '<thead><tr><th class="att-name" style="text-align:left;"></th>';
+  meetings.forEach(m => {
+    thead += `<th>${formatDate(m.date)}</th>`;
+  });
+  thead += `<th>${t('att.pct')}</th></tr></thead>`;
+
+  let tbody = '<tbody>';
+  let meetingTotals = meetings.map(() => ({ present: 0, total: 0 }));
+  let overallPresent = 0;
+  let overallTotal = 0;
+
+  members.forEach(member => {
+    const fullName = `${member.firstName} ${member.lastName.charAt(0)}.`;
+    const isTL = isTeamLeader(member, teamId);
+    let memberPresent = 0;
+
+    tbody += '<tr>';
+    tbody += `<td class="att-name">${fullName}${isTL ? ' <span class="badge badge--leader">TL</span>' : ''}</td>`;
+
+    meetings.forEach((m, i) => {
+      const attended = m.attendees.includes(member.id);
+      if (attended) {
+        memberPresent++;
+        meetingTotals[i].present++;
+      }
+      meetingTotals[i].total++;
+      overallTotal++;
+      if (attended) overallPresent++;
+
+      tbody += `<td><span class="${attended ? 'att-check' : 'att-cross'}">${attended ? '\u2713' : '\u2717'}</span></td>`;
+    });
+
+    const pct = meetings.length > 0 ? Math.round((memberPresent / meetings.length) * 100) : 0;
+    tbody += `<td class="att-pct${pct >= 75 ? ' att-pct--good' : ''}">${pct}%</td>`;
+    tbody += '</tr>';
+  });
+  tbody += '</tbody>';
+
+  let tfoot = '<tfoot><tr class="att-footer">';
+  tfoot += `<td class="att-name" style="text-align:left;">${t('att.total')}</td>`;
+  meetings.forEach((m, i) => {
+    tfoot += `<td>${meetingTotals[i].present}/${meetingTotals[i].total}</td>`;
+  });
+  const overallPct = overallTotal > 0 ? Math.round((overallPresent / overallTotal) * 100) : 0;
+  tfoot += `<td class="att-pct${overallPct >= 75 ? ' att-pct--good' : ''}">${overallPct}%</td>`;
+  tfoot += '</tr></tfoot>';
+
+  table.innerHTML = thead + tbody + tfoot;
+}
+
+// ============================================================
+// 8. TREND CHART
+// ============================================================
+function renderTrend() {
+  const teamId = getCurrentTeamId();
+  const members = getTeamMembers(teamId);
+  const meetings = getTeamMeetings(teamId).slice().reverse();
+  const area = $('trend-area');
+  const labels = $('trend-labels');
+  const yAxis = $('trend-y');
+
+  if (meetings.length === 0) {
+    $('trend-chart').style.display = 'none';
+    return;
+  }
+  $('trend-chart').style.display = '';
+
+  const dataPoints = meetings.map(m => {
+    const present = members.filter(u => m.attendees.includes(u.id)).length;
+    return { date: m.date, pct: members.length > 0 ? Math.round((present / members.length) * 100) : 0 };
+  });
+
+  yAxis.innerHTML = '<span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>';
+
+  area.innerHTML = '';
+
+  if (dataPoints.length === 1) {
+    const x = 50;
+    const y = 100 - dataPoints[0].pct;
+    const yPx = (y / 100) * 150;
+    area.innerHTML = `<div class="trend-chart__point" style="left:${x}%;bottom:${(dataPoints[0].pct / 100) * 150}px;" title="${dataPoints[0].pct}%"></div>`;
+    labels.innerHTML = `<span>${formatDate(dataPoints[0].date)}</span>`;
+    return;
+  }
+
+  const count = dataPoints.length;
+  const points = dataPoints.map((dp, i) => {
+    const xPct = count > 1 ? (i / (count - 1)) * 100 : 50;
+    const yPx = (dp.pct / 100) * 150;
+    return { xPct, yPx, pct: dp.pct, date: dp.date };
+  });
+
+  points.forEach((p, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'trend-chart__point';
+    dot.style.left = p.xPct + '%';
+    dot.style.bottom = p.yPx + 'px';
+    dot.title = p.pct + '%';
+    area.appendChild(dot);
+
+    if (i < points.length - 1) {
+      const next = points[i + 1];
+      const areaWidth = area.offsetWidth || 600;
+      const x1 = (p.xPct / 100) * areaWidth;
+      const y1 = p.yPx;
+      const x2 = (next.xPct / 100) * areaWidth;
+      const y2 = next.yPx;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const angle = Math.atan2(-dy, dx) * (180 / Math.PI);
+
+      const line = document.createElement('div');
+      line.className = 'trend-chart__line';
+      line.style.left = p.xPct + '%';
+      line.style.bottom = y1 + 'px';
+      line.style.width = len + 'px';
+      line.style.transform = `rotate(${angle}deg)`;
+      area.appendChild(line);
+    }
+  });
+
+  labels.innerHTML = points.map(p => `<span>${formatDate(p.date)}</span>`).join('');
+}
+
+// ============================================================
+// 9. MEETING LIST
+// ============================================================
+function renderMeetingList() {
+  const teamId = getCurrentTeamId();
+  const meetings = getTeamMeetings(teamId);
+  const members = getTeamMembers(teamId);
+  const container = $('meeting-list');
+
+  if (meetings.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = meetings.map(m => {
+    const presentCount = members.filter(u => m.attendees.includes(u.id)).length;
+    const attendeeList = members.map(u => {
+      const attended = m.attendees.includes(u.id);
+      const name = `${u.firstName} ${u.lastName}`;
+      const isTL = isTeamLeader(u, teamId);
+      return `<li><span class="${attended ? 'att-check' : 'att-cross'}">${attended ? '\u2713' : '\u2717'}</span> ${name}${isTL ? ' <span class="badge badge--leader" style="font-size:9px;">TL</span>' : ''}</li>`;
+    }).join('');
+
+    return `<div class="meeting-item" data-meeting-id="${m.id}">
+      <div class="meeting-header" data-toggle-meeting="${m.id}">
+        <span class="meeting-header__date">${formatDateFull(m.date)}</span>
+        <span class="meeting-header__count">${presentCount}/${members.length} ${currentLang === 'sv' ? 'närvarande' : 'present'}</span>
+        <span class="meeting-header__arrow">&#9660;</span>
+      </div>
+      <div class="meeting-body">
+        ${m.note ? `<div class="meeting-body__note">${m.note}</div>` : ''}
+        <ul class="meeting-body__attendees">${attendeeList}</ul>
+        <div style="margin-top:var(--md);">
+          <button class="btn btn--sm btn--outline" data-edit-meeting="${m.id}">Redigera</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.addEventListener('click', e => {
+  const toggle = e.target.closest('[data-toggle-meeting]');
+  if (toggle) {
+    const item = toggle.closest('.meeting-item');
+    item.classList.toggle('meeting-item--open');
+    return;
+  }
+
+  const editBtn = e.target.closest('[data-edit-meeting]');
+  if (editBtn) {
+    openMeetingSlideOver(editBtn.dataset.editMeeting);
+    return;
+  }
+});
+
+// ============================================================
+// 10. SLIDE-OVER: NEW/EDIT MEETING
+// ============================================================
+function openMeetingSlideOver(meetingId) {
+  const teamId = getCurrentTeamId();
+  const members = getTeamMembers(teamId);
+  const isEdit = !!meetingId;
+  const meeting = isEdit ? WS.meetings.find(m => m.id === meetingId) : null;
+  S.editingMeetingId = meetingId || null;
+
+  $('so-meeting-title').textContent = isEdit
+    ? (currentLang === 'sv' ? 'Redigera möte' : 'Edit meeting')
+    : t('att.newMeeting');
+
+  const date = meeting ? meeting.date : todayStr();
+  const note = meeting ? meeting.note : '';
+  const attendees = meeting ? meeting.attendees : [];
+
+  const body = $('so-meeting-body');
+  body.innerHTML = `
+    <div class="form-group">
+      <label class="form-label" for="meeting-date">${t('att.date')}</label>
+      <input type="date" class="form-input" id="meeting-date" value="${date}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">${currentLang === 'sv' ? 'Deltagare' : 'Attendees'}</label>
+      <ul class="check-list" id="meeting-attendees">
+        ${members.map(u => {
+          const checked = attendees.includes(u.id) ? 'checked' : '';
+          const isTL = isTeamLeader(u, teamId);
+          return `<li class="check-item">
+            <input type="checkbox" id="att-${u.id}" value="${u.id}" ${checked}>
+            <label for="att-${u.id}">${u.firstName} ${u.lastName}${isTL ? ' (TL)' : ''}</label>
+          </li>`;
+        }).join('')}
+      </ul>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="meeting-note">${t('att.note')}</label>
+      <textarea class="form-input" id="meeting-note" rows="3">${note}</textarea>
+    </div>
+  `;
+
+  $('so-meeting-footer').innerHTML = `
+    <button class="btn btn--hi" id="btn-save-meeting">${t('btn.save')}</button>
+    <button class="btn btn--outline" id="btn-cancel-meeting">${t('btn.cancel')}</button>
+  `;
+
+  const dangerEl = $('so-meeting-danger');
+  if (isEdit) {
+    dangerEl.style.display = '';
+    dangerEl.innerHTML = `<button class="btn btn--danger btn--sm" id="btn-delete-meeting">${t('att.deleteMeeting')}</button>`;
+  } else {
+    dangerEl.style.display = 'none';
+    dangerEl.innerHTML = '';
+  }
+
+  $('overlay').classList.add('overlay--visible');
+  $('so-meeting').classList.add('slide-over--open');
+}
+
+function closeMeetingSlideOver() {
+  $('overlay').classList.remove('overlay--visible');
+  $('so-meeting').classList.remove('slide-over--open');
+  S.editingMeetingId = null;
+}
+
+document.addEventListener('click', e => {
+  if (e.target.id === 'btn-save-meeting') {
+    const teamId = getCurrentTeamId();
+    const date = $('meeting-date')?.value;
+    const note = $('meeting-note')?.value || '';
+    const checkboxes = document.querySelectorAll('#meeting-attendees input[type="checkbox"]');
+    const attendees = [];
+    checkboxes.forEach(cb => { if (cb.checked) attendees.push(cb.value); });
+
+    if (!date) { showToast(currentLang === 'sv' ? 'Ange ett datum.' : 'Enter a date.'); return; }
+
+    if (S.editingMeetingId) {
+      const meeting = WS.meetings.find(m => m.id === S.editingMeetingId);
+      if (meeting) {
+        meeting.date = date;
+        meeting.note = note;
+        meeting.attendees = attendees;
+      }
+      showToast(currentLang === 'sv' ? 'Mötet har uppdaterats' : 'Meeting updated');
+    } else {
+      const newId = 'm' + (WS.meetings.length + 1) + '_' + Date.now();
+      WS.meetings.push({ id: newId, teamId: teamId, date: date, note: note, attendees: attendees });
+      showToast(currentLang === 'sv' ? 'Mötet har skapats' : 'Meeting created');
+    }
+
+    closeMeetingSlideOver();
+    renderAll();
+  }
+
+  if (e.target.id === 'btn-cancel-meeting') {
+    closeMeetingSlideOver();
+  }
+
+  if (e.target.id === 'btn-new-meeting') {
+    openMeetingSlideOver(null);
+  }
+
+  if (e.target.id === 'btn-delete-meeting') {
+    showConfirm(
+      t('att.deleteMeeting'),
+      currentLang === 'sv' ? 'Vill du radera detta möte? Åtgärden kan inte ångras.' : 'Delete this meeting? This cannot be undone.',
+      currentLang === 'sv' ? 'Radera' : 'Delete',
+      () => {
+        WS.meetings = WS.meetings.filter(m => m.id !== S.editingMeetingId);
+        closeMeetingSlideOver();
+        renderAll();
+        showToast(currentLang === 'sv' ? 'Mötet har raderats' : 'Meeting deleted');
+      }
+    );
+  }
+
+  if (e.target.id === 'so-meeting-close' || (e.target.id === 'overlay' && $('so-meeting').classList.contains('slide-over--open'))) {
+    closeMeetingSlideOver();
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if ($('dialog-overlay').classList.contains('dialog-overlay--visible')) {
+      $('dialog-overlay').classList.remove('dialog-overlay--visible');
+      return;
+    }
+    if ($('so-meeting').classList.contains('slide-over--open')) {
+      closeMeetingSlideOver();
+    }
+  }
+});
+
+// ============================================================
+// 11. CONFIRM DIALOG
+// ============================================================
+let confirmCallback = null;
+
+function showConfirm(title, text, btnLabel, onConfirm) {
+  $('dialog-title').textContent = title;
+  $('dialog-text').textContent = text;
+  $('dialog-confirm').textContent = btnLabel;
+  confirmCallback = onConfirm;
+  $('dialog-overlay').classList.add('dialog-overlay--visible');
+}
+
+$('dialog-cancel').addEventListener('click', () => {
+  $('dialog-overlay').classList.remove('dialog-overlay--visible');
+  confirmCallback = null;
+});
+
+$('dialog-confirm').addEventListener('click', () => {
+  $('dialog-overlay').classList.remove('dialog-overlay--visible');
+  if (confirmCallback) confirmCallback();
+  confirmCallback = null;
+});
+
+// ============================================================
+// 12. STATIC TEXT UPDATE
+// ============================================================
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-admin').textContent = t('nav.admin');
+  $('page-title').textContent = t('att.title');
+  $('trend-title').textContent = t('att.trend');
+  $('meeting-list-title').textContent = t('att.meetingList');
+  $('btn-new-meeting').textContent = t('att.newMeeting');
+  $('dialog-cancel').textContent = t('btn.cancel');
+}
+
+// ============================================================
+// 13. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderAll();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 14. RENDER ALL
+// ============================================================
+function renderAll() {
+  updateStaticText();
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSidebar();
+  renderGrid();
+  renderTrend();
+  renderMeetingList();
+}
+
+// ============================================================
+// 15. INIT
+// ============================================================
+(function init() {
+  const lang = localStorage.getItem('itt-lang') || 'sv';
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  setRole(S.role);
+})();
+</script>
+</body>
+</html>

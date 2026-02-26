@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handlingsplan v6:6 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+  --sidebar-w: 240px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); display: flex; min-height: 100vh;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- SIDEBAR --- */
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--sm) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: var(--sm) var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
+.sidebar__section-label { padding: var(--md) var(--lg) var(--xs); color: #888; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- PAGE WRAP --- */
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); padding-bottom: 80px; }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--lg); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; border-style: dashed; }
+
+/* --- BADGES --- */
+.badge { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
+.badge--not-started { background: #e8e8e8; color: #555; border-color: #999; }
+.badge--in-progress { background: #ffcc00; color: #000; border-color: #0a0a0a; }
+.badge--overdue { background: #fff1f0; color: #a8071a; border-color: var(--err); }
+.badge--done { background: #e6f7ee; color: #006d36; border-color: var(--ok); }
+
+/* --- VARIANT SWITCHER --- */
+.variant-switcher { display: flex; align-items: center; gap: var(--sm); margin-bottom: var(--lg); flex-wrap: wrap; }
+.variant-switcher__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-right: var(--sm); }
+.variant-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 var(--sm); border: 2px solid var(--border-strong); background: transparent; color: var(--text); font-family: inherit; font-size: 11px; font-weight: 900; text-decoration: none; cursor: pointer; transition: background .15s, color .15s; }
+.variant-pill:hover { background: var(--bg-alt); }
+.variant-pill--active { background: var(--hi); color: var(--bg-dark); pointer-events: none; }
+
+/* --- TOOLBAR --- */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); margin-bottom: var(--lg); }
+.toolbar__left { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); flex: 1; }
+.toolbar__right { display: flex; gap: var(--sm); }
+
+/* --- READ VIEW: BC SECTIONS --- */
+.rv-bc { border: 2px solid var(--border-strong); margin-bottom: var(--md); }
+.rv-bc__header { display: flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--md); background: var(--bg-alt); cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); }
+.rv-bc__chevron { font-size: 10px; transition: transform .2s; color: var(--text-muted); width: 16px; text-align: center; }
+.rv-bc--collapsed .rv-bc__chevron { transform: rotate(-90deg); }
+.rv-bc__title { flex: 1; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.rv-bc__pct { background: var(--hi); color: var(--bg-dark); padding: 2px 8px; font-size: 11px; font-weight: 900; border: 1px solid var(--border-strong); }
+.rv-bc__body { padding: 0; }
+.rv-bc--collapsed .rv-bc__body { display: none; }
+
+.rv-aoi-label { font-size: 11px; font-weight: 600; font-style: italic; color: var(--text-muted); padding: 6px var(--md) 2px; }
+
+.rv-action-row { display: flex; align-items: center; gap: var(--sm); padding: 4px var(--md) 4px 28px; font-size: 13px; line-height: 1.4; border-bottom: 1px solid #f0f0f0; }
+.rv-action-row:last-child { border-bottom: none; }
+.rv-action-row:hover { background: var(--hi-soft); }
+
+.rv-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.rv-status-dot--not_started { background: #999; }
+.rv-status-dot--in_progress { background: #e6ac00; }
+.rv-status-dot--overdue { background: #e6001a; }
+.rv-status-dot--done { background: #00a854; }
+
+.rv-action-title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rv-action-person { width: 110px; flex-shrink: 0; text-align: right; color: var(--text-muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rv-action-deadline { width: 90px; flex-shrink: 0; text-align: right; color: var(--text-muted); font-size: 12px; }
+
+/* --- COMPLETED SECTION --- */
+.completed-section { border: 2px solid var(--border); margin-top: var(--xl); }
+.completed-header { display: flex; align-items: center; gap: var(--md); padding: var(--md) var(--lg); background: var(--bg-alt); cursor: pointer; user-select: none; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.completed-body { display: none; padding: 0; }
+.completed-section--open .completed-body { display: block; }
+.completed-action-row { display: flex; align-items: center; gap: var(--sm); padding: 4px var(--md); font-size: 13px; border-bottom: 1px solid #f0f0f0; opacity: 0.6; }
+.completed-action-row:hover { opacity: 1; background: var(--hi-soft); }
+
+/* --- EMPTY STATE --- */
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+
+/* --- CONFIRM DIALOG --- */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* =========================================================
+   FULLSCREEN EDIT MODAL
+   ========================================================= */
+.edit-modal { display: none; position: fixed; inset: 0; z-index: 3000; background: #fff; flex-direction: column; overflow: hidden; }
+.edit-modal--open { display: flex; }
+
+.edit-modal__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; border-bottom: 3px solid #0a0a0a; flex-shrink: 0;
+  background: #f0f0f0;
+}
+.edit-modal__title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.edit-modal__status { font-size: 11px; color: #666; font-style: italic; }
+.edit-modal__close {
+  background: none; border: 2px solid var(--border-strong); width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font-size: 18px; font-weight: 900; color: var(--text); flex-shrink: 0;
+}
+.edit-modal__close:hover { background: var(--bg-alt); }
+
+.edit-modal__body { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* --- Edit table --- */
+.edit-table { width: 100%; border-collapse: collapse; }
+.edit-table th, .edit-table td { border: 1px solid #e0e0e0; padding: 4px 8px; text-align: left; vertical-align: middle; }
+.edit-table th {
+  background: var(--accent); color: var(--accent-inv); font-size: 10px; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; padding: 6px 8px;
+}
+
+/* BC header row */
+.edit-table .et-bc-row td {
+  background: var(--hi); font-weight: 900; text-transform: uppercase; font-size: 13px;
+  border-bottom: 2px solid var(--border-strong);
+}
+/* AoI header row */
+.edit-table .et-aoi-row td {
+  background: #f0f0f0; font-style: italic; font-size: 12px; color: var(--text-muted);
+}
+
+.edit-table input[type="text"] {
+  border: 1px solid #ddd; padding: 4px 8px; font-size: 13px;
+  width: 100%; font-family: inherit; background: transparent;
+}
+.edit-table input[type="text"]:focus { border-color: #ffcc00; outline: 2px solid #ffcc00; }
+.edit-table select {
+  border: 1px solid #ddd; padding: 4px 8px; font-size: 13px;
+  font-family: inherit; background: transparent; width: 100%;
+}
+.edit-table select:focus { border-color: #ffcc00; outline: 2px solid #ffcc00; }
+.edit-table input[type="date"] {
+  border: 1px solid #ddd; padding: 4px 8px; font-size: 13px;
+  font-family: inherit; background: transparent;
+}
+.edit-table input[type="date"]:focus { border-color: #ffcc00; outline: 2px solid #ffcc00; }
+
+.et-col-name { width: auto; }
+.et-col-resp { width: 150px; }
+.et-col-supp { width: 150px; }
+.et-col-deadline { width: 130px; }
+.et-col-status { width: 40px; text-align: center; }
+.et-col-delete { width: 40px; text-align: center; }
+
+.et-status-dot {
+  width: 14px; height: 14px; border-radius: 50%; cursor: pointer;
+  display: inline-block; border: 1px solid rgba(0,0,0,0.2);
+}
+.et-status-dot--not_started { background: #999; }
+.et-status-dot--in_progress { background: #e6ac00; }
+.et-status-dot--overdue { background: #e6001a; }
+.et-status-dot--done { background: #00a854; }
+
+.et-delete-btn {
+  background: none; border: none; cursor: pointer; font-size: 16px;
+  color: #999; padding: 2px 6px; line-height: 1;
+}
+.et-delete-btn:hover { color: var(--err); }
+
+.et-add-btn {
+  background: none; border: 1px dashed #ccc; cursor: pointer; font-size: 11px;
+  color: var(--text-muted); padding: 4px 12px; font-family: inherit; margin: 2px 0;
+}
+.et-add-btn:hover { border-color: var(--text); color: var(--text); }
+
+.et-bc-actions {
+  display: flex; gap: 4px; align-items: center; float: right;
+}
+
+/* Action rows compact height */
+.edit-table .et-action-row td { height: 36px; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) { .col-hide-sm { display: none; } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header">
+    <a href="dashboard.html" class="sidebar__logo" id="nav-logo">ITT</a>
+  </div>
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap">
+      <span class="sidebar__selector-label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="sidebar__selector" id="team-selector-wrap">
+      <span class="sidebar__selector-label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== PAGE WRAP ===== -->
+<div class="page-wrap">
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Handlingsplan</h1>
+
+  <!-- VARIANT SWITCHER -->
+  <div class="variant-switcher">
+    <span class="variant-switcher__label">Designvarianter:</span>
+    <a href="action-plan.html" class="variant-pill">Original</a>
+    <a href="action-plan-1.html" class="variant-pill">1</a>
+    <a href="action-plan-2.html" class="variant-pill">2</a>
+    <a href="action-plan-3.html" class="variant-pill">3</a>
+    <a href="action-plan-4.html" class="variant-pill">4</a>
+    <a href="action-plan-5.html" class="variant-pill">5</a>
+    <a href="action-plan-6.html" class="variant-pill variant-pill--active">6</a>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar" id="toolbar">
+    <div class="toolbar__left">
+      <button class="btn btn--hi" id="btn-open-edit">Redigera handlingsplan</button>
+      <button class="btn btn--outline btn--sm" id="btn-new-bc" data-min-role="team-leader">+ Nytt bästa bidrag</button>
+      <button class="btn btn--outline btn--sm" id="btn-new-action">+ Ny åtgärd</button>
+    </div>
+  </div>
+
+  <!-- READ VIEW: BC SECTIONS -->
+  <div id="rv-container"></div>
+
+  <!-- COMPLETED STEPS -->
+  <div class="completed-section" id="completed-section">
+    <div class="completed-header" id="completed-toggle">
+      <span class="bc-chevron" style="font-size:10px;transition:transform .2s;" id="completed-chevron">&#9660;</span>
+      <span id="completed-title">Avklarade steg</span>
+      <span id="completed-count" style="margin-left:auto;font-size:11px;"></span>
+    </div>
+    <div class="completed-body" id="completed-body"></div>
+  </div>
+</main>
+</div>
+
+<!-- ===== FULLSCREEN EDIT MODAL ===== -->
+<div class="edit-modal" id="edit-modal" role="dialog" aria-modal="true" aria-label="Redigera handlingsplan">
+  <div class="edit-modal__header">
+    <div style="display:flex;align-items:center;gap:var(--md);">
+      <span class="edit-modal__title">Redigera handlingsplan</span>
+      <span class="edit-modal__status">Ändringar sparas automatiskt</span>
+    </div>
+    <button class="edit-modal__close" id="edit-modal-close" aria-label="Stäng">&times;</button>
+  </div>
+  <div class="edit-modal__body" id="edit-modal-body"></div>
+</div>
+
+<!-- ===== CONFIRM DIALOG ===== -->
+<div class="dialog-overlay" id="confirm-dialog">
+  <div class="dialog">
+    <div class="dialog__title" id="dialog-title">Bekräfta</div>
+    <div class="dialog__text" id="dialog-text"></div>
+    <div class="dialog__actions">
+      <button class="btn btn--outline" id="dialog-cancel">Avbryt</button>
+      <button class="btn btn--danger" id="dialog-confirm">Bekräfta</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  updateStaticText();
+  renderSidebar();
+  renderAll();
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 1. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const userById = id => DB.users.find(u => u.id === id);
+const teamById = id => DB.teams.find(t => t.id === id);
+const fullName = u => u ? `${u.firstName} ${u.lastName}` : '—';
+const shortName = u => u ? `${u.firstName} ${u.lastName[0]}.` : '—';
+
+// ============================================================
+// 2. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  teamId: '',
+  editModalOpen: false,
+};
+
+const ACTIVE_MODULE = 'actionPlan';
+
+// ============================================================
+// 3. TEAM SELECTOR
+// ============================================================
+function getTeamId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('teamId')) return urlParams.get('teamId');
+  return localStorage.getItem('itt-team') || 'alpha';
+}
+
+function orgsForActor() {
+  const a = ACTORS[S.role];
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function getUserTeams() {
+  const a = ACTORS[S.role];
+  const u = DB.users.find(u => u.id === a.userId);
+  if (!u) return DB.teams;
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = getUserTeams();
+  if (teams.length > 0) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+  renderAll();
+});
+
+function renderTeamSelector() {
+  const sel = $('team-select');
+  const teams = getUserTeams();
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) { wrap.style.display = 'none'; } else { wrap.style.display = ''; }
+  S.teamId = getTeamId();
+  if (!teams.find(t => t.id === S.teamId)) S.teamId = teams[0]?.id || 'alpha';
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === S.teamId ? 'selected' : ''}>${t.title}</option>`).join('');
+}
+
+$('team-select').addEventListener('change', e => {
+  S.teamId = e.target.value;
+  localStorage.setItem('itt-team', S.teamId);
+  renderAll();
+});
+
+// ============================================================
+// 4. TEAM MEMBERS FOR CURRENT TEAM
+// ============================================================
+function getTeamMembers() {
+  return DB.users.filter(u => u.memberships.some(m => m.teamId === S.teamId) && u.registerStatus !== 'soft_deleted');
+}
+
+// ============================================================
+// 5. SIDEBAR
+// ============================================================
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, shortKey: 'mod.short.strategic', fullKey: 'mod.strategic' },
+  { key: 'newsflash', file: 'newsflash.html', section: 1, shortKey: 'mod.short.newsflash', fullKey: 'mod.newsflash' },
+  { key: 'desiredState', file: 'desired-state.html', section: 2, shortKey: 'mod.short.desiredState', fullKey: 'mod.desiredState' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, shortKey: 'mod.short.goalsMetrics', fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, shortKey: 'mod.short.actionPlan', fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, shortKey: 'mod.short.documents', fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, shortKey: 'mod.short.ideas', fullKey: 'mod.ideas' },
+  { key: 'attendance', file: 'attendance.html', section: 4, shortKey: 'mod.short.attendance', fullKey: 'mod.attendance' },
+  { key: 'reflections', file: 'reflections.html', section: 4, shortKey: 'mod.short.reflections', fullKey: 'mod.reflections' },
+];
+
+const SECTION_LABELS = {
+  1: { sv: '1. Vart är vi på väg?', en: '1. Where are we headed?' },
+  2: { sv: '2. Vad siktar vi på?', en: '2. What are we aiming for?' },
+  3: { sv: '3. Tar vi steg framåt?', en: '3. Are we taking steps?' },
+  4: { sv: '4. Lär vi oss?', en: '4. Are we learning?' },
+};
+
+function getVisibleModules() {
+  const stored = localStorage.getItem('itt-agenda-visibility-' + S.teamId);
+  if (stored) {
+    try {
+      const vis = JSON.parse(stored);
+      return MODULES.filter(m => vis[m.key] !== false);
+    } catch(e) {}
+  }
+  return MODULES;
+}
+
+function renderSidebar() {
+  const mods = getVisibleModules();
+  let html = '';
+  const dashActive = ACTIVE_MODULE === 'dashboard' ? ' sidebar__link--active' : '';
+  html += `<a href="dashboard.html" class="sidebar__link${dashActive}" id="nav-dashboard">${t('nav.dashboard')}</a>`;
+  html += '<div class="sidebar__divider"></div>';
+  let lastSection = 0;
+  mods.forEach(m => {
+    if (m.section !== lastSection) {
+      const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
+      html += `<div class="sidebar__section-label">${l}</div>`;
+      lastSection = m.section;
+    }
+    const isActive = m.key === ACTIVE_MODULE;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}</a>`;
+  });
+  html += `<a href="#" class="sidebar__link sidebar__link--disabled">Integ Chat</a>`;
+  $('sidebar-nav').innerHTML = html;
+}
+
+// ============================================================
+// 6. TOAST
+// ============================================================
+function showToast(msg, duration) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  const ms = duration || 2000;
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, ms);
+}
+
+// ============================================================
+// 7. CONFIRM DIALOG
+// ============================================================
+let confirmCallback = null;
+function showConfirm(title, text, label, cb) {
+  $('dialog-title').textContent = title;
+  $('dialog-text').textContent = text;
+  const btn = $('dialog-confirm');
+  btn.textContent = t('btn.wait'); btn.disabled = true;
+  confirmCallback = cb;
+  $('confirm-dialog').classList.add('dialog-overlay--visible');
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 1000);
+}
+function closeConfirm() { $('confirm-dialog').classList.remove('dialog-overlay--visible'); confirmCallback = null; }
+$('dialog-cancel').onclick = closeConfirm;
+$('dialog-confirm').onclick = () => { if (confirmCallback) confirmCallback(); closeConfirm(); };
+
+// ============================================================
+// 8. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderAll();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 9. DATA ACCESS
+// ============================================================
+function getTeamBCs() {
+  return WS.bestContributions.filter(bc => bc.teamId === S.teamId);
+}
+
+function getTeamActions() {
+  return WS.actions.filter(a => a.teamId === S.teamId);
+}
+
+function getActiveActions() {
+  return getTeamActions().filter(a => a.status !== 'done');
+}
+
+function getDoneActions() {
+  return getTeamActions().filter(a => a.status === 'done');
+}
+
+function getBCCompletionPct(bcId) {
+  const bcActions = getTeamActions().filter(a => a.bcId === bcId);
+  if (bcActions.length === 0) return 0;
+  const done = bcActions.filter(a => a.status === 'done').length;
+  return Math.round((done / bcActions.length) * 100);
+}
+
+// Status dot color map
+const STATUS_COLORS = {
+  not_started: '#999',
+  in_progress: '#e6ac00',
+  overdue: '#e6001a',
+  done: '#00a854',
+};
+
+const STATUS_CYCLE = ['not_started', 'in_progress', 'done'];
+
+function cycleStatus(current) {
+  const idx = STATUS_CYCLE.indexOf(current);
+  if (idx === -1) return 'not_started';
+  return STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+}
+
+// ============================================================
+// 10. READ VIEW RENDERING
+// ============================================================
+function renderReadView() {
+  const bcs = getTeamBCs();
+  const activeActions = getActiveActions();
+  const container = $('rv-container');
+
+  if (bcs.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>Inga bästa bidrag har skapats ännu.</p></div>';
+    renderCompletedSection();
+    return;
+  }
+
+  let html = '';
+  bcs.forEach(bc => {
+    const bcActiveActions = activeActions.filter(a => a.bcId === bc.id);
+    const pct = getBCCompletionPct(bc.id);
+
+    html += `<div class="rv-bc" data-bc-id="${bc.id}">`;
+    html += `<div class="rv-bc__header" data-rv-toggle="${bc.id}">`;
+    html += `<span class="rv-bc__chevron">&#9660;</span>`;
+    html += `<span class="rv-bc__title">${bc.title}</span>`;
+    html += `<span class="rv-bc__pct">${pct}%</span>`;
+    html += `</div>`;
+    html += `<div class="rv-bc__body">`;
+
+    if (bcActiveActions.length === 0) {
+      html += `<div style="padding:var(--sm) var(--md);color:var(--text-muted);font-size:12px;font-style:italic;">Inga aktiva åtgärder.</div>`;
+    } else {
+      const aois = bc.areaOfImprovement || [];
+      aois.forEach(aoi => {
+        const aoiActions = bcActiveActions.filter(a => a.aiId === aoi.id);
+        if (aoiActions.length === 0) return;
+
+        html += `<div class="rv-aoi-label">${aoi.title}:</div>`;
+        aoiActions.forEach(a => {
+          const resp = userById(a.responsibleId);
+          html += `<div class="rv-action-row">`;
+          html += `<span class="rv-status-dot rv-status-dot--${a.status}"></span>`;
+          html += `<span class="rv-action-title">${a.title}</span>`;
+          html += `<span class="rv-action-person">${shortName(resp)}</span>`;
+          html += `<span class="rv-action-deadline">${a.deadline || '—'}</span>`;
+          html += `</div>`;
+        });
+      });
+    }
+
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+  renderCompletedSection();
+}
+
+// BC collapse toggle
+document.addEventListener('click', e => {
+  const toggle = e.target.closest('[data-rv-toggle]');
+  if (toggle) {
+    const bc = toggle.closest('.rv-bc');
+    bc.classList.toggle('rv-bc--collapsed');
+  }
+});
+
+// ============================================================
+// 11. COMPLETED SECTION
+// ============================================================
+function renderCompletedSection() {
+  const doneActions = getDoneActions();
+  if (doneActions.length === 0) {
+    $('completed-section').style.display = 'none';
+    return;
+  }
+  $('completed-section').style.display = '';
+  $('completed-count').textContent = `(${doneActions.length})`;
+
+  let html = '';
+  doneActions.forEach(a => {
+    const resp = userById(a.responsibleId);
+    const bc = WS.bestContributions.find(bc => bc.id === a.bcId);
+    html += `<div class="completed-action-row">`;
+    html += `<span class="rv-status-dot rv-status-dot--done"></span>`;
+    html += `<span class="rv-action-title" style="flex:1;">${a.title}</span>`;
+    html += `<span class="rv-action-person" style="width:100px;color:var(--text-muted);font-size:12px;text-align:right;">${bc ? bc.title : '—'}</span>`;
+    html += `<span class="rv-action-person">${shortName(resp)}</span>`;
+    html += `<span class="rv-action-deadline">${a.deadline || '—'}</span>`;
+    html += `</div>`;
+  });
+  $('completed-body').innerHTML = html;
+}
+
+$('completed-toggle').addEventListener('click', () => {
+  $('completed-section').classList.toggle('completed-section--open');
+});
+
+// ============================================================
+// 12. FULLSCREEN EDIT MODAL
+// ============================================================
+function openEditModal() {
+  S.editModalOpen = true;
+  $('edit-modal').classList.add('edit-modal--open');
+  document.body.style.overflow = 'hidden';
+  renderEditTable();
+  // Focus first input after render
+  requestAnimationFrame(() => {
+    const first = $('edit-modal-body').querySelector('input, select');
+    if (first) first.focus();
+  });
+}
+
+function closeEditModal() {
+  S.editModalOpen = false;
+  $('edit-modal').classList.remove('edit-modal--open');
+  document.body.style.overflow = '';
+  renderReadView();
+}
+
+$('edit-modal-close').addEventListener('click', closeEditModal);
+
+// Escape to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if ($('confirm-dialog').classList.contains('dialog-overlay--visible')) {
+      closeConfirm();
+    } else if (S.editModalOpen) {
+      closeEditModal();
+    }
+  }
+});
+
+// Enter in text input moves to next row first input
+document.addEventListener('keydown', e => {
+  if (!S.editModalOpen) return;
+  if (e.key === 'Enter' && e.target.matches('.edit-table input[type="text"]')) {
+    e.preventDefault();
+    const row = e.target.closest('tr');
+    if (row) {
+      let nextRow = row.nextElementSibling;
+      // Skip non-action rows
+      while (nextRow && !nextRow.classList.contains('et-action-row')) {
+        nextRow = nextRow.nextElementSibling;
+      }
+      if (nextRow) {
+        const firstInput = nextRow.querySelector('input[type="text"]');
+        if (firstInput) firstInput.focus();
+      }
+    }
+  }
+});
+
+function renderEditTable() {
+  const bcs = getTeamBCs();
+  const allActions = getTeamActions();
+  const members = getTeamMembers();
+
+  const memberOptions = members.map(u => `<option value="${u.id}">${shortName(u)}</option>`).join('');
+
+  let html = '<table class="edit-table">';
+  html += '<thead><tr>';
+  html += '<th class="et-col-name">Åtgärd</th>';
+  html += '<th class="et-col-resp">Ansvarig</th>';
+  html += '<th class="et-col-supp">Stöd</th>';
+  html += '<th class="et-col-deadline">Deadline</th>';
+  html += '<th class="et-col-status">Status</th>';
+  html += '<th class="et-col-delete"></th>';
+  html += '</tr></thead><tbody>';
+
+  bcs.forEach(bc => {
+    // BC header row
+    html += `<tr class="et-bc-row" data-bc-id="${bc.id}">`;
+    html += `<td colspan="4"><div style="display:flex;align-items:center;gap:8px;">`;
+    html += `<input type="text" value="${escHtml(bc.title)}" data-bc-title="${bc.id}" style="font-weight:900;text-transform:uppercase;font-size:13px;background:transparent;border:1px solid rgba(0,0,0,0.15);">`;
+    html += `<span style="background:#fff;padding:2px 8px;font-size:11px;font-weight:900;border:1px solid #0a0a0a;">${getBCCompletionPct(bc.id)}%</span>`;
+    html += `</div></td>`;
+    html += `<td colspan="2" style="text-align:right;">`;
+    html += `<div class="et-bc-actions">`;
+    html += `<button class="et-add-btn" data-add-aoi="${bc.id}">+ Förbättringsområde</button>`;
+    html += `<button class="et-delete-btn" data-delete-bc="${bc.id}" title="Radera bästa bidrag">&times;</button>`;
+    html += `</div></td>`;
+    html += `</tr>`;
+
+    const aois = bc.areaOfImprovement || [];
+    aois.forEach(aoi => {
+      // AoI header row
+      html += `<tr class="et-aoi-row" data-aoi-id="${aoi.id}" data-bc-id="${bc.id}">`;
+      html += `<td colspan="4"><div style="display:flex;align-items:center;gap:8px;">`;
+      html += `<input type="text" value="${escHtml(aoi.title)}" data-aoi-title="${aoi.id}" data-aoi-bc="${bc.id}" style="font-style:italic;font-size:12px;background:transparent;border:1px solid rgba(0,0,0,0.1);">`;
+      html += `</div></td>`;
+      html += `<td colspan="2" style="text-align:right;">`;
+      html += `<div class="et-bc-actions">`;
+      html += `<button class="et-add-btn" data-add-action-aoi="${aoi.id}" data-add-action-bc="${bc.id}">+ Ny åtgärd</button>`;
+      html += `<button class="et-delete-btn" data-delete-aoi="${aoi.id}" data-delete-aoi-bc="${bc.id}" title="Radera förbättringsområde">&times;</button>`;
+      html += `</div></td>`;
+      html += `</tr>`;
+
+      // Action rows for this AoI
+      const aoiActions = allActions.filter(a => a.bcId === bc.id && a.aiId === aoi.id);
+      aoiActions.forEach(a => {
+        const resp = userById(a.responsibleId);
+        const supp = a.supportId ? userById(a.supportId) : null;
+        html += `<tr class="et-action-row" data-action-id="${a.id}">`;
+        html += `<td class="et-col-name"><input type="text" value="${escHtml(a.title)}" data-field="title" data-action="${a.id}"></td>`;
+        html += `<td class="et-col-resp"><select data-field="responsibleId" data-action="${a.id}"><option value="">—</option>${memberOptions.replace(`value="${a.responsibleId}"`, `value="${a.responsibleId}" selected`)}</select></td>`;
+        html += `<td class="et-col-supp"><select data-field="supportId" data-action="${a.id}"><option value="">—</option>${memberOptions.replace(`value="${a.supportId}"`, `value="${a.supportId}" selected`)}</select></td>`;
+        html += `<td class="et-col-deadline"><input type="date" value="${a.deadline || ''}" data-field="deadline" data-action="${a.id}"></td>`;
+        html += `<td class="et-col-status" style="text-align:center;"><span class="et-status-dot et-status-dot--${a.status}" data-cycle-status="${a.id}" title="${statusLabel(a.status)}"></span></td>`;
+        html += `<td class="et-col-delete" style="text-align:center;"><button class="et-delete-btn" data-delete-action="${a.id}" title="Radera åtgärd">&times;</button></td>`;
+        html += `</tr>`;
+      });
+    });
+  });
+
+  html += '</tbody></table>';
+  $('edit-modal-body').innerHTML = html;
+}
+
+function statusLabel(status) {
+  const map = { not_started: 'Ej påbörjad', in_progress: 'Pågående', overdue: 'Försenad', done: 'Klar' };
+  return map[status] || status;
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+// 13. EDIT MODAL EVENT HANDLERS
+// ============================================================
+
+// Auto-save on change/blur for action fields
+document.addEventListener('change', e => {
+  if (!S.editModalOpen) return;
+  const actionId = e.target.dataset.action;
+  const field = e.target.dataset.field;
+  if (actionId && field) {
+    const action = WS.actions.find(a => a.id === actionId);
+    if (action) {
+      action[field] = e.target.value;
+      showToast('Sparat', 1200);
+    }
+  }
+
+  // BC title
+  const bcTitleId = e.target.dataset.bcTitle;
+  if (bcTitleId) {
+    const bc = WS.bestContributions.find(b => b.id === bcTitleId);
+    if (bc) {
+      bc.title = e.target.value.trim();
+      showToast('Sparat', 1200);
+    }
+  }
+
+  // AoI title
+  const aoiTitleId = e.target.dataset.aoiTitle;
+  if (aoiTitleId) {
+    const bcId = e.target.dataset.aoiBc;
+    const bc = WS.bestContributions.find(b => b.id === bcId);
+    if (bc) {
+      const aoi = bc.areaOfImprovement.find(a => a.id === aoiTitleId);
+      if (aoi) {
+        aoi.title = e.target.value.trim();
+        showToast('Sparat', 1200);
+      }
+    }
+  }
+});
+
+document.addEventListener('blur', e => {
+  if (!S.editModalOpen) return;
+  const actionId = e.target.dataset.action;
+  const field = e.target.dataset.field;
+  if (actionId && field && e.target.tagName === 'INPUT') {
+    const action = WS.actions.find(a => a.id === actionId);
+    if (action && action[field] !== e.target.value) {
+      action[field] = e.target.value;
+      showToast('Sparat', 1200);
+    }
+  }
+}, true);
+
+// Status dot cycle
+document.addEventListener('click', e => {
+  const dot = e.target.closest('[data-cycle-status]');
+  if (dot && S.editModalOpen) {
+    const actionId = dot.dataset.cycleStatus;
+    const action = WS.actions.find(a => a.id === actionId);
+    if (action) {
+      action.status = cycleStatus(action.status);
+      // Update dot visually
+      dot.className = `et-status-dot et-status-dot--${action.status}`;
+      dot.title = statusLabel(action.status);
+      showToast('Sparat', 1200);
+    }
+  }
+});
+
+// Delete action
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-delete-action]');
+  if (btn && S.editModalOpen) {
+    const actionId = btn.dataset.deleteAction;
+    const action = WS.actions.find(a => a.id === actionId);
+    if (action) {
+      showConfirm(
+        'Radera åtgärd',
+        `Radera "${action.title}" permanent?`,
+        'Radera',
+        () => {
+          WS.actions = WS.actions.filter(a => a.id !== actionId);
+          renderEditTable();
+          showToast('Åtgärd raderad');
+        }
+      );
+    }
+  }
+});
+
+// Delete BC
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-delete-bc]');
+  if (btn && S.editModalOpen) {
+    const bcId = btn.dataset.deleteBc;
+    const bc = WS.bestContributions.find(b => b.id === bcId);
+    const actionCount = WS.actions.filter(a => a.bcId === bcId).length;
+    if (actionCount > 0) {
+      showConfirm(
+        'Kan inte radera',
+        `Detta bästa bidrag har ${actionCount} åtgärder. Ta bort alla åtgärder först.`,
+        'OK',
+        () => {}
+      );
+    } else {
+      showConfirm(
+        'Radera bästa bidrag',
+        `Radera "${bc.title}" permanent?`,
+        'Radera',
+        () => {
+          WS.bestContributions = WS.bestContributions.filter(b => b.id !== bcId);
+          renderEditTable();
+          showToast('Bästa bidrag raderat');
+        }
+      );
+    }
+  }
+});
+
+// Delete AoI
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-delete-aoi]');
+  if (btn && S.editModalOpen) {
+    const aoiId = btn.dataset.deleteAoi;
+    const bcId = btn.dataset.deleteAoiBc;
+    const bc = WS.bestContributions.find(b => b.id === bcId);
+    const aoiActions = WS.actions.filter(a => a.bcId === bcId && a.aiId === aoiId);
+    if (aoiActions.length > 0) {
+      showConfirm(
+        'Kan inte radera',
+        `Detta förbättringsområde har ${aoiActions.length} åtgärder. Ta bort alla åtgärder först.`,
+        'OK',
+        () => {}
+      );
+    } else if (bc) {
+      const aoi = bc.areaOfImprovement.find(a => a.id === aoiId);
+      showConfirm(
+        'Radera förbättringsområde',
+        `Radera "${aoi ? aoi.title : ''}" permanent?`,
+        'Radera',
+        () => {
+          bc.areaOfImprovement = bc.areaOfImprovement.filter(a => a.id !== aoiId);
+          renderEditTable();
+          showToast('Förbättringsområde raderat');
+        }
+      );
+    }
+  }
+});
+
+// Add AoI
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-add-aoi]');
+  if (btn && S.editModalOpen) {
+    const bcId = btn.dataset.addAoi;
+    const bc = WS.bestContributions.find(b => b.id === bcId);
+    if (bc) {
+      const newId = 'ai_' + Math.random().toString(36).slice(2, 7);
+      bc.areaOfImprovement.push({ id: newId, title: 'Nytt förbättringsområde' });
+      renderEditTable();
+      // Focus the new AoI title input
+      requestAnimationFrame(() => {
+        const input = $('edit-modal-body').querySelector(`[data-aoi-title="${newId}"]`);
+        if (input) { input.focus(); input.select(); }
+      });
+      showToast('Förbättringsområde tillagt', 1200);
+    }
+  }
+});
+
+// Add action from AoI row
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-add-action-aoi]');
+  if (btn && S.editModalOpen) {
+    const aoiId = btn.dataset.addActionAoi;
+    const bcId = btn.dataset.addActionBc;
+    addNewAction(bcId, aoiId);
+  }
+});
+
+function addNewAction(bcId, aoiId) {
+  const newId = 'a_' + Math.random().toString(36).slice(2, 7);
+  WS.actions.push({
+    id: newId,
+    teamId: S.teamId,
+    bcId: bcId,
+    aiId: aoiId,
+    title: '',
+    description: '',
+    responsibleId: '',
+    supportId: '',
+    deadline: '',
+    status: 'not_started',
+    comment: '',
+  });
+  renderEditTable();
+  // Focus the new action title input
+  requestAnimationFrame(() => {
+    const input = $('edit-modal-body').querySelector(`[data-action="${newId}"][data-field="title"]`);
+    if (input) input.focus();
+  });
+}
+
+// ============================================================
+// 14. TOOLBAR BUTTONS
+// ============================================================
+$('btn-open-edit').addEventListener('click', openEditModal);
+
+$('btn-new-bc').addEventListener('click', () => {
+  const name = prompt('Namn på bästa bidrag:');
+  if (name && name.trim()) {
+    const newBcId = 'bc_' + Math.random().toString(36).slice(2, 7);
+    const newAoiId = 'ai_' + Math.random().toString(36).slice(2, 7);
+    WS.bestContributions.push({
+      id: newBcId,
+      teamId: S.teamId,
+      title: name.trim(),
+      areaOfImprovement: [{ id: newAoiId, title: 'Inget förbättringsområde' }],
+    });
+    showToast('Bästa bidrag skapat');
+    if (S.editModalOpen) {
+      renderEditTable();
+    } else {
+      renderReadView();
+    }
+  }
+});
+
+$('btn-new-action').addEventListener('click', () => {
+  const bcs = getTeamBCs();
+  if (bcs.length === 0) {
+    showToast('Skapa ett bästa bidrag först.');
+    return;
+  }
+  // Open modal and add a new action to the first BC's first AoI
+  const bc = bcs[0];
+  const aoi = bc.areaOfImprovement[0];
+  if (!S.editModalOpen) openEditModal();
+  addNewAction(bc.id, aoi.id);
+});
+
+// ============================================================
+// 15. STATIC TEXT
+// ============================================================
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-logo').textContent = 'ITT';
+  $('page-title').textContent = t('ap.title');
+  $('completed-title').textContent = t('ap.completedSteps');
+  $('dialog-cancel').textContent = t('btn.cancel');
+}
+
+// ============================================================
+// 16. RENDER ALL
+// ============================================================
+function renderAll() {
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSidebar();
+  renderReadView();
+  if (S.editModalOpen) renderEditTable();
+}
+
+// ============================================================
+// 17. INIT
+// ============================================================
+updateStaticText();
+setRole(S.role);
+</script>
+</body>
+</html>
