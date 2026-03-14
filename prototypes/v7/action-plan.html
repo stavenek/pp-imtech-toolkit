@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handlingsplan v7 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#ffffff; --bg-alt:#f3f3ef; --bg-dark:#0a0a0a; --text:#111; --text-muted:#666;
+  --border:#d9d9d9; --border-strong:#111; --hi:#ffcc00; --hi-soft:rgba(255,204,0,0.18);
+  --ok:#62b7be; --warn:#e5b45b; --err:#d86053; --idle:#9c9c9c; --sidebar-w:240px;
+  --xs:4px; --sm:8px; --md:12px; --lg:18px; --xl:24px; --2xl:36px;
+}
+body { font-family:'Inter',system-ui,sans-serif; font-size:14px; line-height:1.6; color:var(--text); background:var(--bg); display:flex; min-height:100vh; padding-bottom:64px; }
+.skip-link { position:absolute; top:-100%; left:var(--md); background:var(--hi); color:#000; padding:var(--sm) var(--md); font-weight:700; z-index:9999; border:2px solid var(--border-strong); text-decoration:none; }
+.skip-link:focus { top:var(--md); }
+.sidebar { position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); background:var(--bg-dark); border-right:3px solid var(--hi); display:flex; flex-direction:column; overflow-y:auto; padding-bottom:64px; }
+.sidebar__header { padding:var(--md) var(--lg); border-bottom:1px solid #333; }
+.sidebar__logo { color:var(--hi); text-decoration:none; font-size:15px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+.sidebar__selectors { padding:var(--sm) var(--lg); border-bottom:1px solid #333; }
+.sidebar__selector { margin-bottom:var(--sm); }
+.sidebar__selector:last-child { margin-bottom:0; }
+.sidebar__selector-label { color:#888; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:2px; }
+.sidebar__selector select { width:100%; background:#1a1a1a; color:#ccc; border:1px solid #555; padding:var(--xs) 24px var(--xs) var(--sm); font:700 11px inherit; text-transform:uppercase; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; min-height:32px; }
+.sidebar__nav { flex:1; padding:var(--sm) 0; }
+.sidebar__link { display:block; padding:var(--sm) var(--lg); color:#ccc; text-decoration:none; font-size:12px; font-weight:600; border-left:3px solid transparent; }
+.sidebar__link:hover { color:#fff; background:rgba(255,255,255,.05); }
+.sidebar__link--active { color:var(--hi); background:var(--hi-soft); border-left-color:var(--hi); }
+.sidebar__section-label { padding:var(--lg) var(--lg) var(--xs); color:var(--hi); font-size:14px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+.sidebar__divider { height:1px; background:#333; margin:var(--sm) var(--lg); }
+.sidebar__footer { padding:var(--sm) 0; border-top:1px solid #333; }
+.lang-switcher { display:flex; gap:2px; padding:var(--sm) var(--lg); }
+.lang-btn { padding:var(--xs) var(--sm); border:1px solid #555; background:transparent; color:#888; font-size:10px; font-weight:900; cursor:pointer; }
+.lang-btn--active { background:var(--hi); color:#000; border-color:var(--hi); }
+.page-wrap { flex:1; margin-left:var(--sidebar-w); min-width:0; }
+.main { max-width:1400px; margin:0 auto; padding:0 var(--lg) var(--2xl); }
+.page-title { font-size:32px; font-weight:900; text-transform:uppercase; letter-spacing:-.02em; line-height:1.1; padding:var(--xl) 0; border-bottom:3px solid var(--border-strong); margin-bottom:var(--lg); }
+.toolbar { display:flex; justify-content:space-between; gap:var(--md); align-items:flex-start; flex-wrap:wrap; margin-bottom:var(--lg); }
+.toolbar__left, .toolbar__right { display:flex; gap:var(--sm); flex-wrap:wrap; align-items:center; }
+.btn { display:inline-flex; align-items:center; gap:var(--sm); min-height:44px; padding:var(--sm) var(--lg); border:2px solid var(--border-strong); background:#111; color:#fff; font:700 12px inherit; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; text-decoration:none; transition:box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow:4px 4px 0 var(--hi); }
+.btn--hi { background:var(--hi); color:#000; }
+.btn--outline { background:#fff; color:#111; }
+.btn--sm { min-height:32px; padding:6px 10px; font-size:10px; }
+.field, .search { min-height:40px; border:2px solid var(--border-strong); background:#fff; padding:0 10px; font:700 12px inherit; }
+.search { min-width:220px; }
+.state-editor { display:grid; grid-template-columns:1fr 1fr; gap:var(--md); margin-bottom:var(--xl); }
+.state-editor[hidden], .hero-strip[hidden] { display:none !important; }
+.text-module { border:2px solid var(--border-strong); background:linear-gradient(180deg,#fff 0%,#fcfcf8 100%); padding:var(--lg); }
+.text-module__title { font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; margin-bottom:var(--xs); }
+.text-module__help { font-size:12px; color:var(--text-muted); margin-bottom:var(--lg); }
+.text-module textarea { width:100%; min-height:150px; padding:var(--md); border:2px solid var(--border-strong); background:#fff; color:var(--text); font:500 14px/1.6 inherit; resize:vertical; }
+.hero-strip { display:none; }
+.bc-card { margin-bottom:var(--md); background:#fff; border:2px solid var(--border-strong); }
+.bc-header { display:flex; align-items:center; gap:var(--sm); padding:var(--sm) var(--md); background:var(--bg-alt); border-bottom:1px solid var(--border); cursor:pointer; }
+.bc-toggle { width:18px; height:18px; border:none; background:transparent; font-weight:900; font-size:18px; line-height:1; cursor:pointer; color:#666; }
+.bc-title-input { width:100%; border:none; background:transparent; font-size:13px; font-weight:900; line-height:1.1; text-transform:uppercase; letter-spacing:.04em; }
+.bc-title-input:focus { outline:none; }
+.progress-band { margin:0 0 10px; max-width:520px; padding:var(--sm) var(--md) 0; }
+.progress-band__label { font-size:11px; font-weight:700; margin-bottom:3px; }
+.progress-band__track { height:6px; background:#dde1e6; border-radius:999px; overflow:hidden; }
+.progress-band__fill { height:100%; background:#2149b7; }
+.progress-band__pct { font-size:11px; font-weight:800; color:var(--text-muted); margin-top:3px; }
+.state-lines { margin:0 0 10px; padding:0 var(--md); font-size:12px; line-height:1.45; }
+.state-lines strong { font-weight:800; }
+.bc-body { display:none; padding:0; }
+.bc-card--open .bc-body { display:block; }
+.aoi-block { margin-bottom:12px; }
+.aoi-head { display:grid; grid-template-columns:220px 150px 150px 150px 1fr 54px 54px 104px; gap:0; align-items:center; padding:0; background:transparent; border-bottom:1px solid #ddd; }
+.aoi-title-input { width:100%; border:none; background:#e7b456; color:#fff; padding:7px 10px; font-size:12px; font-weight:800; }
+.aoi-head__col { padding:0 6px; font-size:11px; font-weight:800; }
+.plan-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+.plan-table th, .plan-table td { border-top:1px solid #e1e1e1; padding:0; vertical-align:top; background:#fff; }
+.plan-table th { padding:0; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:#555; text-align:left; background:transparent; }
+.cell-input, .cell-select, .cell-date { width:100%; min-height:36px; border:none; background:transparent; padding:6px 8px; font:500 12px inherit; }
+.cell-action { min-height:36px; resize:vertical; }
+.cell-comment { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+.icon-cell { display:flex; align-items:center; justify-content:center; min-height:36px; font-size:13px; color:#999; }
+.status-select { width:100%; min-width:22px; height:36px; border:none; appearance:none; cursor:pointer; color:transparent; }
+.status-not_started { background:var(--idle); }
+.status-in_progress { background:var(--warn); }
+.status-overdue { background:var(--err); }
+.status-done { background:var(--ok); }
+.comment-pop { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:var(--lg); z-index:5000; }
+.comment-pop--open { display:flex; }
+.comment-pop__card { width:min(520px,100%); background:#fff; border:3px solid var(--border-strong); padding:var(--xl); }
+.comment-pop__title { font-size:16px; font-weight:900; text-transform:uppercase; margin-bottom:var(--sm); }
+.comment-pop__text { line-height:1.6; margin-bottom:var(--lg); white-space:pre-wrap; }
+.done-panel { border:2px solid var(--border); margin-top:var(--xl); }
+.done-head { padding:var(--sm) var(--md); background:#f0f0f0; font-size:12px; font-weight:900; text-transform:uppercase; }
+.done-list { padding:var(--md); color:var(--text-muted); }
+.role-bar { position:fixed; bottom:0; left:0; right:0; z-index:9999; background:#1a1a2e; border-top:3px solid var(--hi); padding:var(--sm) var(--lg); display:flex; gap:var(--md); align-items:center; font-family:'Courier New',monospace; font-size:12px; color:#aaa; }
+.role-bar__btns { display:flex; gap:2px; }
+.role-btn { padding:var(--sm) var(--md); border:2px solid #555; background:#2a2a40; color:#ccc; font:700 12px 'Courier New',monospace; cursor:pointer; }
+.role-btn--active { background:var(--hi); color:#000; border-color:var(--hi); }
+.role-user [data-min-role="team-leader"], .role-user [data-min-role="org-admin"], .role-user [data-min-role="integ-admin"], .role-user [data-min-role="super-admin"] { display:none !important; }
+.role-team-leader [data-min-role="org-admin"], .role-team-leader [data-min-role="integ-admin"], .role-team-leader [data-min-role="super-admin"] { display:none !important; }
+.role-org-admin [data-min-role="integ-admin"], .role-org-admin [data-min-role="super-admin"] { display:none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display:none !important; }
+@media (max-width:1200px) { .plan-table { display:block; overflow-x:auto; white-space:nowrap; } .hero-strip { grid-template-columns:1fr; background:#faf8f3; } .hero-strip__label { background:#2e5a8a; } .state-editor { grid-template-columns:1fr; } }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline:2px solid var(--hi); outline-offset:2px; }
+
+/* v6:6 visual alignment */
+:root {
+  --bg:#ffffff; --bg-alt:#f0f0f0; --bg-dark:#0a0a0a;
+  --text:#0a0a0a; --text-muted:#666666;
+  --border:#e0e0e0; --border-strong:#0a0a0a;
+  --hi:#ffcc00; --hi-soft:rgba(255,204,0,0.18);
+  --ok:#00a854; --warn:#fa8c16; --err:#e6001a; --idle:#999999;
+  --md:16px; --lg:24px; --xl:32px; --2xl:48px;
+}
+body { line-height:1.6; }
+.main { max-width:1400px; padding:0 var(--lg) var(--2xl); padding-bottom:80px; }
+.page-title { margin-bottom:var(--lg); }
+.toolbar { gap:var(--md); margin-bottom:var(--lg); }
+.btn { min-height:44px; padding:var(--sm) var(--lg); font-size:12px; font-weight:700; transition:box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow:4px 4px 0 var(--hi); }
+.btn--outline { background:var(--bg); color:var(--text); }
+.btn--sm { min-height:36px; padding:var(--xs) var(--md); font-size:11px; }
+.field, .search { min-height:44px; border:2px solid var(--border-strong); font-size:12px; font-weight:700; }
+.lang-btn { font-family:inherit; letter-spacing:.06em; }
+.state-editor { gap:var(--md); margin-bottom:var(--lg); }
+.text-module { border:2px solid var(--border-strong); background:#fff; padding:var(--lg); }
+.text-module__title { font-size:14px; letter-spacing:.06em; }
+.text-module textarea { min-height:132px; border:1px solid var(--border); }
+.bc-card { border:2px solid var(--border-strong); margin-bottom:var(--md); background:#fff; }
+.bc-header { display:flex; align-items:center; gap:var(--sm); padding:var(--sm) var(--md); background:var(--bg-alt); border-bottom:1px solid var(--border); margin-bottom:0; }
+.bc-toggle { width:16px; height:16px; border:none; background:transparent; color:var(--text-muted); font-size:10px; }
+.bc-title-input { font-family:'Inter',system-ui,sans-serif; font-size:13px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
+.progress-band { padding:var(--sm) var(--md) 0; margin:0 0 var(--sm); max-width:560px; }
+.progress-band__track { height:8px; border:1px solid var(--border); border-radius:0; background:var(--bg-alt); }
+.progress-band__fill { background:var(--hi); }
+.state-lines { padding:0 var(--md); margin-bottom:var(--sm); }
+.aoi-head { display:grid; grid-template-columns:220px 150px 150px 150px 1fr 54px 54px 44px; gap:0; align-items:center; border-bottom:1px solid var(--border); }
+.aoi-title-input { background:#f0f0f0; color:var(--text-muted); font-style:italic; font-weight:600; text-transform:none; letter-spacing:0; }
+.aoi-head__col { padding:6px 8px; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); }
+.plan-table th, .plan-table td { border-top:1px solid var(--border); }
+.cell-input, .cell-select, .cell-date { min-height:36px; padding:4px 8px; font-size:13px; font-weight:500; }
+.cell-action { min-height:36px; }
+.icon-cell { min-height:36px; }
+.status-select { height:36px; width:100%; min-width:0; }
+.done-panel { border:2px solid var(--border); margin-top:var(--xl); }
+</style>
+<link rel="stylesheet" href="action-plan-bestcon-v6.css">
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header"><a href="dashboard.html" class="sidebar__logo">ITT</a></div>
+  <div class="sidebar__selectors">
+    <div class="sidebar__selector" id="org-selector-wrap"><span class="sidebar__selector-label">Org</span><select id="org-select"></select></div>
+    <div class="sidebar__selector" id="team-selector-wrap"><span class="sidebar__selector-label">Team</span><select id="team-select"></select></div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher"><button class="lang-btn lang-btn--active" data-lang="sv">SV</button><button class="lang-btn" data-lang="en">EN</button></div>
+  </div>
+</aside>
+<div class="page-wrap">
+  <main class="main" id="main-content">
+    <h1 class="page-title" id="page-title">Handlingsplan</h1>
+    <div class="toolbar">
+      <div class="toolbar__left">
+        <select class="field" id="filter-person"></select>
+        <select class="field" id="filter-status"></select>
+        <input class="search" id="search" type="search" placeholder="Sök åtgärd">
+      </div>
+      <div class="toolbar__right" data-min-role="team-leader">
+        <button class="btn btn--hi" id="btn-open-edit"></button>
+        <button class="btn btn--outline btn--sm" id="btn-new-action-global"></button>
+        <button class="btn btn--outline btn--sm" id="toggle-all"></button>
+        <button class="btn btn--hi btn--sm" id="btn-new-bc"></button>
+      </div>
+    </div>
+    <section class="state-editor" id="state-editor"></section>
+    <div class="hero-strip">
+      <div class="hero-strip__label" id="team-focus-label">Team focus</div>
+      <div class="hero-strip__value" id="team-focus-value"></div>
+    </div>
+    <div id="bc-list"></div>
+    <div class="done-panel">
+      <div class="done-head" id="done-title">Avklarade steg</div>
+      <div class="done-list" id="done-list"></div>
+    </div>
+  </main>
+</div>
+<div class="comment-pop" id="comment-pop">
+  <div class="comment-pop__card">
+    <div class="comment-pop__title" id="comment-title">Kommentar</div>
+    <div class="comment-pop__text" id="comment-text"></div>
+    <button class="btn btn--outline" id="comment-close">Stäng</button>
+  </div>
+</div>
+<div class="role-bar">
+  <span>Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script>
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+const WS_STORAGE_KEY = 'itt-workspace-v7';
+const cloneWs = data => JSON.parse(JSON.stringify(data));
+try {
+  const storedWs = localStorage.getItem(WS_STORAGE_KEY);
+  if (storedWs) Object.assign(WS, cloneWs(JSON.parse(storedWs)));
+} catch (err) {}
+function persistWs() { localStorage.setItem(WS_STORAGE_KEY, JSON.stringify(WS)); }
+const MODE = 'expanded';
+const ACTIVE_MODULE = 'actionPlan';
+const $ = id => document.getElementById(id);
+const S = { role: localStorage.getItem('itt-role') || 'super-admin', orgId: localStorage.getItem('itt-org') || '', teamId: localStorage.getItem('itt-team') || 'alpha', person:'all', status:'all', search:'', openBc:{}, editMode:false };
+function t(key, params) { let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS.sv[key] || key; if (params) Object.keys(params).forEach(k => str = str.replace(new RegExp('\\{' + k + '\\}','g'), params[k])); return str; }
+const canEdit = () => S.role !== 'user';
+const isEditMode = () => canEdit() && S.editMode;
+const actor = () => ACTORS[S.role];
+const userById = id => DB.users.find(u => u.id === id);
+const fullName = u => u ? `${u.firstName} ${u.lastName}` : '—';
+const statusOptions = ['not_started','in_progress','overdue','done'];
+const statusClass = s => `status-${s}`;
+const statusLabel = s => t({ not_started:'ap.notStarted', in_progress:'ap.inProgress', overdue:'ap.overdue', done:'ap.done' }[s] || s);
+const nextStatus = s => statusOptions[(Math.max(0, statusOptions.indexOf(s)) + 1) % statusOptions.length];
+const bcCompletion = bcId => { const items = WS.actions.filter(a => a.teamId === S.teamId && a.bcId === bcId); if (!items.length) return 0; return Math.round((items.filter(a => a.status === 'done').length / items.length) * 100); };
+const visibleBCs = () => WS.bestContributions.filter(bc => bc.teamId === S.teamId && !bc.archived);
+const MODULES = [
+  { key:'strategic', file:'strategic.html', section:1, fullKey:'mod.strategic' },
+  { key:'newsflash', file:'newsflash.html', section:1, fullKey:'mod.newsflash' },
+  { key:'desiredState', file:'desired-state.html', section:2, fullKey:'mod.desiredState' },
+  { key:'goalsMetrics', file:'goals-metrics.html', section:2, fullKey:'mod.goalsMetrics' },
+  { key:'bestContributions', file:'best-contributions.html', section:3, fullKey:'mod.bestContributions' },
+  { key:'actionPlan', file:'action-plan.html', section:3, fullKey:'mod.actionPlan' },
+  { key:'documents', file:'documents.html', section:3, fullKey:'mod.documents' },
+  { key:'ideas', file:'ideas.html', section:3, fullKey:'mod.ideas' },
+  { key:'reflections', file:'reflections.html', section:4, fullKey:'mod.reflections' },
+  { key:'attendance', file:'attendance.html', section:4, fullKey:'mod.attendance' },
+  { key:'completedBestContributions', file:'completed-best-contributions.html', section:4, fullKey:'mod.completedBestContributions' },
+];
+const SECTION_LABELS = { 1:{sv:'1. Vart är vi på väg?', en:'1. Where are we headed?'}, 2:{sv:'2. Vad siktar vi på?', en:'2. What are we aiming for?'}, 3:{sv:'3. Gör vi framsteg?', en:'3. Are we making progress?'}, 4:{sv:'4. Lär vi oss?', en:'4. Are we learning?'} };
+function setLang(lang) { currentLang = lang; localStorage.setItem('itt-lang', lang); document.documentElement.lang = lang; document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang)); renderAll(); }
+document.addEventListener('click', e => { if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang); });
+function orgsForActor() { const a = actor(); if (S.role === 'super-admin') return DB.organizations; return DB.organizations.filter(o => a.orgs.includes(o.id)); }
+function teamsForActor() { const a = actor(); const u = userById(a.userId); if (['super-admin','integ-admin','org-admin'].includes(S.role)) { let teams = DB.teams.filter(t => a.orgs.includes(t.orgId)); if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId); return teams; } return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id)); }
+function membersForTeam() { return DB.users.filter(u => u.memberships.some(m => m.teamId === S.teamId) && u.registerStatus !== 'soft_deleted'); }
+function renderSelectors() {
+  const orgs = orgsForActor(); const orgWrap = $('org-selector-wrap'); const orgSel = $('org-select');
+  if (!['super-admin','integ-admin','org-admin'].includes(S.role) || orgs.length <= 1) { orgWrap.style.display = 'none'; if (orgs[0]) S.orgId = orgs[0].id; } else { orgWrap.style.display = ''; if (!orgs.find(o => o.id === S.orgId)) S.orgId = orgs[0].id; orgSel.innerHTML = orgs.map(o => `<option value="${o.id}" ${o.id===S.orgId?'selected':''}>${o.title}</option>`).join(''); }
+  const teams = teamsForActor(); const teamWrap = $('team-selector-wrap'); const teamSel = $('team-select');
+  if (!teams.find(t => t.id === S.teamId)) S.teamId = teams[0]?.id || 'alpha';
+  if (teams.length <= 1) { teamWrap.style.display = 'none'; } else { teamWrap.style.display = ''; teamSel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id===S.teamId?'selected':''}>${t.title}</option>`).join(''); }
+}
+$('org-select').addEventListener('change', e => { S.orgId = e.target.value; localStorage.setItem('itt-org', S.orgId); S.teamId = teamsForActor()[0]?.id || 'alpha'; localStorage.setItem('itt-team', S.teamId); renderAll(); });
+$('team-select').addEventListener('change', e => { S.teamId = e.target.value; localStorage.setItem('itt-team', S.teamId); renderAll(); });
+function renderSidebar() {
+  let html = `<a href="dashboard.html" class="sidebar__link">${t('nav.dashboard')}</a><div class="sidebar__divider"></div>`; let last = 0;
+  MODULES.forEach(m => { if (m.section !== last) { html += `<div class="sidebar__section-label">${currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv}</div>`; last = m.section; } html += `<a href="${m.file}" class="sidebar__link${m.key===ACTIVE_MODULE?' sidebar__link--active':''}">${t(m.fullKey)}</a>`; });
+  html += `<div class="sidebar__divider"></div><a href="external-view.html?src=https%3A%2F%2Fintegpartner.com" class="sidebar__link">${t('ap.externalView')}</a>`;
+  $('sidebar-nav').innerHTML = html;
+}
+function renderFilters() {
+  const members = membersForTeam();
+  $('filter-person').innerHTML = `<option value="all">${t('ap.filterPerson')}</option>` + members.map(u => `<option value="${u.id}" ${S.person===u.id?'selected':''}>${fullName(u)}</option>`).join('');
+  $('filter-status').innerHTML = `<option value="all">${t('ap.filterStatus')}</option>` + statusOptions.map(s => `<option value="${s}" ${S.status===s?'selected':''}>${t({not_started:'ap.notStarted',in_progress:'ap.inProgress',overdue:'ap.overdue',done:'ap.done'}[s])}</option>`).join('');
+}
+function filteredActions(bcId, aoiId) {
+  return WS.actions
+    .filter(a => a.teamId === S.teamId && a.bcId === bcId && a.aiId === aoiId)
+    .filter(a => S.person === 'all' || a.responsibleId === S.person || a.supportId === S.person)
+    .filter(a => S.status === 'all' ? a.status !== 'done' : a.status === S.status)
+    .filter(a => !S.search || a.title.toLowerCase().includes(S.search) || (a.comment || '').toLowerCase().includes(S.search));
+}
+function renderFocus() {
+  const txt = ensureTextModule();
+  const focusValue = txt.teamFocus || txt.desiredState || '';
+  $('team-focus-label').textContent = t('ap.teamFocus');
+  $('team-focus-value').innerHTML = isEditMode()
+    ? `<textarea class="hero-strip__editor" data-team-focus placeholder="${t('ds.desiredPlaceholder')}">${esc(focusValue)}</textarea>`
+    : `<div class="hero-strip__text">${displayValue(focusValue)}</div>`;
+}
+function ensureBcNotes(bc) {
+  if (bc.startingPointText === undefined) bc.startingPointText = '';
+  if (bc.desiredStateText === undefined) bc.desiredStateText = '';
+  return bc;
+}
+function ensureTextModule() {
+  if (!WS.textModules[S.teamId]) WS.textModules[S.teamId] = { currentState:'', desiredState:'', teamFocus:'', reflections:[] };
+  if (WS.textModules[S.teamId].teamFocus === undefined) WS.textModules[S.teamId].teamFocus = '';
+  return WS.textModules[S.teamId];
+}
+function displayValue(value) {
+  return String(value || '').trim() ? esc(value).replace(/\n/g, '<br>') : '—';
+}
+function renderStateLines(bc) {
+  const notes = ensureBcNotes(bc);
+  if (!isEditMode()) {
+    return `<div class="state-lines"><div><strong>${t('ds.currentTitle')}:</strong> ${displayValue(notes.startingPointText)}</div><div><strong>${t('ds.desiredTitle')}:</strong> ${displayValue(notes.desiredStateText)}</div></div>`;
+  }
+  return `<div class="state-lines state-lines--editable">
+    <label class="state-line-editor">
+      <span class="state-line-editor__label">${t('ds.currentTitle')}</span>
+      <textarea class="state-line-editor__field" data-bc-text="startingPointText" data-bc-id="${bc.id}" placeholder="${t('ds.currentPlaceholder')}">${esc(notes.startingPointText)}</textarea>
+    </label>
+    <label class="state-line-editor">
+      <span class="state-line-editor__label">${t('ds.desiredTitle')}</span>
+      <textarea class="state-line-editor__field" data-bc-text="desiredStateText" data-bc-id="${bc.id}" placeholder="${t('ds.desiredPlaceholder')}">${esc(notes.desiredStateText)}</textarea>
+    </label>
+  </div>`;
+}
+function renderCellDisplay(value, extraClass = '') {
+  return `<div class="cell-display${extraClass ? ` ${extraClass}` : ''}">${displayValue(value)}</div>`;
+}
+function renderStateEditor() {
+  const txt = ensureTextModule();
+  $('state-editor').innerHTML = `
+    <div class="text-module">
+      <div class="text-module__title">${t('ds.currentTitle')}</div>
+      <div class="text-module__help">${t('ds.currentHelp')}</div>
+      ${isEditMode()
+        ? `<textarea id="state-current-input" data-text-field="currentState" placeholder="${t('ds.currentPlaceholder')}">${esc(txt.currentState || '')}</textarea>`
+        : `<div class="state-line-editor__text">${displayValue(txt.currentState)}</div>`
+      }
+    </div>
+    <div class="text-module">
+      <div class="text-module__title">${t('ds.desiredTitle')}</div>
+      <div class="text-module__help">${t('ds.desiredHelp')}</div>
+      ${isEditMode()
+        ? `<textarea id="state-desired-input" data-text-field="desiredState" placeholder="${t('ds.desiredPlaceholder')}">${esc(txt.desiredState || '')}</textarea>`
+        : `<div class="state-line-editor__text">${displayValue(txt.desiredState)}</div>`
+      }
+    </div>
+  `;
+}
+function personOptions(selected) { return `<option value=""></option>` + membersForTeam().map(u => `<option value="${u.id}" ${u.id===selected?'selected':''}>${fullName(u)}</option>`).join(''); }
+function statusOptionsHtml(selected) { return statusOptions.map(s => `<option value="${s}" ${s===selected?'selected':''}>${t({not_started:'ap.notStarted',in_progress:'ap.inProgress',overdue:'ap.overdue',done:'ap.done'}[s])}</option>`).join(''); }
+function renderBCList() {
+  const list = $('bc-list'); const teamBcs = visibleBCs();
+  if (!teamBcs.length) { list.innerHTML = `<div class="done-list">${t('bc.empty')}</div>`; return; }
+  list.innerHTML = teamBcs.map(bc => {
+    const open = S.openBc[bc.id] !== undefined ? S.openBc[bc.id] : MODE === 'expanded';
+    const pct = bcCompletion(bc.id);
+    return `<section class="bc-card ${open ? 'bc-card--open' : ''}" data-bc="${bc.id}">
+      <div class="bc-header">
+        <button class="bc-toggle" data-toggle="${bc.id}">${open ? '−' : '+'}</button>
+        ${isEditMode()
+          ? `<input class="bc-title-input" data-bc-title="${bc.id}" value="${esc(bc.title)}" placeholder="${t('bc.titlePlaceholder')}">`
+          : `<div class="bc-title-text">${displayValue(bc.title)}</div>`
+        }
+        ${isEditMode() ? `<button class="btn btn--outline btn--sm" data-add-aoi="${bc.id}" data-min-role="team-leader">${t('ap.newAoi')}</button>` : ''}
+      </div>
+      <div class="progress-band"><div class="progress-band__label">${t('ap.progressDegree')}</div><div class="progress-band__track"><div class="progress-band__fill" style="width:${pct}%"></div></div><div class="progress-band__pct">${pct}%</div></div>
+      ${renderStateLines(bc)}
+      <div class="bc-body">
+        ${bc.areaOfImprovement.map(aoi => renderAOI(bc, aoi)).join('')}
+        ${isEditMode() ? `<div style="padding:0 0 0 0;margin-top:8px;" data-min-role="team-leader"><button class="btn btn--outline btn--sm" data-archive-bc="${bc.id}">${currentLang === 'en' ? 'Move to completed' : 'Flytta till avslutade'}</button></div>` : ''}
+      </div>
+    </section>`;
+  }).join('');
+}
+function renderAOI(bc, aoi) {
+  const actions = filteredActions(bc.id, aoi.id);
+  return `<div class="aoi-block">
+    <div class="aoi-head">
+      <div class="aoi-head__col aoi-head__col--spacer"></div>
+      ${isEditMode()
+        ? `<input class="aoi-title-input" data-aoi-title="${aoi.id}" value="${esc(aoi.title)}" placeholder="${t('ap.aoiPlaceholder')}">`
+        : `<div class="aoi-title-text">${displayValue(aoi.title)}</div>`
+      }
+      <div class="aoi-head__col">${t('ap.responsible')}</div>
+      <div class="aoi-head__col">${t('ap.support')}</div>
+      <div class="aoi-head__col">${t('ap.deadline')}</div>
+      <div class="aoi-head__col">${t('ap.commentShort')}</div>
+      <div class="aoi-head__col">${currentLang === 'en' ? 'Mail' : 'Meddela'}</div>
+      <div class="aoi-head__col">${currentLang === 'en' ? 'Delete' : 'Radera'}</div>
+    </div>
+    <table class="plan-table">
+      <colgroup>
+        <col class="plan-col-status">
+        <col class="plan-col-action">
+        <col class="plan-col-person">
+        <col class="plan-col-person">
+        <col class="plan-col-date">
+        <col class="plan-col-comment">
+        <col class="plan-col-icon">
+        <col class="plan-col-icon">
+      </colgroup>
+      <tbody>${actions.map(a => renderActionRow(a, aoi)).join('')}</tbody>
+    </table>
+    ${isEditMode() ? `<div style="padding:8px 0 0;"><button class="btn btn--outline btn--sm" data-add-action="${bc.id}|${aoi.id}" data-min-role="team-leader">${t('ap.addAction')}</button></div>` : ''}
+  </div>`;
+}
+function renderActionRow(a, aoi) {
+  const comment = a.comment || '';
+  const responsible = fullName(userById(a.responsibleId));
+  const support = fullName(userById(a.supportId));
+  return `<tr data-action="${a.id}">
+    <td class="status-col"><button class="status-dot-btn" data-status-dot="${a.id}" title="${statusLabel(a.status)}" ${isEditMode() ? '' : 'disabled'}><span class="status-dot status-dot--${a.status}"></span></button></td>
+    <td>${isEditMode() ? `<textarea class="cell-input cell-action" data-field="title" data-id="${a.id}" placeholder="${t('ap.actionPlaceholder')}">${esc(a.title)}</textarea>` : renderCellDisplay(a.title, !a.title && 'cell-display--muted')}</td>
+    <td>${isEditMode() ? `<select class="cell-select" data-field="responsibleId" data-id="${a.id}">${personOptions(a.responsibleId)}</select>` : renderCellDisplay(responsible, !a.responsibleId && 'cell-display--muted')}</td>
+    <td>${isEditMode() ? `<select class="cell-select" data-field="supportId" data-id="${a.id}">${personOptions(a.supportId)}</select>` : renderCellDisplay(support, !a.supportId && 'cell-display--muted')}</td>
+    <td>${isEditMode() ? `<input class="cell-date" type="date" data-field="deadline" data-id="${a.id}" value="${a.deadline || ''}">` : renderCellDisplay(a.deadline, !a.deadline && 'cell-display--muted')}</td>
+    <td>${isEditMode() ? `<input class="cell-input cell-comment" data-field="comment" data-id="${a.id}" value="${esc(comment)}" title="${esc(comment)}" placeholder="${t('ap.commentPlaceholder')}">` : `<div class="cell-display cell-comment${comment ? '' : ' cell-display--muted'}" data-comment-preview="${a.id}" title="${esc(comment)}">${displayValue(comment)}</div>`}</td>
+    <td><div class="icon-cell">&#9993;</div></td>
+    <td>${isEditMode() ? `<button class="icon-cell" style="border:none;background:transparent;cursor:pointer;" data-delete-action="${a.id}">&#128465;</button>` : `<div class="icon-cell">—</div>`}</td>
+  </tr>`;
+}
+function renderDone() {
+  const done = WS.actions.filter(a => a.teamId === S.teamId && a.status === 'done');
+  $('done-title').textContent = `${t('ap.completedSteps')} (${done.length})`;
+  $('done-list').innerHTML = done.length ? done.map(a => `${a.title} · ${a.deadline || '—'}`).join('<br>') : (currentLang === 'en' ? 'No completed steps yet.' : 'Inga avklarade steg ännu.');
+}
+function esc(str) { return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function attachEvents() {
+  document.querySelectorAll('[data-toggle]').forEach(btn => btn.onclick = () => { S.openBc[btn.dataset.toggle] = !(S.openBc[btn.dataset.toggle] !== undefined ? S.openBc[btn.dataset.toggle] : MODE === 'expanded'); renderBCList(); attachEvents(); });
+  document.querySelectorAll('[data-team-focus]').forEach(el => el.onchange = () => { const txt = ensureTextModule(); txt.teamFocus = el.value; persistWs(); renderFocus(); });
+  document.querySelectorAll('[data-text-field]').forEach(el => el.onchange = () => { const txt = ensureTextModule(); txt[el.dataset.textField] = el.value; persistWs(); renderStateEditor(); });
+  document.querySelectorAll('[data-bc-title]').forEach(el => el.onchange = () => { const bc = WS.bestContributions.find(b => b.id === el.dataset.bcTitle); if (bc) bc.title = el.value; persistWs(); renderAll(); });
+  document.querySelectorAll('[data-bc-text]').forEach(el => el.onchange = () => { const bc = WS.bestContributions.find(b => b.id === el.dataset.bcId); if (!bc) return; bc[el.dataset.bcText] = el.value; persistWs(); renderAll(); });
+  document.querySelectorAll('[data-aoi-title]').forEach(el => el.onchange = () => { WS.bestContributions.forEach(bc => bc.areaOfImprovement.forEach(aoi => { if (aoi.id === el.dataset.aoiTitle) aoi.title = el.value; })); persistWs(); renderAll(); });
+  document.querySelectorAll('[data-field]').forEach(el => el.onchange = () => { const a = WS.actions.find(x => x.id === el.dataset.id); if (!a) return; a[el.dataset.field] = el.value; persistWs(); renderDone(); });
+  document.querySelectorAll('[data-comment-preview]').forEach(el => el.onclick = () => { const a = WS.actions.find(x => x.id === el.dataset.commentPreview); $('comment-title').textContent = t('ap.commentShort'); $('comment-text').textContent = a?.comment || ''; $('comment-pop').classList.add('comment-pop--open'); });
+  document.querySelectorAll('[data-add-action]').forEach(btn => btn.onclick = () => { const [bcId, aoiId] = btn.dataset.addAction.split('|'); WS.actions.unshift({ id:'a_'+Math.random().toString(36).slice(2,7), teamId:S.teamId, bcId, aiId:aoiId, title:'', description:'', responsibleId:'', supportId:'', deadline:'', status:'not_started', comment:'' }); persistWs(); renderAll(); });
+  document.querySelectorAll('[data-add-aoi]').forEach(btn => btn.onclick = () => { const bc = WS.bestContributions.find(b => b.id === btn.dataset.addAoi); if (!bc) return; bc.areaOfImprovement.push({ id:'ai_'+Math.random().toString(36).slice(2,7), title: currentLang === 'en' ? 'New area' : 'Nytt område' }); S.openBc[bc.id] = true; persistWs(); renderAll(); });
+  document.querySelectorAll('[data-delete-action]').forEach(btn => btn.onclick = () => { WS.actions = WS.actions.filter(a => a.id !== btn.dataset.deleteAction); persistWs(); renderAll(); });
+  document.querySelectorAll('[data-archive-bc]').forEach(btn => btn.onclick = () => { const bc = WS.bestContributions.find(b => b.id === btn.dataset.archiveBc); if (!bc) return; bc.archived = true; bc.archivedAt = new Date().toISOString().slice(0,10); persistWs(); renderAll(); });
+  document.querySelectorAll('[data-status-dot]').forEach(btn => btn.onclick = () => { if (!isEditMode()) return; const a = WS.actions.find(x => x.id === btn.dataset.statusDot); if (!a) return; a.status = nextStatus(a.status); persistWs(); renderAll(); });
+}
+function renderAll() {
+  if (!canEdit()) S.editMode = false;
+  document.body.className = 'role-' + S.role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === S.role));
+  renderSelectors(); renderSidebar(); renderFilters(); renderStateEditor(); renderFocus(); renderBCList(); renderDone(); attachEvents();
+  $('page-title').textContent = t('ap.title');
+  $('btn-new-bc').textContent = t('ap.newBc');
+  $('btn-open-edit').textContent = isEditMode()
+    ? (currentLang === 'en' ? 'Done editing' : 'Klar med redigering')
+    : (currentLang === 'en' ? 'Edit action plan' : 'Redigera handlingsplan');
+  $('btn-new-action-global').textContent = currentLang === 'en' ? '+ New action' : '+ Ny åtgärd';
+  $('toggle-all').textContent = allOpen() ? t('ap.closeAll') : t('ap.openAll');
+  $('team-focus-label').textContent = t('ap.teamFocus');
+  $('search').placeholder = t('ap.searchPlaceholder');
+  $('nav-admin').innerHTML = '&#9881; ' + t('nav.admin');
+  $('skip-link').textContent = t('skip');
+  $('btn-new-action-global').hidden = !isEditMode();
+  $('btn-new-bc').hidden = !isEditMode();
+}
+function allOpen() { return visibleBCs().every(b => S.openBc[b.id] !== false); }
+$('toggle-all').onclick = () => { const open = !allOpen(); visibleBCs().forEach(b => S.openBc[b.id] = open); renderAll(); };
+$('btn-new-bc').onclick = () => { if (!isEditMode()) return; const id = 'bc_' + Math.random().toString(36).slice(2,7); WS.bestContributions.unshift({ id, teamId:S.teamId, title: currentLang === 'en' ? 'New best contribution' : 'Nytt bästa bidrag', startingPointText:'', desiredStateText:'', areaOfImprovement:[{ id:'ai_'+Math.random().toString(36).slice(2,7), title: currentLang === 'en' ? 'New area' : 'Nytt område' }] }); S.openBc[id] = true; persistWs(); renderAll(); };
+$('btn-open-edit').onclick = () => {
+  if (!canEdit()) return;
+  S.editMode = !S.editMode;
+  renderAll();
+  if (!S.editMode) return;
+  const first = document.querySelector('[data-team-focus], [data-text-field], .bc-title-input, [data-bc-text], [data-aoi-title], .cell-action, .cell-input, .cell-select');
+  if (first) {
+    first.focus();
+    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+};
+$('btn-new-action-global').onclick = () => {
+  if (!isEditMode()) return;
+  const bc = visibleBCs()[0];
+  if (!bc) return;
+  const aoi = bc.areaOfImprovement[0];
+  if (!aoi) return;
+  WS.actions.unshift({ id:'a_'+Math.random().toString(36).slice(2,7), teamId:S.teamId, bcId:bc.id, aiId:aoi.id, title:'', description:'', responsibleId:'', supportId:'', deadline:'', status:'not_started', comment:'' });
+  S.openBc[bc.id] = true;
+  persistWs();
+  renderAll();
+};
+$('filter-person').onchange = e => { S.person = e.target.value; renderAll(); };
+$('filter-status').onchange = e => { S.status = e.target.value; renderAll(); };
+$('search').oninput = e => { S.search = e.target.value.toLowerCase(); renderAll(); };
+$('comment-close').onclick = () => $('comment-pop').classList.remove('comment-pop--open');
+document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLang(btn.dataset.lang)));
+document.querySelectorAll('.role-btn').forEach(btn => btn.onclick = () => { S.role = btn.dataset.role; localStorage.setItem('itt-role', S.role); renderAll(); });
+document.documentElement.lang = currentLang; document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === currentLang)); renderAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teamdokument v6 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+  --sidebar-w: 240px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg); display: flex; min-height: 100vh;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- SIDEBAR --- */
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--sm) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: var(--sm) var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
+.sidebar__section-label { padding: var(--lg) var(--lg) var(--xs); color: var(--hi); font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- PAGE WRAPPER --- */
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); padding-bottom: 64px; }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; border-style: dashed; }
+
+/* --- FORMS --- */
+.form-group { margin-bottom: var(--md); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--xs); display: block; }
+.form-input, .form-select { width: 100%; padding: var(--sm) var(--md); border: 2px solid var(--border-strong); background: var(--bg-alt); color: var(--text); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-input:focus, .form-select:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%230a0a0a' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+.search-input { max-width: 320px; }
+
+/* --- TOOLBAR --- */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); margin-bottom: var(--lg); }
+.toolbar__left { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); flex: 1; }
+
+/* --- INLINE FORM --- */
+.inline-form { display: flex; flex-wrap: wrap; gap: var(--md); align-items: flex-end; padding: var(--lg); border: 2px solid var(--border); margin-bottom: var(--lg); background: var(--bg-alt); }
+.inline-form .form-group { margin: 0; }
+
+/* --- TABLE --- */
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border: 2px solid var(--border-strong); padding: var(--sm) var(--md); text-align: left; vertical-align: middle; }
+.data-table thead th { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+.data-table tbody tr { transition: background .1s; }
+.data-table tbody tr:hover { background: var(--hi-soft); }
+
+/* --- TYPE BADGES --- */
+.type-badge { display: inline-block; padding: 2px 8px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; }
+.type-badge--pdf { background: #fff1f0; color: #a8071a; border-color: #e6001a; }
+.type-badge--doc { background: #e6f0ff; color: #1a5ab8; border-color: #1a5ab8; }
+.type-badge--xls { background: #e6f7ee; color: #006d36; border-color: #00a854; }
+.type-badge--ppt { background: #fff7e6; color: #8a3e00; border-color: #fa8c16; }
+.type-badge--csv { background: #f0f0f0; color: #666; border-color: #999; }
+.type-badge--other { background: #e0e0e0; color: #333; border-color: #666; }
+
+/* --- URL CELL --- */
+.url-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--text-muted); }
+
+/* --- EMPTY STATE --- */
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+
+/* --- OVERLAY + SLIDE-OVER --- */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; }
+.overlay--visible { display: block; }
+.slide-over { position: fixed; top: 0; right: -540px; width: 520px; max-width: 100vw; height: 100vh; background: var(--bg); border-left: 3px solid var(--border-strong); z-index: 2001; overflow-y: auto; transition: right .25s ease; display: flex; flex-direction: column; }
+.slide-over--open { right: 0; }
+.so-header { display: flex; justify-content: space-between; align-items: flex-start; padding: var(--xl); padding-bottom: var(--md); border-bottom: 3px solid var(--border-strong); flex-shrink: 0; }
+.so-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.so-close { background: none; border: 2px solid var(--border-strong); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: 900; color: var(--text); }
+.so-close:hover { background: var(--bg-alt); }
+.so-body { flex: 1; overflow-y: auto; padding: var(--xl); }
+.so-footer { padding: var(--lg) var(--xl); border-top: 2px solid var(--border); display: flex; gap: var(--md); flex-shrink: 0; }
+
+/* --- CONFIRM DIALOG --- */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) { .slide-over { width: 100vw; } }
+@media (max-width: 768px) { .col-hide-sm { display: none; } }
+@media (max-width: 480px) {
+  .main { padding: 0 var(--md) var(--2xl); }
+  .page-title { font-size: 24px; padding: var(--lg) 0; }
+  .inline-form { flex-direction: column; }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header">
+    <a href="dashboard.html" class="sidebar__logo" id="nav-logo">ITT</a>
+  </div>
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap">
+      <span class="sidebar__selector-label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="sidebar__selector" id="team-selector-wrap">
+      <span class="sidebar__selector-label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</aside>
+
+<div class="page-wrap">
+<!-- ===== MAIN ===== -->
+<main class="main" id="main-content">
+  <h1 class="page-title" id="page-title">Teamdokument</h1>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar__left">
+      <input type="text" class="form-input search-input" id="doc-search" placeholder="Sök dokument...">
+      <select class="form-select" id="doc-type-filter" style="width:auto;min-width:140px;">
+        <option value="all">Alla</option>
+        <option value="pdf">PDF</option>
+        <option value="doc">DOC</option>
+        <option value="xls">XLS</option>
+        <option value="ppt">PPT</option>
+        <option value="csv">CSV</option>
+        <option value="other">Övrigt</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Inline create form -->
+  <div class="inline-form" id="create-form">
+    <div class="form-group" style="flex:1;min-width:180px;">
+      <label class="form-label" id="lbl-add-title">Titel</label>
+      <input type="text" class="form-input" id="new-doc-title">
+    </div>
+    <div class="form-group" style="flex:1;min-width:220px;">
+      <label class="form-label" id="lbl-add-url">URL</label>
+      <input type="text" class="form-input" id="new-doc-url" placeholder="https://...">
+    </div>
+    <div class="form-group" style="width:120px;">
+      <label class="form-label" id="lbl-add-type">Typ</label>
+      <select class="form-select" id="new-doc-type">
+        <option value="pdf">PDF</option>
+        <option value="doc">DOC</option>
+        <option value="xls">XLS</option>
+        <option value="ppt">PPT</option>
+        <option value="csv">CSV</option>
+        <option value="other">Övrigt</option>
+      </select>
+    </div>
+    <button class="btn btn--hi" id="btn-save-link">Spara Länk</button>
+  </div>
+
+  <!-- Document table -->
+  <div class="table-wrap">
+    <table class="data-table" id="doc-table">
+      <thead>
+        <tr>
+          <th id="th-title">Titel</th>
+          <th id="th-url">URL</th>
+          <th id="th-type">Typ</th>
+          <th id="th-created" class="col-hide-sm">Skapad</th>
+          <th id="th-actions">Åtgärd</th>
+        </tr>
+      </thead>
+      <tbody id="doc-tbody"></tbody>
+    </table>
+  </div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <p>Inga dokument att visa.</p>
+  </div>
+</main>
+</div>
+
+<!-- ===== OVERLAY ===== -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ===== EDIT SLIDE-OVER ===== -->
+<div class="slide-over" id="so-edit" role="dialog" aria-modal="true">
+  <div class="so-header">
+    <h2 class="so-title" id="so-edit-title">Redigera dokument</h2>
+    <button class="so-close" onclick="tryCloseSlideOver()" aria-label="Stäng">&times;</button>
+  </div>
+  <div class="so-body">
+    <div class="form-group">
+      <label class="form-label">Titel</label>
+      <input type="text" class="form-input" id="edit-doc-title">
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL</label>
+      <input type="text" class="form-input" id="edit-doc-url">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Typ</label>
+      <select class="form-select" id="edit-doc-type">
+        <option value="pdf">PDF</option>
+        <option value="doc">DOC</option>
+        <option value="xls">XLS</option>
+        <option value="ppt">PPT</option>
+        <option value="csv">CSV</option>
+        <option value="other">Övrigt</option>
+      </select>
+    </div>
+  </div>
+  <div class="so-footer">
+    <button class="btn btn--outline" onclick="tryCloseSlideOver()">Avbryt</button>
+    <button class="btn" id="btn-edit-save">Spara Ändringar</button>
+  </div>
+</div>
+
+<!-- ===== CONFIRM DIALOG ===== -->
+<div class="dialog-overlay" id="confirm-dialog">
+  <div class="dialog">
+    <h3 class="dialog__title" id="dialog-title"></h3>
+    <p class="dialog__text" id="dialog-text"></p>
+    <div class="dialog__actions">
+      <button class="btn btn--outline" id="dialog-cancel">Avbryt</button>
+      <button class="btn btn--danger" id="dialog-confirm">Bekräfta</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script>
+// ============================================================
+// 0. CONSTANTS
+// ============================================================
+const ACTIVE_MODULE = 'documents';
+
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, shortKey: 'mod.short.strategic', fullKey: 'mod.strategic' },
+  { key: 'newsflash', file: 'newsflash.html', section: 1, shortKey: 'mod.short.newsflash', fullKey: 'mod.newsflash' },
+  { key: 'desiredState', file: 'desired-state.html', section: 2, shortKey: 'mod.short.desiredState', fullKey: 'mod.desiredState' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, shortKey: 'mod.short.goalsMetrics', fullKey: 'mod.goalsMetrics' },
+  { key: 'bestContributions', file: 'best-contributions.html', section: 3, shortKey: 'mod.short.bestContributions', fullKey: 'mod.bestContributions' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, shortKey: 'mod.short.actionPlan', fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, shortKey: 'mod.short.documents', fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, shortKey: 'mod.short.ideas', fullKey: 'mod.ideas' },
+  { key: 'reflections', file: 'reflections.html', section: 4, shortKey: 'mod.short.reflections', fullKey: 'mod.reflections' },
+  { key: 'attendance', file: 'attendance.html', section: 4, shortKey: 'mod.short.attendance', fullKey: 'mod.attendance' },
+  { key: 'completedBestContributions', file: 'completed-best-contributions.html', section: 4, shortKey: 'mod.short.completedBestContributions', fullKey: 'mod.completedBestContributions' },
+];
+
+const SECTION_LABELS = {
+  1: { sv: '1. Vart är vi på väg?', en: '1. Where are we headed?' },
+  2: { sv: '2. Vad siktar vi på?', en: '2. What are we aiming for?' },
+  3: { sv: '3. Gör vi framsteg?', en: '3. Are we making progress?' },
+  4: { sv: '4. Lär vi oss?', en: '4. Are we learning?' },
+};
+
+const MODULE_KEYS = MODULES.map(m => m.key);
+
+// ============================================================
+// 1. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  updateStaticText();
+  renderSidebar();
+  renderDocuments();
+}
+
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-admin').textContent = t('nav.admin');
+  $('page-title').textContent = t('doc.title');
+  $('lbl-add-title').textContent = t('doc.addTitle');
+  $('lbl-add-url').textContent = t('doc.addUrl');
+  $('lbl-add-type').textContent = t('doc.addType');
+  $('btn-save-link').textContent = t('doc.saveLink');
+  $('dialog-cancel').textContent = t('btn.cancel');
+  $('th-title').textContent = t('doc.addTitle');
+  $('th-url').textContent = t('doc.addUrl');
+  $('th-type').textContent = t('doc.addType');
+  $('th-created').textContent = t('doc.created');
+  $('th-actions').textContent = t('col.actions');
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 2. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  editDocId: null,
+};
+
+// ============================================================
+// 3. HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const actor = () => ACTORS[S.role];
+const userById = id => DB.users.find(u => u.id === id);
+const fullName = u => `${u.firstName} ${u.lastName}`;
+
+function getTeamId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('teamId')) return urlParams.get('teamId');
+  return localStorage.getItem('itt-team') || '';
+}
+
+function orgsForActor() {
+  const a = actor();
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function getUserTeams() {
+  const a = actor();
+  const u = DB.users.find(u => u.id === a.userId);
+  if (!u) return DB.teams;
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function getCurrentTeamId() {
+  const teams = getUserTeams();
+  const stored = getTeamId();
+  if (stored && teams.some(t => t.id === stored)) return stored;
+  return teams[0]?.id || 'alpha';
+}
+
+function getVisibility(teamId) {
+  const key = `itt-agenda-visibility-${teamId}`;
+  const stored = localStorage.getItem(key);
+  if (stored) { try { return JSON.parse(stored); } catch(e) { /* fall through */ } }
+  const def = {};
+  MODULE_KEYS.forEach(k => { def[k] = true; });
+  return def;
+}
+
+function getVisibleModules() {
+  const teamId = getCurrentTeamId();
+  const vis = getVisibility(teamId);
+  return MODULES.filter(m => vis[m.key] !== false);
+}
+
+// ============================================================
+// 4. TOAST
+// ============================================================
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 5. CONFIRM DIALOG
+// ============================================================
+let confirmCallback = null;
+function showConfirm(title, text, label, cb) {
+  $('dialog-title').textContent = title;
+  $('dialog-text').textContent = text;
+  const btn = $('dialog-confirm');
+  btn.textContent = t('btn.wait'); btn.disabled = true;
+  confirmCallback = cb;
+  $('confirm-dialog').classList.add('dialog-overlay--visible');
+  setTimeout(() => { btn.textContent = label; btn.disabled = false; }, 1000);
+}
+function closeConfirm() { $('confirm-dialog').classList.remove('dialog-overlay--visible'); confirmCallback = null; }
+$('dialog-cancel').onclick = closeConfirm;
+$('dialog-confirm').onclick = () => { if (confirmCallback) confirmCallback(); closeConfirm(); };
+
+// ============================================================
+// 6. SLIDE-OVER
+// ============================================================
+let slideOverDirty = false;
+let slideOverOpener = null;
+
+function openSlideOver(id) {
+  forceCloseSlideOver();
+  slideOverOpener = document.activeElement;
+  slideOverDirty = false;
+  $('overlay').classList.add('overlay--visible');
+  $(id).classList.add('slide-over--open');
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(() => {
+    const panel = $(id);
+    const first = panel.querySelector('button, input, select, textarea, a[href]');
+    if (first) first.focus();
+  });
+}
+function tryCloseSlideOver() {
+  if (slideOverDirty) {
+    showConfirm(t('confirm.unsavedTitle'), t('confirm.unsavedText'), t('confirm.unsavedBtn'), () => { forceCloseSlideOver(); });
+  } else {
+    forceCloseSlideOver();
+  }
+}
+function forceCloseSlideOver() {
+  $('overlay').classList.remove('overlay--visible');
+  document.querySelectorAll('.slide-over').forEach(s => s.classList.remove('slide-over--open'));
+  document.body.style.overflow = '';
+  if (slideOverOpener && slideOverOpener.focus) { slideOverOpener.focus(); slideOverOpener = null; }
+  slideOverDirty = false;
+}
+function closeSlideOver() { forceCloseSlideOver(); }
+
+$('overlay').addEventListener('click', tryCloseSlideOver);
+
+// ============================================================
+// 7. ORG + TEAM SELECTORS
+// ============================================================
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role);
+
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    else if (orgs.length === 0) S.orgId = '';
+    return;
+  }
+
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`
+  ).join('');
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = getUserTeams();
+  if (teams.length > 0) {
+    localStorage.setItem('itt-team', teams[0].id);
+  }
+  renderSidebar();
+  renderDocuments();
+});
+
+function renderTeamSelector() {
+  const sel = $('team-select');
+  if (!sel) return;
+  const teams = getUserTeams();
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  const currentTeam = getCurrentTeamId();
+  sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === currentTeam ? 'selected' : ''}>${t.title}</option>`).join('');
+}
+
+$('team-select')?.addEventListener('change', e => {
+  localStorage.setItem('itt-team', e.target.value);
+  renderSidebar();
+  renderDocuments();
+});
+
+// ============================================================
+// 8. SIDEBAR
+// ============================================================
+function renderSidebar() {
+  const mods = getVisibleModules();
+  let html = '';
+  const dashActive = ACTIVE_MODULE === 'dashboard' ? ' sidebar__link--active' : '';
+  html += `<a href="dashboard.html" class="sidebar__link${dashActive}" id="nav-dashboard">${t('nav.dashboard')}</a>`;
+  html += '<div class="sidebar__divider"></div>';
+  let lastSection = 0;
+  mods.forEach(m => {
+    if (m.section !== lastSection) {
+      const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
+      html += `<div class="sidebar__section-label">${l}</div>`;
+      lastSection = m.section;
+    }
+    const isActive = m.key === ACTIVE_MODULE;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}</a>`;
+  });
+  html += `<div class="sidebar__divider"></div><a href="external-view.html?src=https%3A%2F%2Fintegpartner.com" class="sidebar__link">${t('ap.externalView')}</a>`;
+  $('sidebar-nav').innerHTML = html;
+}
+
+// ============================================================
+// 9. RENDER DOCUMENTS
+// ============================================================
+function getDocuments() {
+  const teamId = getCurrentTeamId();
+  let docs = WS.documents.filter(d => d.teamId === teamId);
+  const search = $('doc-search').value.toLowerCase().trim();
+  if (search) docs = docs.filter(d => d.title.toLowerCase().includes(search) || d.url.toLowerCase().includes(search));
+  const typeFilter = $('doc-type-filter').value;
+  if (typeFilter !== 'all') docs = docs.filter(d => d.type === typeFilter);
+  return docs;
+}
+
+function typeBadgeHtml(type) {
+  const cls = ['pdf','doc','xls','ppt','csv'].includes(type) ? type : 'other';
+  const label = type.toUpperCase();
+  return `<span class="type-badge type-badge--${cls}">${label}</span>`;
+}
+
+function renderDocuments() {
+  const docs = getDocuments();
+  const tbody = $('doc-tbody');
+  const empty = $('empty-state');
+
+  if (docs.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = docs.map(d => `<tr data-id="${d.id}">
+    <td>${d.title}</td>
+    <td class="url-cell" title="${d.url}">${d.url}</td>
+    <td>${typeBadgeHtml(d.type)}</td>
+    <td class="col-hide-sm">${d.createdDate}</td>
+    <td style="white-space:nowrap;">
+      <button class="btn btn--sm btn--outline" onclick="openDoc('${d.id}')">${t('doc.open')}</button>
+      <button class="btn btn--sm btn--outline" onclick="copyUrl('${d.id}')">${t('doc.copy')}</button>
+      <button class="btn btn--sm btn--outline" onclick="editDoc('${d.id}')">${t('doc.edit')}</button>
+      <button class="btn btn--sm btn--outline btn--danger" style="background:var(--bg);color:var(--err);" onclick="deleteDoc('${d.id}')">${t('doc.delete')}</button>
+    </td>
+  </tr>`).join('');
+}
+
+// ============================================================
+// 10. DOCUMENT ACTIONS
+// ============================================================
+function openDoc(id) {
+  const doc = WS.documents.find(d => d.id === id);
+  if (doc) window.open(doc.url, '_blank');
+}
+
+function copyUrl(id) {
+  const doc = WS.documents.find(d => d.id === id);
+  if (!doc) return;
+  navigator.clipboard.writeText(doc.url).then(() => {
+    showToast(t('doc.urlCopied'));
+  }).catch(() => {
+    showToast(t('doc.urlCopied'));
+  });
+}
+
+function editDoc(id) {
+  const doc = WS.documents.find(d => d.id === id);
+  if (!doc) return;
+  S.editDocId = id;
+  $('edit-doc-title').value = doc.title;
+  $('edit-doc-url').value = doc.url;
+  $('edit-doc-type').value = doc.type;
+  $('so-edit-title').textContent = 'Redigera dokument';
+  openSlideOver('so-edit');
+}
+
+$('btn-edit-save').addEventListener('click', () => {
+  const doc = WS.documents.find(d => d.id === S.editDocId);
+  if (!doc) return;
+  doc.title = $('edit-doc-title').value.trim();
+  doc.url = $('edit-doc-url').value.trim();
+  doc.type = $('edit-doc-type').value;
+  closeSlideOver();
+  renderDocuments();
+  showToast(t('toast.teamUpdated'));
+});
+
+['edit-doc-title','edit-doc-url','edit-doc-type'].forEach(id => {
+  $(id)?.addEventListener('input', () => { slideOverDirty = true; });
+  $(id)?.addEventListener('change', () => { slideOverDirty = true; });
+});
+
+function deleteDoc(id) {
+  const doc = WS.documents.find(d => d.id === id);
+  if (!doc) return;
+  showConfirm(t('doc.confirmDelete'), `"${doc.title}"`, t('btn.confirm'), () => {
+    WS.documents = WS.documents.filter(d => d.id !== id);
+    renderDocuments();
+    showToast(t('doc.delete') + ': ' + doc.title);
+  });
+}
+
+// ============================================================
+// 11. INLINE CREATE
+// ============================================================
+$('btn-save-link').addEventListener('click', () => {
+  const title = $('new-doc-title').value.trim();
+  const url = $('new-doc-url').value.trim();
+  const type = $('new-doc-type').value;
+  if (!title || !url) {
+    showToast('Ange titel och URL');
+    return;
+  }
+  const teamId = getCurrentTeamId();
+  const newId = 'd' + Date.now();
+  const today = new Date().toISOString().slice(0, 10);
+  WS.documents.push({
+    id: newId,
+    teamId: teamId,
+    title: title,
+    url: url,
+    type: type,
+    createdDate: today,
+    createdBy: actor().userId,
+  });
+  $('new-doc-title').value = '';
+  $('new-doc-url').value = '';
+  renderDocuments();
+  showToast(t('doc.saveLink'));
+});
+
+// ============================================================
+// 12. SEARCH + FILTER
+// ============================================================
+$('doc-search').addEventListener('input', renderDocuments);
+$('doc-type-filter').addEventListener('change', renderDocuments);
+
+// ============================================================
+// 13. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderAll();
+}
+
+function renderAll() {
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSidebar();
+  updateStaticText();
+  renderDocuments();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 14. INIT
+// ============================================================
+(function init() {
+  const lang = localStorage.getItem('itt-lang') || 'sv';
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  setRole(S.role);
+})();
+</script>
+</body>
+</html>

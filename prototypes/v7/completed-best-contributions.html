@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avslutade bästa bidrag v7 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#ffffff; --bg-alt:#f3f3ef; --bg-dark:#0a0a0a; --text:#111; --text-muted:#666;
+  --border:#d9d9d9; --border-strong:#111; --hi:#ffcc00; --hi-soft:rgba(255,204,0,0.18);
+  --ok:#62b7be; --warn:#e5b45b; --err:#d86053; --idle:#9c9c9c; --sidebar-w:240px;
+  --xs:4px; --sm:8px; --md:12px; --lg:18px; --xl:24px; --2xl:36px;
+}
+body { font-family:'Inter',system-ui,sans-serif; font-size:14px; line-height:1.45; color:var(--text); background:var(--bg); display:flex; min-height:100vh; padding-bottom:64px; }
+.skip-link { position:absolute; top:-100%; left:var(--md); background:var(--hi); color:#000; padding:var(--sm) var(--md); font-weight:700; z-index:9999; border:2px solid var(--border-strong); text-decoration:none; }
+.skip-link:focus { top:var(--md); }
+.sidebar { position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); background:var(--bg-dark); border-right:3px solid var(--hi); display:flex; flex-direction:column; overflow-y:auto; padding-bottom:64px; }
+.sidebar__header { padding:var(--md) var(--lg); border-bottom:1px solid #333; }
+.sidebar__logo { color:var(--hi); text-decoration:none; font-size:15px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+.sidebar__selectors { padding:var(--sm) var(--lg); border-bottom:1px solid #333; }
+.sidebar__selector { margin-bottom:var(--sm); }
+.sidebar__selector:last-child { margin-bottom:0; }
+.sidebar__selector-label { color:#888; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:2px; }
+.sidebar__selector select { width:100%; background:#1a1a1a; color:#ccc; border:1px solid #555; padding:var(--xs) 24px var(--xs) var(--sm); font:700 11px inherit; text-transform:uppercase; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; min-height:32px; }
+.sidebar__nav { flex:1; padding:var(--sm) 0; }
+.sidebar__link { display:block; padding:var(--sm) var(--lg); color:#ccc; text-decoration:none; font-size:12px; font-weight:600; border-left:3px solid transparent; }
+.sidebar__link:hover { color:#fff; background:rgba(255,255,255,.05); }
+.sidebar__link--active { color:var(--hi); background:var(--hi-soft); border-left-color:var(--hi); }
+.sidebar__section-label { padding:var(--lg) var(--lg) var(--xs); color:var(--hi); font-size:14px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+.sidebar__divider { height:1px; background:#333; margin:var(--sm) var(--lg); }
+.sidebar__footer { padding:var(--sm) 0; border-top:1px solid #333; }
+.lang-switcher { display:flex; gap:2px; padding:var(--sm) var(--lg); }
+.lang-btn { padding:var(--xs) var(--sm); border:1px solid #555; background:transparent; color:#888; font-size:10px; font-weight:900; cursor:pointer; }
+.lang-btn--active { background:var(--hi); color:#000; border-color:var(--hi); }
+.page-wrap { flex:1; margin-left:var(--sidebar-w); min-width:0; }
+.main { max-width:1600px; margin:0 auto; padding:0 var(--md) var(--2xl); }
+.page-title { font-size:32px; font-weight:800; letter-spacing:-.02em; padding:var(--xl) 0 var(--md); margin-bottom:var(--md); }
+.toolbar { display:flex; justify-content:space-between; gap:var(--md); align-items:flex-start; flex-wrap:wrap; margin-bottom:var(--md); }
+.toolbar__left, .toolbar__right { display:flex; gap:var(--sm); flex-wrap:wrap; align-items:center; }
+.btn { display:inline-flex; align-items:center; gap:var(--sm); min-height:40px; padding:var(--sm) var(--md); border:2px solid var(--border-strong); background:#111; color:#fff; font:700 11px inherit; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; text-decoration:none; }
+.btn--hi { background:var(--hi); color:#000; }
+.btn--outline { background:#fff; color:#111; }
+.btn--sm { min-height:32px; padding:6px 10px; font-size:10px; }
+.field, .search { min-height:40px; border:2px solid var(--border-strong); background:#fff; padding:0 10px; font:700 12px inherit; }
+.search { min-width:220px; }
+.hero-strip { display:none; }
+.bc-card { margin-bottom:var(--xl); background:transparent; }
+.bc-header { display:grid; grid-template-columns:auto 1fr auto; gap:8px; align-items:center; padding:0 0 6px; background:transparent; border-bottom:none; cursor:pointer; }
+.bc-toggle { width:18px; height:18px; border:none; background:transparent; font-weight:900; font-size:18px; line-height:1; cursor:pointer; color:#666; }
+.bc-title-input { width:100%; border:none; background:transparent; font-size:18px; font-weight:800; line-height:1.1; font-family:Georgia, 'Times New Roman', serif; }
+.bc-title-input:focus { outline:none; }
+.progress-band { margin:4px 0 10px 18px; max-width:520px; }
+.progress-band__label { font-size:11px; font-weight:700; margin-bottom:3px; }
+.progress-band__track { height:6px; background:#dde1e6; border-radius:999px; overflow:hidden; }
+.progress-band__fill { height:100%; background:#2149b7; }
+.progress-band__pct { font-size:11px; font-weight:800; color:var(--text-muted); margin-top:3px; }
+.state-lines { margin:0 0 10px 18px; font-size:12px; line-height:1.45; }
+.state-lines strong { font-weight:800; }
+.bc-body { display:none; padding:0 0 0 18px; }
+.bc-card--open .bc-body { display:block; }
+.aoi-block { margin-bottom:12px; }
+.aoi-head { display:grid; grid-template-columns:220px 150px 150px 150px 1fr 54px 54px 104px; gap:0; align-items:center; padding:0; background:transparent; border-bottom:1px solid #ddd; }
+.aoi-title-input { width:100%; border:none; background:#e7b456; color:#fff; padding:7px 10px; font-size:12px; font-weight:800; }
+.aoi-head__col { padding:0 6px; font-size:11px; font-weight:800; }
+.plan-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+.plan-table th, .plan-table td { border-top:1px solid #e1e1e1; padding:0; vertical-align:top; background:#fff; }
+.plan-table th { padding:0; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:#555; text-align:left; background:transparent; }
+.cell-input, .cell-select, .cell-date { width:100%; min-height:36px; border:none; background:transparent; padding:6px 8px; font:500 12px inherit; }
+.cell-action { min-height:36px; resize:vertical; }
+.cell-comment { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+.icon-cell { display:flex; align-items:center; justify-content:center; min-height:36px; font-size:13px; color:#999; }
+.status-select { width:100%; min-width:22px; height:36px; border:none; appearance:none; cursor:pointer; color:transparent; }
+.status-not_started { background:var(--idle); }
+.status-in_progress { background:var(--warn); }
+.status-overdue { background:var(--err); }
+.status-done { background:var(--ok); }
+.comment-pop { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:var(--lg); z-index:5000; }
+.comment-pop--open { display:flex; }
+.comment-pop__card { width:min(520px,100%); background:#fff; border:3px solid var(--border-strong); padding:var(--xl); }
+.comment-pop__title { font-size:16px; font-weight:900; text-transform:uppercase; margin-bottom:var(--sm); }
+.comment-pop__text { line-height:1.6; margin-bottom:var(--lg); white-space:pre-wrap; }
+.done-panel { border-top:1px solid #ddd; margin-top:var(--lg); }
+.done-head { padding:var(--sm) var(--md); background:#f0f0f0; font-size:12px; font-weight:900; text-transform:uppercase; }
+.done-list { padding:var(--md); color:var(--text-muted); }
+.role-bar { position:fixed; bottom:0; left:0; right:0; z-index:9999; background:#1a1a2e; border-top:3px solid var(--hi); padding:var(--sm) var(--lg); display:flex; gap:var(--md); align-items:center; font-family:'Courier New',monospace; font-size:12px; color:#aaa; }
+.role-bar__btns { display:flex; gap:2px; }
+.role-btn { padding:var(--sm) var(--md); border:2px solid #555; background:#2a2a40; color:#ccc; font:700 12px 'Courier New',monospace; cursor:pointer; }
+.role-btn--active { background:var(--hi); color:#000; border-color:var(--hi); }
+.role-user [data-min-role="team-leader"], .role-user [data-min-role="org-admin"], .role-user [data-min-role="integ-admin"], .role-user [data-min-role="super-admin"] { display:none !important; }
+.role-team-leader [data-min-role="org-admin"], .role-team-leader [data-min-role="integ-admin"], .role-team-leader [data-min-role="super-admin"] { display:none !important; }
+.role-org-admin [data-min-role="integ-admin"], .role-org-admin [data-min-role="super-admin"] { display:none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display:none !important; }
+@media (max-width:1200px) { .plan-table { display:block; overflow-x:auto; white-space:nowrap; } .hero-strip { grid-template-columns:1fr; background:#faf8f3; } .hero-strip__label { background:#2e5a8a; } }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline:2px solid var(--hi); outline-offset:2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header"><a href="dashboard.html" class="sidebar__logo">ITT</a></div>
+  <div class="sidebar__selectors">
+    <div class="sidebar__selector" id="org-selector-wrap"><span class="sidebar__selector-label">Org</span><select id="org-select"></select></div>
+    <div class="sidebar__selector" id="team-selector-wrap"><span class="sidebar__selector-label">Team</span><select id="team-select"></select></div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher"><button class="lang-btn lang-btn--active" data-lang="sv">SV</button><button class="lang-btn" data-lang="en">EN</button></div>
+  </div>
+</aside>
+<div class="page-wrap">
+  <main class="main" id="main-content">
+    <h1 class="page-title" id="page-title">Avslutade bästa bidrag</h1>
+    <div class="toolbar">
+      <div class="toolbar__left">
+        <select class="field" id="filter-person"></select>
+        <select class="field" id="filter-status"></select>
+        <input class="search" id="search" type="search" placeholder="Sök åtgärd">
+      </div>
+      <div class="toolbar__right" data-min-role="team-leader">
+        <button class="btn btn--outline btn--sm" id="toggle-all"></button>
+        <button class="btn btn--hi btn--sm" id="btn-new-bc"></button>
+      </div>
+    </div>
+    <div class="hero-strip">
+      <div class="hero-strip__label" id="team-focus-label">Team focus</div>
+      <div class="hero-strip__value" id="team-focus-value"></div>
+    </div>
+    <div id="bc-list"></div>
+    <div class="done-panel">
+      <div class="done-head" id="done-title">Avklarade steg</div>
+      <div class="done-list" id="done-list"></div>
+    </div>
+  </main>
+</div>
+<div class="comment-pop" id="comment-pop">
+  <div class="comment-pop__card">
+    <div class="comment-pop__title" id="comment-title">Kommentar</div>
+    <div class="comment-pop__text" id="comment-text"></div>
+    <button class="btn btn--outline" id="comment-close">Stäng</button>
+  </div>
+</div>
+<div class="role-bar">
+  <span>Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script>
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+const WS_STORAGE_KEY = 'itt-workspace-v7';
+const cloneWs = data => JSON.parse(JSON.stringify(data));
+try {
+  const storedWs = localStorage.getItem(WS_STORAGE_KEY);
+  if (storedWs) Object.assign(WS, cloneWs(JSON.parse(storedWs)));
+} catch (err) {}
+function persistWs() { localStorage.setItem(WS_STORAGE_KEY, JSON.stringify(WS)); }
+const MODE = 'collapsed';
+const ACTIVE_MODULE = 'completedBestContributions';
+const $ = id => document.getElementById(id);
+const S = { role: localStorage.getItem('itt-role') || 'super-admin', orgId: localStorage.getItem('itt-org') || '', teamId: localStorage.getItem('itt-team') || 'alpha', person:'all', status:'all', search:'', openBc:{} };
+function t(key, params) { let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS.sv[key] || key; if (params) Object.keys(params).forEach(k => str = str.replace(new RegExp('\\{' + k + '\\}','g'), params[k])); return str; }
+const actor = () => ACTORS[S.role];
+const userById = id => DB.users.find(u => u.id === id);
+const fullName = u => u ? `${u.firstName} ${u.lastName}` : '—';
+const statusOptions = ['not_started','in_progress','overdue','done'];
+const statusClass = s => `status-${s}`;
+const bcCompletion = bcId => { const items = WS.actions.filter(a => a.teamId === S.teamId && a.bcId === bcId); if (!items.length) return 0; return Math.round((items.filter(a => a.status === 'done').length / items.length) * 100); };
+const visibleBCs = () => WS.bestContributions.filter(bc => bc.teamId === S.teamId && bc.archived);
+const MODULES = [
+  { key:'strategic', file:'strategic.html', section:1, fullKey:'mod.strategic' },
+  { key:'newsflash', file:'newsflash.html', section:1, fullKey:'mod.newsflash' },
+  { key:'desiredState', file:'desired-state.html', section:2, fullKey:'mod.desiredState' },
+  { key:'goalsMetrics', file:'goals-metrics.html', section:2, fullKey:'mod.goalsMetrics' },
+  { key:'bestContributions', file:'best-contributions.html', section:3, fullKey:'mod.bestContributions' },
+  { key:'actionPlan', file:'action-plan.html', section:3, fullKey:'mod.actionPlan' },
+  { key:'documents', file:'documents.html', section:3, fullKey:'mod.documents' },
+  { key:'ideas', file:'ideas.html', section:3, fullKey:'mod.ideas' },
+  { key:'reflections', file:'reflections.html', section:4, fullKey:'mod.reflections' },
+  { key:'attendance', file:'attendance.html', section:4, fullKey:'mod.attendance' },
+  { key:'completedBestContributions', file:'completed-best-contributions.html', section:4, fullKey:'mod.completedBestContributions' },
+];
+const SECTION_LABELS = { 1:{sv:'1. Vart är vi på väg?', en:'1. Where are we headed?'}, 2:{sv:'2. Vad siktar vi på?', en:'2. What are we aiming for?'}, 3:{sv:'3. Gör vi framsteg?', en:'3. Are we making progress?'}, 4:{sv:'4. Lär vi oss?', en:'4. Are we learning?'} };
+function setLang(lang) { currentLang = lang; localStorage.setItem('itt-lang', lang); document.documentElement.lang = lang; document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang)); renderAll(); }
+document.addEventListener('click', e => { if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang); });
+function orgsForActor() { const a = actor(); if (S.role === 'super-admin') return DB.organizations; return DB.organizations.filter(o => a.orgs.includes(o.id)); }
+function teamsForActor() { const a = actor(); const u = userById(a.userId); if (['super-admin','integ-admin','org-admin'].includes(S.role)) { let teams = DB.teams.filter(t => a.orgs.includes(t.orgId)); if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId); return teams; } return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id)); }
+function membersForTeam() { return DB.users.filter(u => u.memberships.some(m => m.teamId === S.teamId) && u.registerStatus !== 'soft_deleted'); }
+function renderSelectors() {
+  const orgs = orgsForActor(); const orgWrap = $('org-selector-wrap'); const orgSel = $('org-select');
+  if (!['super-admin','integ-admin','org-admin'].includes(S.role) || orgs.length <= 1) { orgWrap.style.display = 'none'; if (orgs[0]) S.orgId = orgs[0].id; } else { orgWrap.style.display = ''; if (!orgs.find(o => o.id === S.orgId)) S.orgId = orgs[0].id; orgSel.innerHTML = orgs.map(o => `<option value="${o.id}" ${o.id===S.orgId?'selected':''}>${o.title}</option>`).join(''); }
+  const teams = teamsForActor(); const teamWrap = $('team-selector-wrap'); const teamSel = $('team-select');
+  if (!teams.find(t => t.id === S.teamId)) S.teamId = teams[0]?.id || 'alpha';
+  if (teams.length <= 1) { teamWrap.style.display = 'none'; } else { teamWrap.style.display = ''; teamSel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id===S.teamId?'selected':''}>${t.title}</option>`).join(''); }
+}
+$('org-select').addEventListener('change', e => { S.orgId = e.target.value; localStorage.setItem('itt-org', S.orgId); S.teamId = teamsForActor()[0]?.id || 'alpha'; localStorage.setItem('itt-team', S.teamId); renderAll(); });
+$('team-select').addEventListener('change', e => { S.teamId = e.target.value; localStorage.setItem('itt-team', S.teamId); renderAll(); });
+function renderSidebar() {
+  let html = `<a href="dashboard.html" class="sidebar__link">${t('nav.dashboard')}</a><div class="sidebar__divider"></div>`; let last = 0;
+  MODULES.forEach(m => { if (m.section !== last) { html += `<div class="sidebar__section-label">${currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv}</div>`; last = m.section; } html += `<a href="${m.file}" class="sidebar__link${m.key===ACTIVE_MODULE?' sidebar__link--active':''}">${t(m.fullKey)}</a>`; });
+  html += `<div class="sidebar__divider"></div><a href="external-view.html?src=https%3A%2F%2Fintegpartner.com" class="sidebar__link">${t('ap.externalView')}</a>`;
+  $('sidebar-nav').innerHTML = html;
+}
+function renderFilters() {
+  const members = membersForTeam();
+  $('filter-person').innerHTML = `<option value="all">${t('ap.filterPerson')}</option>` + members.map(u => `<option value="${u.id}" ${S.person===u.id?'selected':''}>${fullName(u)}</option>`).join('');
+  $('filter-status').innerHTML = `<option value="all">${t('ap.filterStatus')}</option>` + statusOptions.map(s => `<option value="${s}" ${S.status===s?'selected':''}>${t({not_started:'ap.notStarted',in_progress:'ap.inProgress',overdue:'ap.overdue',done:'ap.done'}[s])}</option>`).join('');
+}
+function filteredActions(bcId, aoiId) {
+  return WS.actions.filter(a => a.teamId === S.teamId && a.bcId === bcId && a.aiId === aoiId).filter(a => S.person === 'all' || a.responsibleId === S.person || a.supportId === S.person).filter(a => S.status === 'all' || a.status === S.status).filter(a => !S.search || a.title.toLowerCase().includes(S.search) || (a.comment || '').toLowerCase().includes(S.search));
+}
+function renderFocus() {
+  const txt = WS.textModules[S.teamId] || { desiredState:'' };
+  $('team-focus-label').textContent = t('ap.teamFocus');
+  $('team-focus-value').textContent = txt.desiredState || '—';
+}
+function personOptions(selected) { return `<option value=""></option>` + membersForTeam().map(u => `<option value="${u.id}" ${u.id===selected?'selected':''}>${fullName(u)}</option>`).join(''); }
+function statusOptionsHtml(selected) { return statusOptions.map(s => `<option value="${s}" ${s===selected?'selected':''}>${t({not_started:'ap.notStarted',in_progress:'ap.inProgress',overdue:'ap.overdue',done:'ap.done'}[s])}</option>`).join(''); }
+function renderBCList() {
+  const list = $('bc-list'); const teamBcs = visibleBCs();
+  if (!teamBcs.length) { list.innerHTML = `<div class="done-list">${t('bc.empty')}</div>`; return; }
+  list.innerHTML = teamBcs.map(bc => {
+    const open = S.openBc[bc.id] !== undefined ? S.openBc[bc.id] : MODE === 'expanded';
+    const pct = bcCompletion(bc.id);
+    const txt = WS.textModules[S.teamId] || { currentState:'', desiredState:'' };
+    return `<section class="bc-card ${open ? 'bc-card--open' : ''}" data-bc="${bc.id}">
+      <div class="bc-header">
+        <button class="bc-toggle" data-toggle="${bc.id}">${open ? '−' : '+'}</button>
+        <input class="bc-title-input" data-bc-title="${bc.id}" value="${esc(bc.title)}">
+        <button class="btn btn--outline btn--sm" data-add-aoi="${bc.id}" data-min-role="team-leader">${t('ap.newAoi')}</button>
+      </div>
+      <div class="progress-band"><div class="progress-band__label">${t('ap.progressDegree')}</div><div class="progress-band__track"><div class="progress-band__fill" style="width:${pct}%"></div></div><div class="progress-band__pct">${pct}%</div></div>
+      <div class="state-lines"><div><strong>${currentLang === 'en' ? 'Starting point:' : 'Nuläge:'}</strong> ${esc(txt.currentState)}</div><div><strong>${currentLang === 'en' ? 'Desired state:' : 'Önskat läge:'}</strong> ${esc(txt.desiredState)}</div></div>
+      <div class="bc-body">
+        ${bc.areaOfImprovement.map(aoi => renderAOI(bc, aoi)).join('')}
+        <div style="padding:0 0 0 0;margin-top:8px;" data-min-role="team-leader"><button class="btn btn--outline btn--sm" data-restore-bc="${bc.id}">${currentLang === 'en' ? 'Move back to active' : 'Flytta tillbaka till aktiva'}</button></div>
+      </div>
+    </section>`;
+  }).join('');
+}
+function renderAOI(bc, aoi) {
+  const actions = filteredActions(bc.id, aoi.id);
+  return `<div class="aoi-block">
+    <div class="aoi-head">
+      <input class="aoi-title-input" data-aoi-title="${aoi.id}" value="${esc(aoi.title)}">
+      <div class="aoi-head__col">${t('ap.responsible')}</div>
+      <div class="aoi-head__col">${t('ap.support')}</div>
+      <div class="aoi-head__col">${t('ap.deadline')}</div>
+      <div class="aoi-head__col">${t('ap.commentShort')}</div>
+      <div class="aoi-head__col">${currentLang === 'en' ? 'Mail' : 'Meddela'}</div>
+      <div class="aoi-head__col">${currentLang === 'en' ? 'Delete' : 'Radera'}</div>
+      <div class="aoi-head__col">${t('ap.statusColor')}</div>
+    </div>
+    <table class="plan-table">
+      <colgroup>
+        <col style="width:19%">
+        <col style="width:34%">
+        <col style="width:13%">
+        <col style="width:13%">
+        <col style="width:10%">
+        <col style="width:14%">
+        <col style="width:5%">
+        <col style="width:5%">
+        <col style="width:9%">
+      </colgroup>
+      <thead><tr>
+        <th>${t('ap.action')}</th>
+        <th>${t('ap.responsible')}</th>
+        <th>${t('ap.support')}</th>
+        <th>${t('ap.deadline')}</th>
+        <th>${t('ap.commentShort')}</th>
+        <th>${currentLang === 'en' ? 'Mail' : 'Meddela'}</th>
+        <th>${currentLang === 'en' ? 'Delete' : 'Radera'}</th>
+        <th>${t('ap.statusColor')}</th>
+      </tr></thead>
+      <tbody>${actions.map(a => renderActionRow(a, aoi)).join('')}</tbody>
+    </table>
+    <div style="padding:8px 0 0;"><button class="btn btn--outline btn--sm" data-add-action="${bc.id}|${aoi.id}" data-min-role="team-leader">${t('ap.addAction')}</button></div>
+  </div>`;
+}
+function renderActionRow(a, aoi) {
+  const comment = a.comment || '';
+  return `<tr data-action="${a.id}">
+    <td><textarea class="cell-input cell-action" data-field="title" data-id="${a.id}">${esc(a.title)}</textarea></td>
+    <td><select class="cell-select" data-field="responsibleId" data-id="${a.id}">${personOptions(a.responsibleId)}</select></td>
+    <td><select class="cell-select" data-field="supportId" data-id="${a.id}">${personOptions(a.supportId)}</select></td>
+    <td><input class="cell-date" type="date" data-field="deadline" data-id="${a.id}" value="${a.deadline || ''}"></td>
+    <td><input class="cell-input cell-comment" data-field="comment" data-id="${a.id}" value="${esc(comment)}" title="${esc(comment)}"></td>
+    <td><div class="icon-cell">&#9993;</div></td>
+    <td><button class="icon-cell" style="border:none;background:transparent;cursor:pointer;" data-delete-action="${a.id}">&#128465;</button></td>
+    <td><select class="status-select ${statusClass(a.status)}" data-field="status" data-id="${a.id}">${statusOptionsHtml(a.status)}</select></td>
+  </tr>`;
+}
+function renderDone() {
+  const done = WS.actions.filter(a => a.teamId === S.teamId && a.status === 'done');
+  $('done-title').textContent = `${t('ap.completedSteps')} (${done.length})`;
+  $('done-list').innerHTML = done.length ? done.map(a => `${a.title} · ${a.deadline || '—'}`).join('<br>') : (currentLang === 'en' ? 'No completed steps yet.' : 'Inga avklarade steg ännu.');
+}
+function esc(str) { return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function attachEvents() {
+  document.querySelectorAll('[data-toggle]').forEach(btn => btn.onclick = () => { S.openBc[btn.dataset.toggle] = !(S.openBc[btn.dataset.toggle] !== undefined ? S.openBc[btn.dataset.toggle] : MODE === 'expanded'); renderBCList(); attachEvents(); });
+  document.querySelectorAll('[data-bc-title]').forEach(el => el.onchange = () => { const bc = WS.bestContributions.find(b => b.id === el.dataset.bcTitle); if (bc) bc.title = el.value; persistWs(); renderAll(); });
+  document.querySelectorAll('[data-aoi-title]').forEach(el => el.onchange = () => { WS.bestContributions.forEach(bc => bc.areaOfImprovement.forEach(aoi => { if (aoi.id === el.dataset.aoiTitle) aoi.title = el.value; })); persistWs(); renderAll(); });
+  document.querySelectorAll('[data-field]').forEach(el => el.onchange = () => { const a = WS.actions.find(x => x.id === el.dataset.id); if (!a) return; a[el.dataset.field] = el.value; if (el.dataset.field === 'status') el.className = `status-select ${statusClass(el.value)}`; persistWs(); renderDone(); });
+  document.querySelectorAll('.cell-comment').forEach(el => el.onclick = () => { $('comment-title').textContent = t('ap.commentShort'); $('comment-text').textContent = el.value; $('comment-pop').classList.add('comment-pop--open'); });
+  document.querySelectorAll('[data-add-action]').forEach(btn => btn.onclick = () => { const [bcId, aoiId] = btn.dataset.addAction.split('|'); WS.actions.unshift({ id:'a_'+Math.random().toString(36).slice(2,7), teamId:S.teamId, bcId, aiId:aoiId, title:'', description:'', responsibleId:'', supportId:'', deadline:'', status:'not_started', comment:'' }); persistWs(); renderAll(); });
+  document.querySelectorAll('[data-add-aoi]').forEach(btn => btn.onclick = () => { const bc = WS.bestContributions.find(b => b.id === btn.dataset.addAoi); if (!bc) return; bc.areaOfImprovement.push({ id:'ai_'+Math.random().toString(36).slice(2,7), title: currentLang === 'en' ? 'New area' : 'Nytt område' }); S.openBc[bc.id] = true; persistWs(); renderAll(); });
+  document.querySelectorAll('[data-delete-action]').forEach(btn => btn.onclick = () => { WS.actions = WS.actions.filter(a => a.id !== btn.dataset.deleteAction); persistWs(); renderAll(); });
+  document.querySelectorAll('[data-restore-bc]').forEach(btn => btn.onclick = () => { const bc = WS.bestContributions.find(b => b.id === btn.dataset.restoreBc); if (!bc) return; bc.archived = false; delete bc.archivedAt; persistWs(); renderAll(); });
+}
+function renderAll() {
+  document.body.className = 'role-' + S.role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === S.role));
+  renderSelectors(); renderSidebar(); renderFilters(); renderFocus(); renderBCList(); renderDone(); attachEvents();
+  $('page-title').textContent = t('mod.completedBestContributions'); $('btn-new-bc').textContent = t('ap.newBc'); $('toggle-all').textContent = allOpen() ? t('ap.closeAll') : t('ap.openAll'); $('team-focus-label').textContent = t('ap.teamFocus'); $('nav-admin').innerHTML = '&#9881; ' + t('nav.admin'); $('skip-link').textContent = t('skip'); $('btn-new-bc').style.display = 'none';
+}
+function allOpen() { return visibleBCs().every(b => S.openBc[b.id] !== false); }
+$('toggle-all').onclick = () => { const open = !allOpen(); visibleBCs().forEach(b => S.openBc[b.id] = open); renderAll(); };
+$('btn-new-bc').onclick = () => { const id = 'bc_' + Math.random().toString(36).slice(2,7); WS.bestContributions.unshift({ id, teamId:S.teamId, title: currentLang === 'en' ? 'New best contribution' : 'Nytt bästa bidrag', areaOfImprovement:[{ id:'ai_'+Math.random().toString(36).slice(2,7), title: currentLang === 'en' ? 'New area' : 'Nytt område' }] }); S.openBc[id] = true; persistWs(); renderAll(); };
+$('filter-person').onchange = e => { S.person = e.target.value; renderAll(); };
+$('filter-status').onchange = e => { S.status = e.target.value; renderAll(); };
+$('search').oninput = e => { S.search = e.target.value.toLowerCase(); renderAll(); };
+$('comment-close').onclick = () => $('comment-pop').classList.remove('comment-pop--open');
+document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLang(btn.dataset.lang)));
+document.querySelectorAll('.role-btn').forEach(btn => btn.onclick = () => { S.role = btn.dataset.role; localStorage.setItem('itt-role', S.role); renderAll(); });
+document.documentElement.lang = currentLang; document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === currentLang)); renderAll();
+</script>
+</body>
+</html>
