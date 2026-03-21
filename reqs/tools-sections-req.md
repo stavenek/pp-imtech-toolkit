@@ -4,6 +4,20 @@ Krav som rör delar av Integral Teamwork Toolkit utanför admin-sektionen. Ident
 
 ---
 
+## 0. Källdokument och spårbarhet
+
+### Inkorporerade kravdokument
+
+| # | Fil | Status | Inkorp. datum | Beskrivning |
+|---|-----|--------|---------------|-------------|
+| 01 | `reqs/01-old-system-analysis.md` | Fullt inkorporerad | 2026-01 | Systemanalys av gamla Web Toolkit |
+| 02 | `reqs/02-gui-gap-analysis.md` | Fullt inkorporerad | 2026-02 | UX-granskningar |
+| 03 | `reqs/03-admin-feedback-lasse.md` | Fullt inkorporerad | 2026-02-17 | Lasses feedback: roller, terminologi, notifieringar |
+| 04 | `reqs/04-admi-feedback-lasse-19-feb.md` | Fullt inkorporerad | 2026-02-21 | Lasses feedback: hybrid-struktur, mini-nav, språkväxling |
+| 05 | `Feedback#3 Toolkit(LR).pptx` | Fullt inkorporerad | 2026-03-18 | Lasses feedback#3: mötesprogresslinje, sidebar-omstrukturering, Your/Our Dashboard-uppdelning, Locomotive Goals, Archive, mätetal-krav, inline-redigering, drag-and-drop |
+
+---
+
 ## 1. Sign-up-flöde (användarens sida av inbjudan)
 
 ### 1.1 Bakgrund
@@ -114,44 +128,45 @@ ITT-applikationen består av två huvuddelar:
 1. **Admin** — redan prototypad i V4 (`admin.html`), 4 flikar: Användare, Team, Organisation, Anpassning
 2. **Team Workspace** — det agendadrivna arbetsytan som specificeras nedan
 
-Team Workspace innehåller 11 sidor som tillsammans täcker hela Integral Teamwork-agendan. Alla sidor bygger på samma V4-designsystem (Blaze Lynx-struktur + Sprint Falcon-stil).
+Team Workspace använder en **mötesprogresslinje** med 4 stopp som speglar den ordning teamet arbetar igenom agendan under varje möte. Alla sidor bygger på samma V4-designsystem (Blaze Lynx-struktur + Sprint Falcon-stil).
 
 ### 4.2 Sidöversikt
 
 | # | Filnamn | Svensk titel | Agendasektion | Sidtyp |
 |---|---------|-------------|---------------|--------|
-| 1 | `dashboard.html` | Dashboard | — | Startsida |
-| 2 | `agenda.html` | Teamwork Agenda | — | Navigationsöversikt |
-| 3 | `strategic.html` | Strategiskt Resonemang | 1. Vart är vi på väg? | Länkmodul |
+| 1 | `dashboard.html` | Your Dashboard | — | Personlig startsida |
+| 2 | `strategic.html` | Strategiskt Resonemang | 1. Vart är vi på väg? | Länkmodul |
+| 3 | `locomotive-goals.html` | Lokomotivmål | 1. Vart är vi på väg? | Länkmodul |
 | 4 | `newsflash.html` | Nyhetsflash | 1. Vart är vi på väg? | Nyhetsmodul |
-| 5 | `desired-state.html` | Önskat Läge | 2. Vad siktar vi på? | Textmodul |
-| 6 | `goals-metrics.html` | Mål & Mätetal | 2. Vad siktar vi på? | Mätningsmodul |
-| 7 | `action-plan.html` | Handlingsplan | 3. Tar vi steg framåt? | Åtgärdsmodul |
-| 8 | `documents.html` | Teamdokument | 3. Tar vi steg framåt? | Länkmodul |
-| 9 | `ideas.html` | Idélogg | 3. Tar vi steg framåt? | Idémodul |
-| 10 | `attendance.html` | Närvaro | 4. Lär vi oss? | Närvaromodul |
-| 11 | `reflections.html` | Reflektioner & Spelregler | 4. Lär vi oss? | Textmodul |
+| 5 | `best-contribution.html` | Bästa bidrag | 2. Vår dashboard | Bidragsmodul |
+| 6 | `goals-metrics.html` | Mål & Mätetal | 2. Vår dashboard | Mätningsmodul |
+| 7 | `action-plan.html` | Handlingsplan | 3. Delprojekt & Handlingsplan | Åtgärdsmodul |
+| 8 | `documents.html` | Teamdokument | 3. Delprojekt & Handlingsplan | Länkmodul |
+| 9 | `ideas.html` | Idélogg | 3. Delprojekt & Handlingsplan | Idémodul |
+| 10 | `reflections.html` | Reflektioner & Spelregler | 4. Reflektioner & Lärande | Textmodul |
+| 11 | `attendance.html` | Närvaro | 4. Reflektioner & Lärande | Närvaromodul |
+| 12 | `archive.html` | Arkiv | 4. Reflektioner & Lärande | Arkivmodul |
 
 ### 4.3 Legacy-modul → Ny sida/komponent-mapping
 
 | Legacy-modul (01-old-system-analysis.md) | Ny sida/komponent | Status |
 |---|---|---|
-| Dashboard (Home) | `dashboard.html` | Full paritet + utökat |
-| Agenda (sidebar-navigation) | `agenda.html` + sidebar-komponent | Omdesignad (sidebar + översiktssida) |
+| Dashboard (Home) | `dashboard.html` (Your Dashboard) | Omdesignad som personlig landningssida |
+| Agenda (sidebar-navigation) | Mötesprogresslinje + sidebar | Omdesignad (progresslinje ersätter separat agendasida) |
 | Strategic Reasoning (extern länk) | `strategic.html` | Full paritet |
-| Progress with Strategic Focus (extern länk) | `strategic.html` (sektion 2) | Full paritet |
-| Newsflash / Chat with NLT | `newsflash.html` | **Avvikelse:** chatdel utelämnad i prototyp, enbart nyhetsflöde |
-| Our Current State (textmodul) | `desired-state.html` (sektion 1) | Full paritet |
-| Our Desired State (textmodul) | `desired-state.html` (sektion 2) | Full paritet |
-| Goals & Metrics / Targets & Measurements | `goals-metrics.html` | Full paritet |
-| Action Plan (åtgärdsmodul) | `action-plan.html` | Full paritet |
+| Progress with Strategic Focus (extern länk) | `locomotive-goals.html` | **Ny sida:** Lokomotivmål (1–3 strategiska mål från ledningen) |
+| Newsflash / Chat with NLT | `newsflash.html` | **Avvikelse:** chatdel utelämnad, enbart nyhetsflöde |
+| Our Current State (textmodul) | `best-contribution.html` (Starting Point-sektion) | **Ändrad:** Absorberad i Bästa bidrag-sidan |
+| Our Desired State (textmodul) | `best-contribution.html` (Objective & Desired State-sektion) | **Ändrad:** Absorberad i Bästa bidrag-sidan |
+| Goals & Metrics / Targets & Measurements | `goals-metrics.html` | Full paritet + utökat |
+| Action Plan (åtgärdsmodul) | `action-plan.html` | Full paritet + utökat |
 | Team Documents (länkmodul) | `documents.html` | Full paritet |
 | Log of Ideas (idémodul) | `ideas.html` | Full paritet |
-| Completed Steps (arkiv) | `action-plan.html` (vikbar sektion) | **Avvikelse:** integrerad i handlingsplan, ej separat sida |
+| Completed Steps (arkiv) | `archive.html` | **Ändrad:** Egen sida (inte vikbar sektion) — bredare scope |
 | Attendance (närvaromodul) | `attendance.html` | Full paritet |
-| Our Teamwork Rules (textmodul) | `reflections.html` (sektion 1) | **Avvikelse:** kombinerad med Reflektioner |
-| Reflections & Learnings (textmodul) | `reflections.html` (sektion 2) | **Avvikelse:** kombinerad med Spelregler |
-| Best Contribution CRUD | `action-plan.html` + `goals-metrics.html` | Full paritet |
+| Our Teamwork Rules (textmodul) | `reflections.html` (sektion 1) | Kombinerad med Reflektioner (samma sida, två sidebar-ingångar) |
+| Reflections & Learnings (textmodul) | `reflections.html` (sektion 2) | Kombinerad med Spelregler |
+| Best Contribution CRUD | `best-contribution.html` + `goals-metrics.html` | Full paritet |
 | Area of Improvement CRUD | `action-plan.html` (inline i bästa bidrag) | Full paritet |
 | Floating Action Button | FAB-komponent (alla modulsidor + dashboard) | Full paritet |
 | User Menu (language, help) | Toppnavigation | Full paritet |
@@ -165,7 +180,7 @@ Team Workspace innehåller 11 sidor som tillsammans täcker hela Integral Teamwo
 
 ```
 ┌───────────────────────────────────────────────────────────────────┐
-│ ITT │ [Team Alpha ▾]  Dashboard  Agenda  Admin    [SV│EN]        │
+│ ITT │ [Team Alpha ▾]  Dashboard  Admin    [SV│EN]                │
 └───────────────────────────────────────────────────────────────────┘
 ```
 
@@ -174,62 +189,113 @@ Team Workspace innehåller 11 sidor som tillsammans täcker hela Integral Teamwo
 | ITT (logotyp) | Alla | `dashboard.html` |
 | Team-väljare | Alla (dold om bara 1 team) | Byter team-kontext |
 | Dashboard | Alla | `dashboard.html` |
-| Agenda | Alla | `agenda.html` |
 | Admin | `data-min-role="team-leader"` | `admin.html` |
 | SV/EN | `data-min-role="integ-admin"` | Språkväxling |
 
-### 5.2 Sidebar (modulsidor)
+### 5.2 Mötesprogresslinje
 
-Sidopanelen visas på alla modulsidor (sida 3–11) men **inte** på Dashboard eller Agenda.
+Visas under toppnav på alla workspace-sidor (ej på Your Dashboard eller Admin). Representerar de 4 agendastegen som teamet arbetar igenom under varje möte. Ritad som en horisontell linje med cirkulära stopp.
 
 ```
-┌──────────────┬──────────────────────────────────────────┐
-│  SIDEBAR     │  Huvudinnehåll                            │
-│              │                                           │
-│ 1 VART ÄR   │                                           │
-│   VI PÅ VÄG?│                                           │
-│   · Strategi │                                           │
-│   · Nyheter  │                                           │
-│              │                                           │
-│ 2 VAD SIKTAR │                                           │
-│   VI PÅ?    │                                           │
-│   · Önskat   │                                           │
-│   · Mål      │                                           │
-│              │                                           │
-│ 3 TAR VI     │                                           │
-│   STEG?     │                                    [FAB+] │
-│   · Plan     │                                           │
-│   · Dokument │                                           │
-│   · Idéer    │                                           │
-│              │                                           │
-│ 4 LÄR VI    │                                           │
-│   OSS?      │                                           │
-│   · Närvaro  │                                           │
-│   · Reflek.  │                                           │
-└──────────────┴──────────────────────────────────────────┘
+         ●─────────────────◉─────────────────○─────────────────○
+    Strategiskt        Vår Dashboard     Delprojekt &      Reflektioner
+      Fokus                              Handlingsplan      & Lärande
 ```
 
-**Sidebar-struktur (default-agenda):**
+**Stoppvisualisering:**
+- **● (fylld cirkel)** = besökt stopp (redan passerat under mötet)
+- **◉ (dubbel cirkel)** = aktuellt stopp (den sektion användaren befinner sig i nu)
+- **○ (tom cirkel)** = kommande stopp (ej ännu besökt)
 
-| Sektion | Moduler | Mål-fil |
-|---------|---------|---------|
-| 1. Vart är vi på väg och varför? | Strategiskt resonemang | `strategic.html` |
-| | Nyhetsflash | `newsflash.html` |
-| 2. Vad siktar vi på? | Vårt önskade läge | `desired-state.html` |
-| | Mål & Mätetal | `goals-metrics.html` |
-| 3. Tar vi steg framåt? | Handlingsplan | `action-plan.html` |
-| | Teamdokument | `documents.html` |
-| | Idélogg | `ideas.html` |
-| 4. Lär vi oss och växer? | Närvaro | `attendance.html` |
-| | Reflektioner & Spelregler | `reflections.html` |
+**Stopp-mapping:**
 
+| # | Stoppetikett | Sidebar-sektion | Landningssida (första undersidan) |
+|---|---|---|---|
+| 1 | Strategiskt Fokus | Vart är vi på väg och varför? | `strategic.html` |
+| 2 | Vår Dashboard | Vår Dashboard | `best-contribution.html` |
+| 3 | Delprojekt & Handlingsplan | Delprojekt & Handlingsplan | `action-plan.html` |
+| 4 | Reflektioner & Lärande | Reflektioner & Lärande | `reflections.html` |
+
+**Beteende:**
+- Varje stopp är **klickbart** — navigerar till landningssidan för den sektionen
+- Stoppet markeras som besökt (fylld cirkel) när teamet spenderat tid i den sektionen under mötet
+- Besöksstatus sparas per team och mötestillfälle i `localStorage('itt-progress-${teamId}')`
+- Progresslinjen visas **inte** på "Your Dashboard" (personlig sida utanför mötesagendan)
+
+### 5.3 Sidebar (modulsidor)
+
+Sidopanelen visas på alla modulsidor (sida 2–12) men **inte** på Your Dashboard eller Admin.
+
+```
+┌──────────────────┬──────────────────────────────────────┐
+│  SIDEBAR         │  Huvudinnehåll                        │
+│                  │                                       │
+│  Your Dashboard  │                                       │
+│                  │                                       │
+│  VART ÄR VI PÅ  │                                       │
+│  VÄG OCH VARFÖR?│                                       │
+│   · Strategiskt  │                                       │
+│     Resonemang   │                                       │
+│   · Lokomotivmål │                                       │
+│   · Nyhetsflash  │                                       │
+│                  │                                       │
+│  VÅR DASHBOARD   │                                       │
+│   · Bästa bidrag │                                       │
+│   · Mål &        │                                       │
+│     Mätetal      │                                       │
+│                  │                                       │
+│  DELPROJEKT &    │                                       │
+│  HANDLINGSPLAN   │                                [FAB+] │
+│   · Handlingsplan│                                       │
+│   · Teamdokument │                                       │
+│   · Idélogg      │                                       │
+│                  │                                       │
+│  REFLEKTIONER &  │                                       │
+│  LÄRANDE         │                                       │
+│   · Reflektioner │                                       │
+│   · Spelregler   │                                       │
+│   · Närvaro      │                                       │
+│   · Arkiv        │                                       │
+└──────────────────┴──────────────────────────────────────┘
+```
+
+**Sidebar-struktur:**
+
+| Element | Typ | Klickbar | Mål |
+|---------|-----|----------|-----|
+| **Your Dashboard** | Länk | Ja | `dashboard.html` |
+| **Vart är vi på väg och varför?** | Sektionsrubrik | Nej | — |
+| · Strategiskt Resonemang | Undersida | Ja | `strategic.html` |
+| · Lokomotivmål | Undersida | Ja | `locomotive-goals.html` |
+| · Nyhetsflash | Undersida | Ja | `newsflash.html` |
+| **Vår Dashboard** | Sektionsrubrik | Nej | — |
+| · Bästa bidrag | Undersida | Ja | `best-contribution.html` |
+| · Mål & Mätetal | Undersida | Ja | `goals-metrics.html` |
+| **Delprojekt & Handlingsplan** | Sektionsrubrik | Nej | — |
+| · Handlingsplan | Undersida | Ja | `action-plan.html` |
+| · Teamdokument | Undersida | Ja | `documents.html` |
+| · Idélogg | Undersida | Ja | `ideas.html` |
+| **Reflektioner & Lärande** | Sektionsrubrik | Nej | — |
+| · Reflektioner | Undersida | Ja | `reflections.html` |
+| · Spelregler | Undersida | Ja | `reflections.html#spelregler` |
+| · Närvaro | Undersida | Ja | `attendance.html` |
+| · Arkiv | Undersida | Ja | `archive.html` |
+
+- Sektionsrubriker visas i **versaler**, fetstil, med avskiljande avstånd ovanför
+- "Your Dashboard" visas som enskild toppnivå-länk (ej under en sektionsrubrik)
 - Sidopanelen är sticky (`position: sticky; top: 52px`)
 - Aktiv sida markeras med gul kantlinje till vänster
 - Kugghjulsikon synlig för org-admin+ (visuell markering, ej funktionell i prototyp)
 
-### 5.3 Flytande åtgärdsknapp (FAB)
+**Synlighetstoggle för agendapunkter (team-leader+):**
+- Varje undersida har en ögon-ikon synlig för team-leader+ (`data-min-role="team-leader"`)
+- Klick på ikonen togglar modulens synlighet (visuellt: genomstruken text + dämpad färg)
+- Syftet: Team Leader kan dölja agendapunkter inför möten som ej är aktuella
+- Status sparas per team i `localStorage('itt-agenda-visibility-${teamId}')`
 
-Visas på alla modulsidor (sida 3–11) **och på Dashboard**, men **inte** på Agenda eller Admin. (Legacy-beteende: "Always visible except in admin/agenda edit views")
+### 5.4 Flytande åtgärdsknapp (FAB)
+
+Visas på alla modulsidor **och på Your Dashboard**, men **inte** på Admin.
 
 - Fast position nere till höger (ovanför rollväljaren)
 - Klick expanderar meny: **+ Åtgärd**, **+ Idé**
@@ -237,15 +303,15 @@ Visas på alla modulsidor (sida 3–11) **och på Dashboard**, men **inte** på 
 - **+ Åtgärd** öppnar slide-over med åtgärdsformulär
 - **+ Idé** öppnar slide-over med idéformulär
 
-### 5.4 Brödsmulor
+### 5.5 Brödsmulor
 
-Alla sidor visar brödsmulor under toppnav:
+Alla sidor visar brödsmulor under mötesprogresslinjen:
 
 ```
-Dashboard / Agenda / Handlingsplan
+Your Dashboard / Vår Dashboard / Bästa bidrag
 ```
 
-### 5.5 Team-kontext och state-strategi
+### 5.6 Team-kontext och state-strategi
 
 Team-kontexten (vilken team användaren tittar på) hanteras via:
 
@@ -259,10 +325,11 @@ Team-kontexten (vilken team användaren tittar på) hanteras via:
 
 ## 6. Detaljerade sidspecifikationer
 
-### 6.1 Dashboard (`dashboard.html`)
+### 6.1 Your Dashboard (`dashboard.html`)
 
-**Layout:** Helbredd (ingen sidebar)
+**Layout:** Helbredd (ingen sidebar, ingen mötesprogresslinje)
 **Rollsynlighet:** Alla roller
+**Beskrivning:** Det första som möter användaren vid inloggning — personlig översikt.
 
 **Innehåll:**
 
@@ -280,56 +347,60 @@ Team-kontexten (vilken team användaren tittar på) hanteras via:
    - Kolumner: Åtgärd, Deadline, Status, Bästa bidrag
    - Länk: "Visa alla i handlingsplanen →"
 
-4. **Önskat läge (preview)** — Kort sammanfattning av "Vårt nuvarande läge" och "Vårt önskade läge" med "Redigera →"-länk till `desired-state.html`. (Legacy-paritet: dashboard visade preview av current/desired state)
+4. **Bästa bidrag (preview)** — Kort sammanfattning av aktuellt bästa bidrag med Starting Point / Desired State. Länk "Redigera →" till `best-contribution.html`.
 
-5. **Mål & Mätetal (mini-graf)** — Liten stapeldiagram-preview av spårade bästa bidrag med "Se alla mätetal →"-länk till `goals-metrics.html`. (Legacy-paritet: dashboard visade targets graph)
+5. **Mål & Mätetal (mini-graf)** — Liten stapeldiagram-preview av spårade mätetal med "Se alla mätetal →"-länk till `goals-metrics.html`.
 
 6. **Senaste aktivitet** — Tidslinje med 5 senaste händelser
 
-7. **Snabblänkar** — Stora klickbara kort till: Handlingsplan, Mål & Mätetal, Teamdokument, Närvaro
+7. **Nyhetsflash** — Senaste nyhetsflash-inlägget. Hanteras av Team & Team Leader. Uppdateringar av sådant som har relevans för teamet.
 
 **Interaktioner:**
 - Statistikkort navigerar till relevant sida vid klick
 - Åtgärdsrader öppnar slide-over vid klick
-- Snabblänkar navigerar till modulsidor
 
 ---
 
-### 6.2 Agenda (`agenda.html`)
+### 6.2 Bästa bidrag (`best-contribution.html`)
 
-**Layout:** Helbredd (ingen sidebar — sidan ÄR navigationsöversikten)
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla roller
+**Agendasektion:** Vår Dashboard (landningssida för stopp 2)
+**Beskrivning:** Teamets gemensamma dashboard — översikt av bästa bidrag, framsteg och mätetal.
 
-**Innehåll:** 4 stora agendakort, ett per sektion:
+**Innehåll:**
 
-```
-┌───────┬──────────────────────────────────────────────┐
-│       │  1. VART ÄR VI PÅ VÄG OCH VARFÖR?           │
-│   1   │  Strategiska perspektiv och kommunikation     │
-│       │                                               │
-│       │  [Strategiskt resonemang]  [Nyhetsflash]      │
-└───────┴──────────────────────────────────────────────┘
-```
+1. **Our Best Contribution** — Redigerbart textblock:
+   - **Starting Point** — Textfält (redigerbart inline, spara-knapp)
+   - **Objective & Desired State** — Textfält (redigerbart inline, spara-knapp)
+   - **Why is this Our Best Contribution?** — Textfält (redigerbart inline, spara-knapp)
 
-Varje kort har:
-- Sektionsnummer i gul panel
-- Sektionsrubrik (fetstil versaler)
-- Beskrivning (dämpad text)
-- Modullänkknappar (outline, offset-skugga vid hover)
+2. **Completion of Best Contribution** — Procentstapel:
+   - Visar aktuell procent (t.ex. 35%)
+   - **Drag-and-drop** för att ändra värdet — dra i den färgade stapeln
+   - Completion-stapeln och texterna Starting Point / Desired State ska vara stora och tydligt synliga
 
-**Synlighetstoggle för agendapunkter (team-leader+):**
-- Varje modullänk har en ögon-ikon (👁) synlig för team-leader+ (`data-min-role="team-leader"`)
-- Klick på ikonen togglar modulens synlighet (visuellt: genomstruken text + dämpad färg)
-- Syftet: Team Leader kan dölja agendapunkter inför möten som ej är aktuella
-- Dolda moduler försvinner även från sidebar på övriga sidor
-- Status sparas per team i `localStorage('itt-agenda-visibility-${teamId}')`
+3. **Mål & Mätetal (preview)** — Stapeldiagram-preview av spårade mätetal
+   - Klickbart — navigerar till `goals-metrics.html` för att administrera mätetal
+
+4. **Our Subprojects** — Expanderbar lista med bästa bidragets delprojekt:
+   - Varje delprojekt som en expanderbar rad (t.ex. "FÖRBÄTTRA KUNDKOMMUNIKATION", "ÖKA PROCESSEFFEKTIVITET")
+   - Klick navigerar till `action-plan.html` med fokus på det delprojektet
+
+5. **"+ Nytt bästa bidrag"** knapp (team-leader+)
+
+**Affärsregler:**
+- Man ska kunna skriva direkt i Best Contribution-fönstret och spara
+- Man ska kunna klicka på mätetalet och komma till mätadmin-fönstret
 
 ---
 
 ### 6.3 Handlingsplan (`action-plan.html`)
 
-**Layout:** Sidebar + huvudinnehåll
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla roller (alla kan skapa/redigera åtgärder)
+**Agendasektion:** Delprojekt & Handlingsplan (landningssida för stopp 3)
+**Beskrivning:** Teamets primära arbetsyta — 50–70% av mötestiden spenderas här.
 
 **Innehåll:**
 
@@ -338,27 +409,37 @@ Varje kort har:
    - Statusfilter (segmented control: Alla | Ej startad | Pågående | Försenad | Klar)
    - Sökfält
 
-2. **Bästa bidrag** — Vikbara sektioner per bidrag:
-   ```
-   ▾ FÖRBÄTTRA KUNDKOMMUNIKATION          [65%]  [Redigera] [Radera]
-     Förbättringsområde: Digitala kanaler
-     ┌────────┬─────────────┬──────────┬──────────┬──────────┐
-     │ Åtgärd │ Ansvarig    │ Stöd av  │ Deadline  │ Status   │
-     ├────────┼─────────────┼──────────┼──────────┼──────────┤
-     │ Uppd.  │ Anna A.     │ Erik S.  │ 2026-03  │ PÅGÅENDE │
-     └────────┴─────────────┴──────────┴──────────┴──────────┘
-   ```
+2. **Starting Point / Desired State (kompakt)** — Visa överst, komprimerad version från `best-contribution.html`. Kan göras större med lämplig färg så att de syns bra.
 
-3. **Förbättringsområden (Area of Improvement)** — Inline i varje bästa bidrag:
+3. **Team Focus** — Sammanfattande text om teamets fokus (redigerbar)
+
+4. **Bästa bidrag / Delprojekt** — Vikbara sektioner per bidrag:
+   ```
+   ▾ FÖRBÄTTRA KUNDKOMMUNIKATION                    Completion: 0%
+     Our Starting Point: —
+     Our Desired State: —
+     ┌────────┬────────────┬──────────┬──────────┬──────────┬───────────┬──────────┐
+     │ Åtgärd │ Ansvarig   │ Stöd av  │ Deadline  │ Kommentar │ Påminnelse│ Status   │
+     ├────────┼────────────┼──────────┼──────────┼──────────┼───────────┼──────────┤
+     │ Uppd.  │ Anna A.    │ Erik S.  │ 2026-03  │ ...       │ ✉         │ PÅGÅENDE │
+     └────────┴────────────┴──────────┴──────────┴──────────┴───────────┴──────────┘
+   ```
+   - **"Zooma ut"**: Ej diskuterade delprojekt kan minimeras/kollapsas så att nästan hela fönstret kan användas för fokus på aktuell handlingsplan
+   - Handlingsplanen kan spänna över hela sidans bredd
+
+5. **Förbättringsområden (Area of Improvement)** — Inline i varje bästa bidrag:
    - **Skapa:** "+ Nytt förbättringsområde"-länk under bästa bidrag → inline textfält
    - **Radera:** ✗-ikon bredvid förbättringsområdets rubrik → bekräftelsedialog:
      "Förbättringsområdet '[Namn]' raderas. Dess åtgärder flyttas till 'Inget förbättringsområde'."
-   - **Affärsregel:** Vid radering flyttas alla kopplade åtgärder till det automatiska "Inget förbättringsområde"-området (skapas automatiskt per bästa bidrag)
+   - **Affärsregel:** Vid radering flyttas alla kopplade åtgärder till det automatiska "Inget förbättringsområde"-området
    - **Affärsregel:** "Inget förbättringsområde" kan inte raderas
 
-4. **Avklarade steg** (vikbar, stängd som standard) — Arkiv med slutförda åtgärder
+6. **Drag-and-drop-omordning:** Användaren ska via drag-and-drop enkelt kunna byta plats mellan:
+   - Delprojekt (Sub Projects)
+   - Förbättringsområden (det grå fältet)
+   - Åtgärder (Actions)
 
-5. **"+ Nytt bästa bidrag"** knapp (team-leader+)
+7. **Inline-redigering:** Allt ska kunna skrivas in och ändras utan att lämna denna vy.
 
 **Slide-over: Redigera åtgärd**
 
@@ -373,6 +454,7 @@ Varje kort har:
 | Bästa bidrag | Dropdown | Ja |
 | Förbättringsområde | Dropdown (filtrerad per bästa bidrag) | Nej |
 | Kommentar | Textarea | Nej |
+| Mejlpåminnelse | Toggle (på/av) | Nej |
 
 Botten: **Radera åtgärd** (röd, bekräftelsedialog)
 
@@ -386,8 +468,9 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
 
 ### 6.4 Mål & Mätetal (`goals-metrics.html`)
 
-**Layout:** Sidebar + huvudinnehåll
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla roller
+**Agendasektion:** Vår Dashboard
 
 **Innehåll:**
 
@@ -396,7 +479,6 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
    | Bästa bidrag | Plan | Do | Check | Act | Totalt |
    |---|---|---|---|---|---|
    | Kundkommunikation | 100% | 75% | 50% | 25% | 65% |
-   | Processeffektivitet | 100% | 100% | 80% | 40% | 80% |
 
    Varje cell har en liten progress-bar.
 
@@ -404,40 +486,51 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
    - Slutmål, nuvarande värde, förändring
    - Progress-bar
    - Färgmarkering
+   - **Målnivå + kritisk linje** ska enkelt kunna läggas in och bli mycket synliga
    - "+ Lägg till bästa bidrag till mätningar"
 
-3. **Stapeldiagram** — CSS-baserat diagram med mätvärden över tid
+3. **Diagram** — Max 2 separata mätetal visas (skifta vy/klicka eller under varandra):
+   - **Fritt val mellan stapel och kurva** för att visa mätvärden
+   - **Tidsaxel** kan styras till: varje vecka, var 14:e dag (baserat på mötesfrekvens), eller månatliga uppdateringar
+   - **Målnivå + kritisk linje** synlig i diagrammet
    - Kryssrutor för att visa/dölja bidrag
    - Y-axel: absoluta värden (enstaka) eller procent (flera)
 
 4. **Mätningsinmatningar** — Vikbar lista med historik
    - "+ Ny mätning" öppnar inline-formulär (datum + numeriska värden)
 
+**Interaktioner:**
+- Klick på ett mätetal öppnar mätadmin-fönstret där man kan addera nya mätvärden, målnivåer, eller designa nytt mätetal
+
 ---
 
-### 6.5 Önskat Läge (`desired-state.html`)
+### 6.5 Lokomotivmål (`locomotive-goals.html`)
 
-**Layout:** Sidebar + huvudinnehåll
-**Rollsynlighet:** Alla roller (alla kan redigera)
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
+**Rollsynlighet:** Alla roller kan läsa. Org-admin+ kan redigera.
+**Agendasektion:** Vart är vi på väg och varför?
+**Beskrivning:** 1–3 strategiskt fokuserade lokomotivmål från ledningen, uppdaterade i relevant frekvens (vanligtvis varje månad eller varje vecka).
 
 **Innehåll:**
 
-1. **Vårt nuvarande läge** — Textblock med redigerbar textarea
-   - Hjälptext: "Ange en beskrivning av hur ni upplever att situationen ser ut idag"
-   - Sparknapp
+1. **Lokomotivmål** — 1–3 länkkort, varje med:
+   - Titel (redigerbar för org-admin+)
+   - Beskrivning/sammanhang (redigerbar för org-admin+)
+   - URL till externt material (redigerbar för org-admin+)
+   - Senast uppdaterad: datum
 
-2. **Vårt önskade läge** — Samma mönster
-   - Hjälptext: "Ange en detaljerad beskrivning av er tänkta situation när ni nått ert mål"
-   - Sparknapp
-
-**Interaktioner:** Redigera text + spara → toast "Innehåll sparat"
+**Affärsregler:**
+- Ständigt aktiv länk till 1–3 lokomotivmål
+- Ledningen uppdaterar dessa i relevant frekvens
+- Sidan ska vara lätt att editera för någon som sitter nära ledningen
 
 ---
 
 ### 6.6 Närvaro (`attendance.html`)
 
-**Layout:** Sidebar + huvudinnehåll
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla roller
+**Agendasektion:** Reflektioner & Lärande
 
 **Innehåll:**
 
@@ -473,8 +566,9 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
 
 ### 6.7 Teamdokument (`documents.html`)
 
-**Layout:** Sidebar + huvudinnehåll
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla roller
+**Agendasektion:** Delprojekt & Handlingsplan
 
 **Innehåll:**
 
@@ -496,12 +590,15 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
    - Kopiera URL → toast "URL kopierad"
    - Radera → bekräftelsedialog
 
+**Pre-read-markering:** Rubriken "Teamdokument" i sidebaren ska byta färg/blinka om det finns nya dokument som bör läsas inför nästa möte. Teammedlemmar kan lägga in och läsa teamdokument som pre-reads inför möten.
+
 ---
 
 ### 6.8 Idélogg (`ideas.html`)
 
-**Layout:** Sidebar + huvudinnehåll
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla roller
+**Agendasektion:** Delprojekt & Handlingsplan
 
 **Innehåll:**
 
@@ -532,12 +629,14 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
 
 ### 6.9 Reflektioner & Spelregler (`reflections.html`)
 
-**Layout:** Sidebar + huvudinnehåll
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla roller (alla kan redigera)
+**Agendasektion:** Reflektioner & Lärande (landningssida för stopp 4)
+**Beskrivning:** Reflektioner och Spelregler är två rubriker/ingångar i sidebaren men leder till samma sida. De hänger ihop men man kan söka sig in båda vägarna beroende på vad som är mest intressant att reflektera över.
 
 **Innehåll:**
 
-1. **Våra spelregler för teamwork** — Textmodul:
+1. **Våra spelregler för teamwork** (ankare: `#spelregler`) — Textmodul:
    - Redigerbar textarea med teamets överenskomna regler
    - Sparknapp
 
@@ -546,12 +645,18 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
    - Redigerbar textarea med löpande text
    - Sparknapp
 
+**Sidebar-ingångar:**
+- "Reflektioner" → `reflections.html` (scrollar till toppen)
+- "Spelregler" → `reflections.html#spelregler` (scrollar till spelregler-sektionen)
+
 ---
 
 ### 6.10 Strategiskt Resonemang (`strategic.html`)
 
-**Layout:** Sidebar + huvudinnehåll
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla roller kan läsa. Org-admin+ kan redigera länkar.
+**Agendasektion:** Vart är vi på väg och varför? (landningssida för stopp 1)
+**Beskrivning:** Strategiskt Resonemang är en summerande bild som vanligtvis bara ändras var 6:e månad. Det ska finnas en länk till det kompletta strategiska resonemanget som kan bestå av ett bildspel med ca 20–40 PPT med bakgrundsfakta.
 
 **Innehåll:**
 
@@ -567,12 +672,16 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
 
 **Interaktioner:** Länkar öppnas i ny flik. Redigering inline (org-admin+).
 
+**Syfte:** Teamet lyfter blicken till ett strategiskt perspektiv, så att den strategiska medvetenheten och energin/sense of urgency ökar.
+
 ---
 
 ### 6.11 Nyhetsflash (`newsflash.html`)
 
-**Layout:** Sidebar + huvudinnehåll
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
 **Rollsynlighet:** Alla kan läsa. Team-leader+ kan skapa/redigera/radera.
+**Agendasektion:** Vart är vi på väg och varför?
+**Beskrivning:** Newsflash är vanligtvis en visuell PPT eller kanske en kort video — något som väcker intresse, reflektion och energi. Hanteras av Team & Team Leader.
 
 **Innehåll:**
 
@@ -594,23 +703,57 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
 - Titel (obligatoriskt)
 - Innehåll (textarea)
 
+**Affärsregler:**
+- Newsflash kan vara 1–2 "bilder"/inlägg
+- Sidan ska vara lätt att editera och kunna anpassas av kunden efter sina behov
+
+---
+
+### 6.12 Arkiv (`archive.html`)
+
+**Layout:** Sidebar + mötesprogresslinje + huvudinnehåll
+**Rollsynlighet:** Alla roller
+**Agendasektion:** Reflektioner & Lärande
+**Beskrivning:** Dit ska teamet enkelt kunna flytta över sådant som inte längre ligger i fokus för det egna arbetet. Tar bort kognitiv vikt så att teamet kan fokusera framåt.
+
+**Innehåll:**
+
+1. **Arkiverade bästa bidrag** — Lista med äldre bästa bidrag som teamet arbetat sig igenom
+   - Varje bidrag med sin historiska Starting Point / Desired State
+   - Datum för arkivering
+
+2. **Arkiverade delprojekt** — Delprojekt som man jobbat sig igenom och inte längre har som fokus
+   - Med sina åtgärder (slutförda)
+
+3. **Arkiverade mätetal & mål** — Graferna ska kunna sparas
+   - Historiska mätdiagram bevaras i arkivet
+
+**Syften:**
+1. Det stärker teamets självförtroende att då och då titta tillbaka på vad man åstadkommit tillsammans
+2. Man kan ibland behöva referera tillbaka till tidigare projekt
+
+**Interaktioner:**
+- Ingen redigering i arkivet — enbart läsning
+- Arkivering sker från respektive källsida (t.ex. "Arkivera bästa bidrag" på `best-contribution.html`)
+
 ---
 
 ## 7. Rollsynlighetsmatris
 
 | Sida | member | team_leader | org_admin | integ_admin | super_admin |
 |------|--------|-------------|-----------|-------------|-------------|
-| Dashboard | Läs | Läs | Läs | Läs | Läs |
-| Agenda | Läs | Läs + synlighetstoggle | Läs + kugghjul | Läs + kugghjul | Läs + kugghjul |
-| Handlingsplan | CRUD åtgärder | + hantera bästa bidrag | Allt | Allt | Allt |
+| Your Dashboard | Läs | Läs | Läs | Läs | Läs |
+| Bästa bidrag | Redigera text | + hantera bidrag | Allt | Allt | Allt |
 | Mål & Mätetal | CRUD mätningar | + hantera spårade bidrag | Allt | Allt | Allt |
-| Önskat Läge | Redigera | Redigera | Redigera | Redigera | Redigera |
+| Handlingsplan | CRUD åtgärder | + hantera bästa bidrag | Allt | Allt | Allt |
 | Närvaro | CRUD möten | CRUD möten | CRUD möten | CRUD möten | CRUD möten |
 | Teamdokument | CRUD länkar | CRUD länkar | CRUD länkar | CRUD länkar | CRUD länkar |
 | Idélogg | CRUD idéer | CRUD idéer | CRUD idéer | CRUD idéer | CRUD idéer |
 | Reflektioner | Redigera | Redigera | Redigera | Redigera | Redigera |
 | Strategiskt | Läs | Läs | Redigera länkar | Redigera | Redigera |
+| Lokomotivmål | Läs | Läs | Redigera | Redigera | Redigera |
 | Nyhetsflash | Läs | CRUD inlägg | CRUD inlägg | CRUD inlägg | CRUD inlägg |
+| Arkiv | Läs | Läs | Läs | Läs | Läs |
 | Admin | Ej åtkomst | Användare-flik | Anv+Team+Org | Alla flikar | Alla flikar |
 
 ---
@@ -627,38 +770,40 @@ Botten: **Radera åtgärd** (röd, bekräftelsedialog)
 - CSS-variabler (`:root`-tema)
 
 ### Nya komponenter:
-- **Sidebar** — Agendadriven sidopanel (sticky, 260px bred, gul aktiv-markering)
+- **Mötesprogresslinje** — Horisontell linje med 4 cirkulära stopp (●/◉/○), klickbar, visar mötesframsteg
+- **Sidebar** — Agendadriven sidopanel (sticky, 260px bred, gul aktiv-markering, sektionsrubriker ej klickbara)
 - **FAB** — Flytande åtgärdsknapp (56×56px, gul, offset-skugga)
 - **Statistikkort** — Dashboard-kort med ikon och värde
 - **Hjältesektion** — Dashboard-hälsning
 - **Aktivitetstidslinje** — Dashboard-händelselista
-- **Agendakort** — Stora navigeringskort för agendasidan
 - **Post-it-kort** — Gula idékort (grid-layout)
 - **Innehållsblock** — Textmodulbehållare med rubrik och textarea
-- **Progressbar** — Mätetal-visualisering
-- **Stapeldiagram** — CSS-baserat för mål & mätetal
+- **Progressbar** — Mätetal-visualisering (drag-and-drop för completion)
+- **Stapel-/kurvdiagram** — Konfigurerbart för mål & mätetal (stapel eller kurva, konfigurerbar tidsaxel)
 - **Närvarorutnät** — Tabell med ✓/✗
 - **Nyhetskort** — Kronologiska nyhetsblock
 - **Team-väljare** — Dropdown i toppnav
+- **Arkivkort** — Historiska bästa bidrag och mätdiagram (read-only)
 
 ---
 
 ## 9. Filorganisation
 
 ```
-prototypes/v4/
-├── admin.html               (befintlig)
-├── dashboard.html            (ny)
-├── agenda.html               (ny)
-├── action-plan.html          (ny)
-├── goals-metrics.html        (ny)
-├── desired-state.html        (ny)
-├── attendance.html           (ny)
-├── documents.html            (ny)
-├── ideas.html                (ny)
-├── reflections.html          (ny)
-├── strategic.html            (ny)
-├── newsflash.html            (ny)
+prototypes/v8/
+├── admin.html               (befintlig, uppdaterad toppnav)
+├── dashboard.html            (Your Dashboard — personlig startsida)
+├── best-contribution.html    (Bästa bidrag — teamets gemensamma dashboard)
+├── action-plan.html          (Delprojekt & Handlingsplan)
+├── goals-metrics.html        (Mål & Mätetal)
+├── attendance.html           (Närvaro)
+├── documents.html            (Teamdokument)
+├── ideas.html                (Idélogg)
+├── reflections.html          (Reflektioner & Spelregler)
+├── strategic.html            (Strategiskt Resonemang)
+├── locomotive-goals.html     (Lokomotivmål)
+├── newsflash.html            (Nyhetsflash)
+├── archive.html              (Arkiv)
 ├── mock-data.js              (befintlig — utökas)
 ├── mock-data-workspace.js    (ny — workspace-data)
 ├── i18n-sv.js                (befintlig — utökas)
@@ -666,17 +811,19 @@ prototypes/v4/
 ```
 
 ### Mock-data (`mock-data-workspace.js`)
-- `bestContributions` — Bästa bidrag-objekt
+- `bestContributions` — Bästa bidrag-objekt (inkl. Starting Point, Desired State, Completion %)
 - `areasOfImprovement` — Förbättringsområden
-- `actions` — Åtgärder
+- `actions` — Åtgärder (inkl. mejlpåminnelse-toggle)
 - `ideas` — Idéer
 - `meetings` — Mötesnärvaro
-- `documents` — Dokumentlänkar
+- `documents` — Dokumentlänkar (inkl. pre-read-flagga)
 - `newsflashes` — Nyhetsflashar
-- `textModules` — Textinnehåll (önskat läge, lärdomar, spelregler)
+- `textModules` — Textinnehåll (spelregler, lärdomar)
 - `trackedContributions` — Spårade mätningar
 - `measurementInputs` — Mätdatapunkter
 - `strategicLinks` — Strategilänkar
+- `locomotiveGoals` — Lokomotivmål (1–3 per organisation)
+- `archivedItems` — Arkiverade bästa bidrag, delprojekt, mätetal
 
 Refererar användare/team/org från `mock-data.js` via ID.
 
@@ -692,6 +839,7 @@ Alla sidor följer V4-designsystemet (Blaze Lynx-struktur + Sprint Falcon-stil):
 - **Skugga vid hover:** `4px 4px 0`
 - **Typsnitt:** Inter, versaler för etiketter
 - **Toppnav:** Mörk med gul bottenlinje
+- **Mötesprogresslinje:** Ljus bakgrund, horisontell linje med cirkulära stopp, under toppnav
 - **Språk:** Svenska (SV) standard, engelska (EN) via växlare
 - **Fristående:** Varje HTML-fil är komplett med inline CSS/JS
 - **Rollväljare:** Alltid synlig längst ner
@@ -725,53 +873,51 @@ Team Leader+ kan konfigurera automatiska åtgärdsnotifieringar per team. I prot
 
 | Fas | Vad | Beroenden |
 |-----|-----|-----------|
-| 0 | **Shared layout contract:** Definiera gemensam topnav, sidebar, breadcrumbs, FAB, role-switch persistence, team-context (localStorage), i18n-init som kopieras till alla filer. Bygg som referens-snippet. | — |
+| 0 | **Shared layout contract:** Definiera gemensam topnav, mötesprogresslinje, sidebar, breadcrumbs, FAB, role-switch persistence, team-context (localStorage), i18n-init som kopieras till alla filer. Bygg som referens-snippet. | — |
 | 1 | `mock-data-workspace.js` + utöka i18n-filer | Fas 0 |
-| 2 | `dashboard.html` + `agenda.html` | Fas 1 |
+| 2 | `dashboard.html` + `best-contribution.html` | Fas 1 |
 | 3 | `action-plan.html` + `goals-metrics.html` + `attendance.html` | Fas 2 |
-| 4 | `documents.html` + `ideas.html` + `desired-state.html` + `reflections.html` + `strategic.html` + `newsflash.html` | Fas 2 |
+| 4 | `documents.html` + `ideas.html` + `reflections.html` + `strategic.html` + `locomotive-goals.html` + `newsflash.html` + `archive.html` | Fas 2 |
 | 5 | Uppdatera `admin.html` toppnav + rot `index.html` | Fas 3–4 |
 
 ---
 
 ## 14. Motsägelser och avvikelser med befintlig dokumentation
 
-### ⚠️ Potentiella motsägelser
+### Potentiella motsägelser
 
-**13.1 Sidebar vs toppnavigation**
+**14.1 Sidebar vs toppnavigation**
 - V4 admin använder **horisontella flikar** för navigation
 - Denna spec föreslår **sidebar** för workspace-sidor
-- **Motivering:** Agendastrukturen är hierarkisk (4 sektioner × 2–3 moduler = 9 sidor) och passar inte i horisontella flikar. Sidebar följer också det gamla systemet (`01-old-system-analysis.md` sektion 4.1)
+- **Motivering:** Agendastrukturen är hierarkisk (4 sektioner × 2–4 moduler = 12 sidor) och passar inte i horisontella flikar. Sidebar följer också det gamla systemet.
 - **Risk:** Visuell inkonsistens mellan admin och workspace
 
-**13.2 Närvaro-sektion: sektion 4 (denna spec) vs sektion 1 (gammal navigeringskarta)**
-- `01-old-system-analysis.md` sektion 4.2 placerar Närvaro under "Where are we headed?" (sektion 1)
-- Men default-agendan i sektion 3.4 av samma dokument placerar Närvaro under "Are we learning & growing?" (sektion 4)
-- **Beslut:** Följer agendasektionen 4, som matchar v2-kravspec:s agendamodell
+**14.2 Separat agendasida (V1–V7) → mötesprogresslinje (V8)**
+- Tidigare versioner hade en separat `agenda.html` med agendakort
+- Feedback#3 ersätter detta med mötesprogresslinjen + sidebar-navigering
+- **Beslut:** Agendasidan tas bort. Progresslinjen och sidebaren ger samma navigering mer integrerat.
 
-**13.3 Reflektioner + Spelregler som EN sida vs TVÅ separata moduler**
-- `01-old-system-analysis.md` har "Our Teamwork Rules" och "Reflections & Learnings" som separata moduler
-- V1-prototypen hade dem kombinerade på en sida
-- **Beslut:** Kombineras till en sida för enkelhet. Båda är enkla textmoduler.
+**14.3 Önskat Läge som egen sida (V1–V7) → del av Bästa bidrag (V8)**
+- Tidigare versioner hade `desired-state.html` som separat sida
+- Feedback#3 placerar Starting Point / Desired State som redigerbara textfält direkt på `best-contribution.html`
+- **Beslut:** Separat sida tas bort. Informationen lever nu inline på Bästa bidrag-sidan.
 
-**13.4 Team-väljare i toppnav vs incognito-fönster (gammalt system)**
-- Gamla systemet krävde incognito-fönster för att byta team
-- **Beslut:** Modern approach — team-väljare som dropdown
+**14.4 Avklarade steg som vikbar sektion (V7) → Arkiv som egen sida (V8)**
+- Tidigare: vikbar sektion längst ner på `action-plan.html`
+- Feedback#3: egen sida `archive.html` med bredare scope (även mätetal, bästa bidrag)
+- **Beslut:** Arkiv blir egen sida under Reflektioner & Lärande.
 
-**13.5 FAB på Dashboard — LÖST**
-- `01-old-system-analysis.md` sektion 6.6: FAB "alltid synlig utom i admin/agendaredigering"
-- **Beslut:** FAB visas även på Dashboard (enligt legacy-beteende)
+**14.5 Reflektioner + Spelregler: samma sida, två ingångar**
+- Sidebar har två separata länkar ("Reflektioner" och "Spelregler") som båda leder till `reflections.html`
+- De hänger ihop men man kan söka sig in båda vägarna
+- **Beslut:** En sida med ankarlänkar
 
-**13.6 Avklarade steg som vikbar sektion vs separat sida**
-- Gamla systemet nämner "Completed Steps" som separat agendapunkt under sektion 3
-- **Beslut:** Implementeras som vikbar sektion längst ner på `action-plan.html`
-
-**13.7 Anpassning-fliken vs statiska sidebar-namn**
+**14.6 Anpassning-fliken vs statiska sidebar-namn**
 - `admin-section-req.md` Anpassning-fliken låter integ-admin byta namn på agendamoduler per organisation
 - Sidebar-etiketterna i denna spec använder standardnamn
 - **Not:** Prototypen visar bara standardnamn. Implementationen bör stödja anpassade namn.
 
-### ✅ Överensstämmelser bekräftade
+### Överensstämmelser bekräftade
 
 - 5-nivå rollhierarki: samma som `admin-section-req.md`
 - Rollväljare (debug bar): enligt `aaa-base-requirements.md`
@@ -786,6 +932,6 @@ Team Leader+ kan konfigurera automatiska åtgärdsnotifieringar per team. I prot
 
 ## 15. Öppna frågor
 
-_(Tidigare öppna frågor 1–3 är nu lösta — se sektion 5.3 (FAB), 12 (notifieringar) och 6.2 (agenda-synlighet))_
+_(Tidigare öppna frågor 1–3 är nu lösta — se sektion 5.4 (FAB), 12 (notifieringar) och 5.3 (agenda-synlighet))_
 
 Inga kvarstående öppna frågor.
