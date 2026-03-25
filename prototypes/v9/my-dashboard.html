@@ -416,16 +416,36 @@ function startMeeting() {
   localStorage.setItem('itt-meeting-start', String(now));
   localStorage.setItem('itt-meeting-section-times', JSON.stringify({1:0,2:0,3:0,4:0}));
   localStorage.setItem('itt-meeting-section-enter', String(now));
-  localStorage.setItem('itt-meeting-current-section', '0');
-  renderAll();
+  localStorage.setItem('itt-meeting-current-section', '1');
+  location.href = 'strategic.html';
 }
 
 function stopMeeting() {
+  flushSectionTime();
   localStorage.removeItem('itt-meeting-active');
   localStorage.removeItem('itt-meeting-start');
   localStorage.removeItem('itt-meeting-section-enter');
   localStorage.removeItem('itt-meeting-current-section');
   renderAll();
+}
+
+function flushSectionTime() {
+  if (!isMeetingActive()) return;
+  const enter = parseInt(localStorage.getItem('itt-meeting-section-enter') || '0');
+  const sec = parseInt(localStorage.getItem('itt-meeting-current-section') || '0');
+  if (!enter || !sec || enter < 1000000000000) return;
+  const elapsed = (Date.now() - enter) / 1000;
+  const times = JSON.parse(localStorage.getItem('itt-meeting-section-times') || '{}');
+  times[sec] = (times[sec] || 0) + elapsed;
+  localStorage.setItem('itt-meeting-section-times', JSON.stringify(times));
+  localStorage.setItem('itt-meeting-section-enter', String(Date.now()));
+}
+
+// Flush time from previous section on page load (but don't track time here)
+if (isMeetingActive()) {
+  flushSectionTime();
+  // Clear enter time so no time accumulates on non-agenda pages
+  localStorage.removeItem('itt-meeting-section-enter');
 }
 
 function renderSidebar() {

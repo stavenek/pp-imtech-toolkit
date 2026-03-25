@@ -495,7 +495,7 @@ function flushSectionTime() {
   if (!isMeetingActive()) return;
   const enter = parseInt(localStorage.getItem("itt-meeting-section-enter") || "0");
   const sec = parseInt(localStorage.getItem("itt-meeting-current-section") || "0");
-  if (!enter || !sec) return;
+  if (!enter || !sec || enter < 1000000000000) return;
   const elapsed = (Date.now() - enter) / 1000;
   const times = JSON.parse(localStorage.getItem("itt-meeting-section-times") || "{}");
   times[sec] = (times[sec] || 0) + elapsed;

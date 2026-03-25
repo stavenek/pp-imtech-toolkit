@@ -433,8 +433,8 @@ function startMeeting() {
   localStorage.setItem('itt-meeting-start', String(now));
   localStorage.setItem('itt-meeting-section-times', JSON.stringify({1:0,2:0,3:0,4:0}));
   localStorage.setItem('itt-meeting-section-enter', String(now));
-  localStorage.setItem('itt-meeting-current-section', String(CURRENT_SECTION));
-  renderAll();
+  localStorage.setItem('itt-meeting-current-section', '1');
+  location.href = 'strategic.html';
 }
 
 function stopMeeting() {
@@ -450,7 +450,7 @@ function flushSectionTime() {
   if (!isMeetingActive()) return;
   const enter = parseInt(localStorage.getItem('itt-meeting-section-enter') || '0');
   const sec = parseInt(localStorage.getItem('itt-meeting-current-section') || '0');
-  if (!enter || !sec) return;
+  if (!enter || !sec || enter < 1000000000000) return;
   const elapsed = (Date.now() - enter) / 1000;
   const times = JSON.parse(localStorage.getItem('itt-meeting-section-times') || '{}');
   times[sec] = (times[sec] || 0) + elapsed;
