@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vår Dashboard v8 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f3f3ef; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #dddddd; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a; --blue: #5b7cfa;
+  --xs: 4px; --sm: 8px; --md: 12px; --lg: 18px; --xl: 24px; --2xl: 36px;
+  --sidebar-w: 240px; --progress-h: 32px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.45;
+  color: var(--text); background: var(--bg); padding-bottom: 64px;
+  display: flex; min-height: 100vh;
+}
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- SIDEBAR --- */
+.sidebar { position: fixed; top: var(--progress-h); left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--sm) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: var(--sm) var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__section-label { padding: var(--lg) var(--lg) var(--xs); color: var(--hi); font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- PAGE WRAP --- */
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; padding-top: var(--progress-h); display: flex; flex-direction: column; }
+
+/* --- PROGRESS BOXES --- */
+.progress-line { display: flex; gap: 4px; padding: 2px var(--sm); background: var(--bg-alt); border-bottom: 2px solid var(--border); position: fixed; top: 0; left: 0; right: 0; z-index: 1100; }
+.progress-stop { display: flex; align-items: center; justify-content: center; padding: 2px var(--sm); border: 2px solid var(--border-strong); background: var(--bg); cursor: pointer; text-decoration: none; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; transition: box-shadow .15s, transform .15s; }
+.progress-stop:nth-child(1) { width: 20%; }
+.progress-stop:nth-child(2) { width: 20%; }
+.progress-stop:nth-child(3) { width: 40%; }
+.progress-stop:nth-child(4) { width: 20%; }
+.progress-stop:hover { box-shadow: 4px 4px 0 var(--accent); transform: translate(-2px, -2px); }
+.progress-stop--visited { background: #22c55e; border-color: #16a34a; color: #fff; }
+.progress-stop--current { background: var(--accent); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.progress-stop--future { background: var(--bg); border-color: var(--border); color: var(--text-muted); }
+.progress-stop--fill { background: linear-gradient(to right, #22c55e var(--fill, 0%), #1a3a1a var(--fill, 0%)); border-color: #16a34a; color: #fff; }
+.progress-stop--fill-current { background: linear-gradient(to right, #22c55e var(--fill, 0%), var(--accent) var(--fill, 0%)); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.sidebar__link--meeting { background: var(--accent) !important; color: var(--accent-inv) !important; font-weight: 900; text-align: center; }
+.sidebar__link--meeting-stop { background: #c00 !important; color: #fff !important; font-weight: 900; text-align: center; }
+
+/* --- MAIN --- */
+.main { max-width: 1720px; margin: 0 auto; padding: var(--lg) var(--md) var(--2xl); width: 100%; }
+.hero { padding: var(--md) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--md); }
+.hero__welcome { display: flex; align-items: center; gap: var(--sm); font-size: 28px; font-weight: 900; text-transform: uppercase; line-height: 1.1; flex-wrap: wrap; }
+.badge { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
+.badge--super { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.badge--integ { background: #e0e0ff; color: #3030a0; border-color: #3030a0; }
+.badge--admin { background: var(--accent); color: var(--accent-inv); border-color: var(--accent); }
+.badge--leader { background: var(--hi-soft); color: var(--text); border-color: var(--hi); }
+.badge--user { background: var(--bg-alt); color: var(--text-muted); border-color: var(--border); }
+
+/* --- QUAD GRID --- */
+.quad-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: var(--md); }
+.section { border: 2px solid var(--border-strong); background: linear-gradient(180deg, #fff 0%, #fcfcf8 100%); padding: var(--md); }
+.section__header { display: flex; align-items: center; justify-content: space-between; gap: var(--md); padding-bottom: 8px; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--md); }
+.section__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.section__title a { color: var(--text); text-decoration: none; }
+.section__title a:hover { color: var(--blue); }
+.section--linked { cursor: pointer; }
+.section--linked:hover { box-shadow: 6px 6px 0 var(--hi-soft); }
+
+/* --- EDIT BUTTON --- */
+.edit-btn { background: none; border: 2px solid var(--border); padding: var(--xs) var(--sm); cursor: pointer; font-size: 14px; line-height: 1; color: var(--text-muted); }
+.edit-btn:hover { border-color: var(--border-strong); color: var(--text); background: var(--hi-soft); }
+
+/* --- TEXT FIELDS (Best Contribution box) --- */
+.bc-field { margin-bottom: var(--md); }
+.bc-field:last-child { margin-bottom: 0; }
+.bc-field__label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: var(--xs); }
+.bc-field__text { font-size: 13px; line-height: 1.6; color: var(--text); min-height: 24px; }
+.bc-field__text--empty { color: var(--text-muted); font-style: italic; }
+.bc-field textarea { width: 100%; min-height: 80px; padding: var(--sm); border: 2px solid var(--border-strong); font-family: inherit; font-size: 13px; line-height: 1.6; resize: vertical; background: var(--bg); color: var(--text); }
+.bc-field textarea:focus { outline: 2px solid var(--hi); outline-offset: 2px; }
+.bc-save-row { display: flex; justify-content: flex-end; gap: var(--sm); margin-top: var(--md); }
+.btn { display: inline-flex; align-items: center; gap: var(--sm); min-height: 36px; padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; text-decoration: none; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+
+/* --- CHART (Goals box) --- */
+.chart-legend { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-bottom: 12px; font-size: 11px; color: #666; }
+.chart-legend__item { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend__swatch { width: 18px; height: 8px; border-radius: 999px; }
+.chart-wrap { position: relative; height: 220px; border-top: 2px solid #ef9ca8; background:
+  linear-gradient(to top, transparent 0, transparent calc(100% - 1px), #ececec calc(100% - 1px)),
+  repeating-linear-gradient(to top, #f9f9f9 0, #f9f9f9 31px, #ececec 32px); padding: 12px 12px 36px 44px; }
+.chart-y-label { position: absolute; left: 8px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: left top; font-size: 11px; color: #777; }
+.bar-chart { position: absolute; inset: 12px 12px 36px 44px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; }
+.bar-group { flex: 1; min-width: 0; display: flex; align-items: flex-end; justify-content: center; gap: 8px; height: 100%; position: relative; }
+.bar { width: min(22px, 100%); border-radius: 3px 3px 0 0; min-height: 2px; }
+.bar-group__date { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #777; white-space: nowrap; }
+
+/* --- COMPLETION BAR --- */
+.completion-overall { margin-bottom: var(--lg); }
+.completion-overall__label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: var(--xs); }
+.completion-bar { height: 18px; background: var(--bg-alt); border: 1px solid var(--border); position: relative; overflow: hidden; }
+.completion-bar__fill { height: 100%; background: var(--accent); transition: width 0.3s; }
+.completion-bar__pct { position: absolute; right: var(--sm); top: 0; bottom: 0; display: flex; align-items: center; font-size: 10px; font-weight: 900; color: var(--text-muted); }
+
+/* --- SUBPROJECT LIST --- */
+.subproject { display: flex; align-items: center; gap: var(--md); padding: var(--sm) 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.subproject:last-child { border-bottom: none; }
+.subproject:hover { background: var(--hi-soft); margin: 0 calc(-1 * var(--sm)); padding-left: var(--sm); padding-right: var(--sm); }
+.subproject__title { flex: 1; font-size: 13px; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.subproject__bar { width: 120px; flex-shrink: 0; }
+.subproject__bar .completion-bar { height: 10px; }
+.subproject__pct { font-size: 12px; font-weight: 900; width: 40px; text-align: right; flex-shrink: 0; }
+
+/* --- PLACEHOLDER BOX --- */
+.placeholder-box { display: flex; align-items: center; justify-content: center; min-height: 200px; border: 2px dashed var(--border); color: var(--text-muted); font-size: 13px; text-align: center; padding: var(--xl); }
+
+/* --- EMPTY --- */
+.empty { text-align: center; color: var(--text-muted); padding: var(--xl); border: 2px dashed var(--border); background: #fff; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1100px) {
+  .quad-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .chart-wrap { height: 180px; padding-left: 30px; }
+  .bar-chart { inset: 12px 8px 36px 30px; gap: 10px; }
+  .bar { width: 16px; }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header">
+    <a href="our-dashboard.html" class="sidebar__logo" id="nav-logo">ITT</a>
+  </div>
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap">
+      <span class="sidebar__selector-label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="sidebar__selector" id="team-selector-wrap">
+      <span class="sidebar__selector-label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher" id="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== PAGE WRAP ===== -->
+<div class="page-wrap">
+
+  <!-- ===== PROGRESS BOXES ===== -->
+  <div class="progress-line" id="progress-line"></div>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main" id="main-content">
+    <div class="hero">
+      <h1 class="hero__welcome" id="hero-welcome">Vår Dashboard <span id="hero-role"></span></h1>
+    </div>
+
+    <div class="quad-grid">
+      <!-- TOP LEFT: Our Best Contribution -->
+      <section class="section" id="section-bc">
+        <div class="section__header">
+          <h2 class="section__title" id="title-bc">OUR BEST CONTRIBUTION</h2>
+          <button class="edit-btn" id="btn-edit-bc" data-min-role="team-leader" title="Redigera">&#9998;</button>
+        </div>
+        <div id="bc-content"></div>
+      </section>
+
+      <!-- TOP RIGHT: Goals & Metrics -->
+      <section class="section section--linked" data-href="goals-metrics.html" tabindex="0" role="link" aria-labelledby="title-goals">
+        <div class="section__header">
+          <h2 class="section__title"><a href="goals-metrics.html" id="title-goals">Mål &amp; Mätetal</a></h2>
+        </div>
+        <div class="chart-legend" id="metrics-chart-legend"></div>
+        <div class="chart-wrap">
+          <div class="chart-y-label" id="metrics-chart-y-label">värde</div>
+          <div class="bar-chart" id="metrics-chart-area"></div>
+        </div>
+      </section>
+
+      <!-- BOTTOM LEFT: Completion + Subprojects -->
+      <section class="section">
+        <div class="section__header">
+          <h2 class="section__title" id="title-completion">Genomförande & Delprojekt</h2>
+        </div>
+        <div id="completion-content"></div>
+      </section>
+
+      <!-- BOTTOM RIGHT: Team Info -->
+      <section class="section">
+        <div class="section__header">
+          <h2 class="section__title" id="title-team-info">Teaminfo</h2>
+        </div>
+        <div id="team-info-content"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script src="mock-data.js"></script>
+<script src="mock-data-workspace.js"></script>
+<script>
+// ============================================================
+// 0. CONSTANTS & TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+const ACTIVE_MODULE = 'bestContribution';
+const CURRENT_SECTION = 2;
+const PROGRESS_STOPS = [
+  { section: 1, label: { sv: 'Strategiskt Fokus', en: 'Strategic Focus' }, file: 'strategic.html' },
+  { section: 2, label: { sv: 'Vår Dashboard', en: 'Our Dashboard' }, file: 'our-dashboard.html' },
+  { section: 3, label: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, file: 'action-plan.html' },
+  { section: 4, label: { sv: 'Reflektioner & Lärande', en: 'Reflections & Learning' }, file: 'reflections.html' },
+];
+const CHART_COLORS = ['#57b7b7', '#ed9b32', '#d94fe8', '#d94b7f', '#7a8df5'];
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS.sv[key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+const $ = id => document.getElementById(id);
+const esc = str => String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const userById = id => DB.users.find(u => u.id === id);
+const actor = () => ACTORS[S.role];
+const actorUser = () => userById(actor().userId);
+const canEdit = () => S.role !== 'user';
+
+// ============================================================
+// 1. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  teamId: localStorage.getItem('itt-team') || 'alpha',
+  editingBc: false,
+};
+
+const ROLE_NAMES = {
+  'super-admin': 'role.superAdmin',
+  'integ-admin': 'role.integAdmin',
+  'org-admin': 'role.orgAdmin',
+  'team-leader': 'role.teamLeader',
+  'user': 'role.user',
+};
+
+// ============================================================
+// 2. V8 MODULES & SECTIONS
+// ============================================================
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, fullKey: 'mod.strategic' },
+  { key: 'locomotiveGoals', file: 'locomotive-goals.html', section: 1, fullKey: 'mod.locomotiveGoals' },
+  { key: 'newsflash', file: 'newsflash.html', section: 1, fullKey: 'mod.newsflash' },
+  { key: 'bestContribution', file: 'our-dashboard.html', section: 2, fullKey: 'mod.bestContribution' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, fullKey: 'mod.ideas' },
+  { key: 'reflections', file: 'reflections.html', section: 4, fullKey: 'mod.reflections' },
+  { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
+  { key: 'archive', file: 'archive.html', section: 4, fullKey: 'mod.archive' },
+];
+
+const SECTION_LABELS = {
+  1: { sv: 'Vart är vi på väg och varför?', en: 'Where are we headed and why?' },
+  2: { sv: 'Vår Dashboard', en: 'Our Dashboard' },
+  3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' },
+  4: { sv: 'Reflektioner & Lärande', en: 'Reflections & Learning' },
+};
+
+// ============================================================
+// 3. TOAST
+// ============================================================
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 4. HELPERS
+// ============================================================
+function roleBadgeClass(role) {
+  if (role === 'super-admin') return 'badge--super';
+  if (role === 'integ-admin') return 'badge--integ';
+  if (role === 'org-admin') return 'badge--admin';
+  if (role === 'team-leader') return 'badge--leader';
+  return 'badge--user';
+}
+
+function orgsForActor() {
+  const a = actor();
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function teamsForActor() {
+  const a = actor();
+  const u = actorUser();
+  if (['super-admin', 'integ-admin', 'org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(team => a.orgs.includes(team.orgId));
+    if (S.orgId) teams = teams.filter(team => team.orgId === S.orgId);
+    return teams;
+  }
+  if (S.role === 'team-leader' && a.teams) return DB.teams.filter(team => a.teams.includes(team.id));
+  return DB.teams.filter(team => u.memberships.some(m => m.teamId === team.id));
+}
+
+function bcCompletion(bcId) {
+  const items = WS.actions.filter(a => a.teamId === S.teamId && a.bcId === bcId);
+  if (!items.length) return 0;
+  return Math.round((items.filter(a => a.status === 'done').length / items.length) * 100);
+}
+
+function getVisibleModules() {
+  const stored = localStorage.getItem('itt-agenda-visibility-' + S.teamId);
+  if (stored) {
+    try {
+      const vis = JSON.parse(stored);
+      return MODULES.filter(m => vis[m.key] !== false);
+    } catch (e) {}
+  }
+  return MODULES;
+}
+
+// ============================================================
+// 5. ORG + TEAM SELECTORS
+// ============================================================
+function renderOrgSelector() {
+  const orgs = orgsForActor();
+  const sel = $('org-select');
+  const wrap = $('org-selector-wrap');
+  const isHighRole = ['super-admin', 'integ-admin', 'org-admin'].includes(S.role);
+  if (!isHighRole || orgs.length <= 1) {
+    wrap.style.display = 'none';
+    if (orgs.length === 1) S.orgId = orgs[0].id;
+    return;
+  }
+  wrap.style.display = '';
+  if (!S.orgId || !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  sel.innerHTML = orgs.map(o => `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`).join('');
+}
+
+function renderTeamSelector() {
+  const teams = teamsForActor();
+  const sel = $('team-select');
+  const wrap = $('team-selector-wrap');
+  if (teams.length <= 1) {
+    wrap.style.display = 'none';
+    if (teams.length === 1) S.teamId = teams[0].id;
+  } else {
+    wrap.style.display = '';
+    if (!teams.find(t => t.id === S.teamId)) S.teamId = teams[0].id;
+    sel.innerHTML = teams.map(team => `<option value="${team.id}" ${team.id === S.teamId ? 'selected' : ''}>${team.title}</option>`).join('');
+  }
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = teamsForActor();
+  if (teams.length) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+  S.editingBc = false;
+  renderAll();
+});
+
+$('team-select').addEventListener('change', e => {
+  S.teamId = e.target.value;
+  localStorage.setItem('itt-team', S.teamId);
+  S.editingBc = false;
+  renderAll();
+});
+
+// ============================================================
+// 6. SIDEBAR
+// ============================================================
+
+// ============================================================
+// MEETING TIMER
+// ============================================================
+const SECTION_ALLOC = { 1: 720, 2: 720, 3: 1440, 4: 720 };
+
+function isMeetingActive() { return localStorage.getItem("itt-meeting-active") === "true"; }
+
+function startMeeting() {
+  const now = Date.now();
+  localStorage.setItem("itt-meeting-active", "true");
+  localStorage.setItem("itt-meeting-start", String(now));
+  localStorage.setItem("itt-meeting-section-times", JSON.stringify({1:0,2:0,3:0,4:0}));
+  localStorage.setItem("itt-meeting-section-enter", String(now));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+  renderAll();
+}
+
+function stopMeeting() {
+  flushSectionTime();
+  localStorage.removeItem("itt-meeting-active");
+  localStorage.removeItem("itt-meeting-start");
+  localStorage.removeItem("itt-meeting-section-enter");
+  localStorage.removeItem("itt-meeting-current-section");
+  renderAll();
+}
+
+function flushSectionTime() {
+  if (!isMeetingActive()) return;
+  const enter = parseInt(localStorage.getItem("itt-meeting-section-enter") || "0");
+  const sec = parseInt(localStorage.getItem("itt-meeting-current-section") || "0");
+  if (!enter || !sec) return;
+  const elapsed = (Date.now() - enter) / 1000;
+  const times = JSON.parse(localStorage.getItem("itt-meeting-section-times") || "{}");
+  times[sec] = (times[sec] || 0) + elapsed;
+  localStorage.setItem("itt-meeting-section-times", JSON.stringify(times));
+  localStorage.setItem("itt-meeting-section-enter", String(Date.now()));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+}
+
+function getSectionFill(section) {
+  const times = JSON.parse(localStorage.getItem("itt-meeting-section-times") || "{}");
+  if (!Object.keys(times).length) return 0;
+  let spent = times[section] || 0;
+  if (isMeetingActive() && section === CURRENT_SECTION) {
+    const enter = parseInt(localStorage.getItem("itt-meeting-section-enter") || "0");
+    if (enter) spent += (Date.now() - enter) / 1000;
+  }
+  const alloc = SECTION_ALLOC[section] || 720;
+  return Math.min(100, (spent / alloc) * 100);
+}
+
+if (isMeetingActive()) {
+  const prevSec = parseInt(localStorage.getItem("itt-meeting-current-section") || "0");
+  if (prevSec && prevSec !== CURRENT_SECTION) { flushSectionTime(); }
+  localStorage.setItem("itt-meeting-section-enter", String(Date.now()));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+}
+
+setInterval(() => { if (isMeetingActive()) renderProgressLine(); }, 5000);
+
+function renderSidebar() {
+  const mods = getVisibleModules();
+  let html = '';
+
+  // Min Dashboard link
+  html += `<a href="my-dashboard.html" class="sidebar__link" id="nav-my-dashboard">${t('nav.myDashboard')}</a>`;
+
+  if (isMeetingActive()) {
+    html += `<a href="#" class="sidebar__link sidebar__link--meeting-stop" onclick="event.preventDefault();stopMeeting();">&#9632; Avsluta möte</a>`;
+  } else {
+    html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`;
+  }
+
+  // Admin link (visible TL+)
+  // (admin link is in the footer, but we add a divider after dashboard links)
+  html += '<div class="sidebar__divider"></div>';
+
+  // 4 sections with non-clickable uppercase headers
+  let lastSection = 0;
+  mods.forEach(m => {
+    if (m.section !== lastSection) {
+      const label = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
+      html += `<div class="sidebar__section-label">${label}</div>`;
+      lastSection = m.section;
+    }
+    const isActive = m.key === ACTIVE_MODULE;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}</a>`;
+  });
+
+  $('sidebar-nav').innerHTML = html;
+}
+
+// ============================================================
+// 7. HERO
+// ============================================================
+function renderHero() {
+  const team = DB.teams.find(t => t.id === S.teamId);
+  const teamName = team ? team.title : S.teamId;
+  const sectionLabel = currentLang === 'en' ? SECTION_LABELS[CURRENT_SECTION].en : SECTION_LABELS[CURRENT_SECTION].sv;
+  $('hero-welcome').childNodes[0].textContent = sectionLabel + ' ';
+  $('hero-role').innerHTML = `<span class="badge ${roleBadgeClass(S.role)}">${t(ROLE_NAMES[S.role])}</span>`;
+}
+
+// ============================================================
+// 8. BEST CONTRIBUTION BOX (top-left)
+// ============================================================
+function getActiveBc() {
+  return WS.bestContributions.find(bc => bc.teamId === S.teamId && !bc.archived);
+}
+
+function renderBcBox() {
+  const bc = getActiveBc();
+  const container = $('bc-content');
+
+  if (!bc) {
+    container.innerHTML = `<div class="empty">${currentLang === 'en' ? 'No active best contribution for this team.' : 'Inget aktivt bästa bidrag för detta team.'}</div>`;
+    return;
+  }
+
+  // Ensure fields exist
+  if (bc.startingPointText === undefined) bc.startingPointText = '';
+  if (bc.desiredStateText === undefined) bc.desiredStateText = '';
+  if (bc.whyText === undefined) bc.whyText = '';
+
+  if (S.editingBc && canEdit()) {
+    container.innerHTML = `
+      <div class="bc-field">
+        <div class="bc-field__label">${currentLang === 'en' ? 'Current state' : 'Nuvarande läge'}</div>
+        <textarea id="ta-starting">${esc(bc.startingPointText)}</textarea>
+      </div>
+      <div class="bc-field">
+        <div class="bc-field__label">${currentLang === 'en' ? 'Desired state' : 'Önskat läge'}</div>
+        <textarea id="ta-desired">${esc(bc.desiredStateText)}</textarea>
+      </div>
+      <div class="bc-field">
+        <div class="bc-field__label">${t('bc.whyBest')}</div>
+        <textarea id="ta-why">${esc(bc.whyText)}</textarea>
+      </div>
+      <div class="bc-save-row">
+        <button class="btn btn--outline" id="btn-cancel-bc">${t('btn.cancel')}</button>
+        <button class="btn btn--hi" id="btn-save-bc">${t('btn.save')}</button>
+      </div>
+    `;
+
+    $('btn-cancel-bc').addEventListener('click', () => {
+      S.editingBc = false;
+      renderBcBox();
+    });
+
+    $('btn-save-bc').addEventListener('click', () => {
+      bc.startingPointText = $('ta-starting').value;
+      bc.desiredStateText = $('ta-desired').value;
+      bc.whyText = $('ta-why').value;
+      S.editingBc = false;
+      showToast(t('bc.saved'));
+      renderBcBox();
+    });
+  } else {
+    const startText = bc.startingPointText || (currentLang === 'en' ? 'No description yet.' : 'Ingen beskrivning ännu.');
+    const desiredText = bc.desiredStateText || (currentLang === 'en' ? 'No description yet.' : 'Ingen beskrivning ännu.');
+    const whyText = bc.whyText || (currentLang === 'en' ? 'No description yet.' : 'Ingen beskrivning ännu.');
+    const emptyClass = (val) => val ? '' : ' bc-field__text--empty';
+
+    container.innerHTML = `
+      <div class="bc-field">
+        <div class="bc-field__label">${currentLang === 'en' ? 'Current state' : 'Nuvarande läge'}</div>
+        <div class="bc-field__text${emptyClass(bc.startingPointText)}">${esc(startText).replace(/\n/g, '<br>')}</div>
+      </div>
+      <div class="bc-field">
+        <div class="bc-field__label">${currentLang === 'en' ? 'Desired state' : 'Önskat läge'}</div>
+        <div class="bc-field__text${emptyClass(bc.desiredStateText)}">${esc(desiredText).replace(/\n/g, '<br>')}</div>
+      </div>
+      <div class="bc-field">
+        <div class="bc-field__label">${t('bc.whyBest')}</div>
+        <div class="bc-field__text${emptyClass(bc.whyText)}">${esc(whyText).replace(/\n/g, '<br>')}</div>
+      </div>
+    `;
+  }
+}
+
+// ============================================================
+// 9. GOALS & METRICS CHART (top-right)
+// ============================================================
+function renderMetricsChart() {
+  const tracked = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  const visibleTracked = tracked.slice(0, 2);
+  const legend = $('metrics-chart-legend');
+  const area = $('metrics-chart-area');
+
+  if (!visibleTracked.length) {
+    legend.innerHTML = '';
+    area.innerHTML = `<div class="empty">${currentLang === 'en' ? 'No tracked metrics for this team.' : 'Inga mätetal finns för teamet.'}</div>`;
+    return;
+  }
+
+  const allDates = [...new Set(tracked.flatMap(tc => (tc.measurements || []).map(m => m.date)))].sort();
+  const chartDates = allDates.slice(-5);
+  let maxVal = 0;
+  visibleTracked.forEach(tc => {
+    (tc.measurements || []).forEach(m => {
+      if (chartDates.includes(m.date) && m.value > maxVal) maxVal = m.value;
+    });
+  });
+  if (maxVal === 0) maxVal = 1;
+
+  legend.innerHTML = visibleTracked.map(tc => {
+    const color = CHART_COLORS[tracked.indexOf(tc) % CHART_COLORS.length];
+    return `<span class="chart-legend__item"><span class="chart-legend__swatch" style="background:${color}"></span><span>${tc.title}</span></span>`;
+  }).join('');
+
+  area.innerHTML = chartDates.map(date => {
+    const bars = visibleTracked.map(tc => {
+      const value = ((tc.measurements || []).find(m => m.date === date) || {}).value || 0;
+      const height = Math.max(2, (value / maxVal) * 100);
+      const color = CHART_COLORS[tracked.indexOf(tc) % CHART_COLORS.length];
+      return `<div class="bar" style="height:${height}%; background:${color}" title="${tc.title}: ${value} ${tc.unit}"></div>`;
+    }).join('');
+    return `<div class="bar-group">${bars}<div class="bar-group__date">${date}</div></div>`;
+  }).join('');
+}
+
+// ============================================================
+// 10. COMPLETION + SUBPROJECTS (bottom-left)
+// ============================================================
+function renderCompletion() {
+  const container = $('completion-content');
+  const teamBcs = WS.bestContributions.filter(bc => bc.teamId === S.teamId && !bc.archived);
+
+  if (!teamBcs.length) {
+    container.innerHTML = `<div class="empty">${currentLang === 'en' ? 'No best contributions for this team.' : 'Inga bästa bidrag för detta team.'}</div>`;
+    return;
+  }
+
+  // Calculate overall completion as average of BC completion percentages
+  const completions = teamBcs.map(bc => bcCompletion(bc.id));
+  const overall = completions.length ? Math.round(completions.reduce((a, b) => a + b, 0) / completions.length) : 0;
+
+  let html = `
+    <div class="completion-overall">
+      <div class="completion-overall__label">${t('bc.completion')}</div>
+      <div class="completion-bar">
+        <div class="completion-bar__fill" style="width:${overall}%"></div>
+        <div class="completion-bar__pct">${overall}%</div>
+      </div>
+    </div>
+    <h3 style="font-size:13px; font-weight:900; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:var(--sm); color:var(--text-muted);">${t('bc.subprojects')}</h3>
+  `;
+
+  teamBcs.forEach(bc => {
+    const pct = bcCompletion(bc.id);
+    html += `
+      <div class="subproject" onclick="location.href='action-plan.html'">
+        <div class="subproject__title">${esc(bc.title)}</div>
+        <div class="subproject__bar">
+          <div class="completion-bar">
+            <div class="completion-bar__fill" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <div class="subproject__pct">${pct}%</div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+// ============================================================
+// 11. TEAM INFO (bottom-right)
+// ============================================================
+function renderTeamInfo() {
+  const container = $('team-info-content');
+  const team = DB.teams.find(t => t.id === S.teamId);
+  const org = team ? DB.organizations.find(o => o.id === team.orgId) : null;
+  const members = DB.users.filter(u => u.memberships.some(m => m.teamId === S.teamId) && u.registerStatus !== 'soft_deleted');
+  const leaders = members.filter(u => u.memberships.find(m => m.teamId === S.teamId)?.teamRole === 'team_leader');
+
+  // Recent meeting
+  const meetings = WS.meetings.filter(m => m.teamId === S.teamId).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const lastMeeting = meetings[0];
+
+  // Recent newsflash
+  const news = WS.newsflashes.filter(n => n.teamId === S.teamId).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const latestNews = news[0];
+
+  let html = `
+    <div style="font-size:13px; line-height:1.8;">
+      <div><strong>${currentLang === 'en' ? 'Team:' : 'Team:'}</strong> ${esc(team ? team.title : S.teamId)}</div>
+      <div><strong>${currentLang === 'en' ? 'Organization:' : 'Organisation:'}</strong> ${esc(org ? org.title : '')}</div>
+      <div><strong>${currentLang === 'en' ? 'Members:' : 'Medlemmar:'}</strong> ${members.length}</div>
+      <div><strong>${currentLang === 'en' ? 'Team Leader:' : 'Teamledare:'}</strong> ${leaders.map(u => esc(u.firstName + ' ' + u.lastName)).join(', ') || '—'}</div>
+    </div>
+  `;
+
+  if (lastMeeting) {
+    html += `
+      <div style="margin-top:var(--md); padding-top:var(--md); border-top:1px solid var(--border);">
+        <div style="font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:var(--xs);">${currentLang === 'en' ? 'Last Meeting' : 'Senaste möte'}</div>
+        <div style="font-size:13px;"><strong>${lastMeeting.date}</strong> — ${esc(lastMeeting.note)}</div>
+        <div style="font-size:11px; color:var(--text-muted);">${lastMeeting.attendees.length} ${currentLang === 'en' ? 'attendees' : 'närvarande'}</div>
+      </div>
+    `;
+  }
+
+  if (latestNews) {
+    html += `
+      <div style="margin-top:var(--md); padding-top:var(--md); border-top:1px solid var(--border);">
+        <div style="font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:var(--xs);">${currentLang === 'en' ? 'Latest Newsflash' : 'Senaste nyhetsflash'}</div>
+        <div style="font-size:13px;"><strong>${latestNews.date}</strong> — ${esc(latestNews.title)}</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${esc(latestNews.content).substring(0, 120)}${latestNews.content.length > 120 ? '...' : ''}</div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+// ============================================================
+// 12. LINKED SECTIONS
+// ============================================================
+function bindLinkedSections() {
+  document.querySelectorAll('.section--linked[data-href]').forEach(section => {
+    const target = section.dataset.href;
+    const go = () => { window.location.href = target; };
+    section.onclick = e => {
+      if (e.target.closest('a, button, select, input, textarea, label')) return;
+      go();
+    };
+    section.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        go();
+      }
+    };
+  });
+}
+
+// ============================================================
+// 13. STATIC TEXT UPDATE
+// ============================================================
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('nav-admin').innerHTML = '&#9881; ' + t('nav.admin');
+  $('title-bc').textContent = t('mod.bestContribution').toUpperCase();
+  $('title-goals').textContent = t('dash.goalsPreview');
+  $('title-completion').textContent = t('bc.completion') + ' & ' + t('bc.subprojects');
+  $('title-team-info').textContent = currentLang === 'en' ? 'Team Info' : 'Teaminfo';
+  $('metrics-chart-y-label').textContent = currentLang === 'en' ? 'value' : 'värde';
+
+  // Progress line labels
+  $('prog-label-1').textContent = t('progress.section1');
+  $('prog-label-2').textContent = t('progress.section2');
+  $('prog-label-3').textContent = t('progress.section3');
+  $('prog-label-4').textContent = t('progress.section4');
+}
+
+// ============================================================
+// 14. RENDER ALL
+// ============================================================
+function renderProgressLine() {
+  let html = '';
+  const meetingActive = isMeetingActive();
+  const hasMeetingData = !!localStorage.getItem('itt-meeting-section-times');
+  const meeting = meetingActive || hasMeetingData;
+  PROGRESS_STOPS.forEach((stop, i) => {
+    let cls = 'progress-stop';
+    const fill = meeting ? getSectionFill(stop.section) : 0;
+    if (meeting && fill > 0 && stop.section !== CURRENT_SECTION) {
+      cls += ' progress-stop--fill';
+    } else if (meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--fill-current';
+    } else if (hasMeetingData && !meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else if (stop.section < CURRENT_SECTION) {
+      cls += ' progress-stop--visited';
+    } else if (stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else {
+      cls += ' progress-stop--future';
+    }
+    const label = currentLang === 'en' ? stop.label.en : stop.label.sv;
+    const style = meeting ? ` style="--fill:${fill.toFixed(1)}%"` : '';
+    html += `<a href="${stop.file}" class="${cls}"${style}>${label}</a>`;
+  });
+  $('progress-line').innerHTML = html;
+}
+
+function renderAll() {
+  renderOrgSelector();
+  renderTeamSelector();
+  renderSidebar();
+  renderProgressLine();
+  renderHero();
+  renderBcBox();
+  renderMetricsChart();
+  renderCompletion();
+  renderTeamInfo();
+  updateStaticText();
+  bindLinkedSections();
+}
+
+// ============================================================
+// 15. LANG SWITCHER
+// ============================================================
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  renderAll();
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 16. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(btn => btn.classList.toggle('role-btn--active', btn.dataset.role === role));
+  const orgs = orgsForActor();
+  if (orgs.length && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+  S.editingBc = false;
+  renderAll();
+}
+
+document.querySelectorAll('.role-btn').forEach(btn => btn.addEventListener('click', () => setRole(btn.dataset.role)));
+
+// ============================================================
+// 17. EDIT BC BUTTON
+// ============================================================
+$('btn-edit-bc').addEventListener('click', () => {
+  S.editingBc = !S.editingBc;
+  renderBcBox();
+});
+
+// ============================================================
+// 18. INIT
+// ============================================================
+document.body.className = 'role-' + S.role;
+document.querySelectorAll('.role-btn').forEach(btn => btn.classList.toggle('role-btn--active', btn.dataset.role === S.role));
+document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('lang-btn--active', btn.dataset.lang === currentLang));
+document.documentElement.lang = currentLang;
+renderAll();
+</script>
+</body>
+</html>

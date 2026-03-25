@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handlingsplan v8 — Integral Teamwork Toolkit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#ffffff; --bg-alt:#f0f0f0; --bg-dark:#0a0a0a;
+  --text:#0a0a0a; --text-muted:#666666;
+  --border:#e0e0e0; --border-strong:#0a0a0a;
+  --accent:#0a0a0a; --accent-inv:#ffffff;
+  --hi:#ffcc00; --hi-soft:rgba(255,204,0,0.18);
+  --ok:#00a854; --warn:#fa8c16; --err:#e6001a; --idle:#999999;
+  --plan-status-col:38px; --plan-person-col:140px; --plan-date-col:130px;
+  --plan-comment-col:160px; --plan-icon-col:44px;
+  --xs:4px; --sm:8px; --md:16px; --lg:24px; --xl:32px; --2xl:48px;
+  --sidebar-w:240px;
+}
+body { font-family:'Inter',system-ui,sans-serif; font-size:14px; line-height:1.6; color:var(--text); background:var(--bg); display:flex; min-height:100vh; padding-bottom:64px; }
+[hidden] { display:none !important; }
+.skip-link { position:absolute; top:-100%; left:var(--md); background:var(--hi); color:#000; padding:var(--sm) var(--md); font-weight:700; z-index:9999; border:2px solid var(--border-strong); text-decoration:none; }
+.skip-link:focus { top:var(--md); }
+
+/* ── Sidebar ── */
+.sidebar { position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); background:var(--bg-dark); border-right:3px solid var(--hi); display:flex; flex-direction:column; overflow-y:auto; padding-bottom:64px; z-index:100; }
+.sidebar__header { padding:var(--md) var(--lg); border-bottom:1px solid #333; }
+.sidebar__logo { color:var(--hi); text-decoration:none; font-size:15px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+.sidebar__selectors { padding:var(--sm) var(--lg); border-bottom:1px solid #333; }
+.sidebar__selector { margin-bottom:var(--sm); }
+.sidebar__selector:last-child { margin-bottom:0; }
+.sidebar__selector-label { color:#888; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:2px; }
+.sidebar__selector select { width:100%; background:#1a1a1a; color:#ccc; border:1px solid #555; padding:var(--xs) 24px var(--xs) var(--sm); font:700 11px inherit; text-transform:uppercase; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; min-height:32px; }
+.sidebar__nav { flex:1; padding:var(--sm) 0; }
+.sidebar__link { display:block; padding:var(--sm) var(--lg); color:#ccc; text-decoration:none; font-size:12px; font-weight:600; border-left:3px solid transparent; letter-spacing:0.02em; transition:color .15s, background .15s; }
+.sidebar__link:hover { color:#fff; background:rgba(255,255,255,.05); }
+.sidebar__link--active { color:var(--hi); background:var(--hi-soft); border-left-color:var(--hi); }
+.sidebar__section-label { padding:var(--lg) var(--lg) var(--xs); color:var(--hi); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; cursor:default; }
+.sidebar__divider { height:1px; background:#333; margin:var(--sm) var(--lg); }
+.sidebar__footer { padding:var(--sm) 0; border-top:1px solid #333; }
+.lang-switcher { display:flex; gap:2px; padding:var(--sm) var(--lg); }
+.lang-btn { padding:var(--xs) var(--sm); border:1px solid #555; background:transparent; color:#888; font:900 10px inherit; letter-spacing:.06em; cursor:pointer; transition:all .15s; }
+.lang-btn:hover:not(.lang-btn--active) { color:#fff; border-color:#888; }
+.lang-btn--active { background:var(--hi); color:#000; border-color:var(--hi); }
+
+/* ── Progress Line ── */
+/* --- PROGRESS BOXES --- */
+.progress-line { display: flex; gap: 4px; padding: 2px var(--sm); background: var(--bg-alt); border-bottom: 2px solid var(--border); position: fixed; top: 0; left: 0; right: 0; z-index: 1100; }
+.progress-stop { display: flex; align-items: center; justify-content: center; padding: 2px var(--sm); border: 2px solid var(--border-strong); background: var(--bg); cursor: pointer; text-decoration: none; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; transition: box-shadow .15s, transform .15s; }
+.progress-stop:nth-child(1) { width: 20%; }
+.progress-stop:nth-child(2) { width: 20%; }
+.progress-stop:nth-child(3) { width: 40%; }
+.progress-stop:nth-child(4) { width: 20%; }
+.progress-stop:hover { box-shadow: 4px 4px 0 var(--accent); transform: translate(-2px, -2px); }
+.progress-stop--visited { background: #22c55e; border-color: #16a34a; color: #fff; }
+.progress-stop--current { background: var(--accent); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.progress-stop--future { background: var(--bg); border-color: var(--border); color: var(--text-muted); }
+.progress-stop--fill { background: linear-gradient(to right, #22c55e var(--fill, 0%), #1a3a1a var(--fill, 0%)); border-color: #16a34a; color: #fff; }
+.progress-stop--fill-current { background: linear-gradient(to right, #22c55e var(--fill, 0%), var(--accent) var(--fill, 0%)); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.sidebar__link--meeting { background: var(--accent) !important; color: var(--accent-inv) !important; font-weight: 900; text-align: center; }
+.sidebar__link--meeting-stop { background: #c00 !important; color: #fff !important; font-weight: 900; text-align: center; }
+
+/* ── Page Layout ── */
+.page-wrap { flex:1; margin-left:var(--sidebar-w); min-width:0; }
+.main { max-width:1400px; margin:0 auto; padding:0 var(--lg) var(--2xl); padding-bottom:80px; }
+.page-title { font-size:32px; font-weight:900; text-transform:uppercase; letter-spacing:-.02em; line-height:1.1; padding:var(--xl) 0; border-bottom:3px solid var(--border-strong); margin-bottom:var(--lg); }
+
+/* ── Toolbar ── */
+.toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:var(--md); margin-bottom:var(--lg); }
+.toolbar__left, .toolbar__right { display:flex; flex-wrap:wrap; align-items:center; gap:var(--md); }
+.toolbar__left { flex:1; }
+.btn { display:inline-flex; align-items:center; gap:var(--sm); padding:var(--sm) var(--lg); border:2px solid var(--border-strong); background:var(--accent); color:var(--accent-inv); font:700 12px inherit; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; min-height:44px; text-decoration:none; transition:box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow:4px 4px 0 var(--hi); }
+.btn--hi { background:var(--hi); color:var(--bg-dark); border-color:var(--bg-dark); }
+.btn--outline { background:var(--bg); color:var(--text); }
+.btn--sm { min-height:36px; padding:var(--xs) var(--md); font-size:11px; }
+.btn--danger { background:var(--err); color:#fff; border-color:var(--err); }
+.field, .search { min-height:44px; border:2px solid var(--border-strong); background:var(--bg); padding:0 10px; font:700 12px inherit; }
+.search { min-width:220px; }
+
+/* ── Icon Button System ── */
+.icon-btn {
+  background: none; border: none; cursor: pointer; padding: 4px 6px;
+  font-size: 14px; color: var(--text-muted); border-radius: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 28px; min-height: 28px;
+}
+.icon-btn:hover { color: var(--text); background: var(--hi-soft); }
+.icon-btn--danger:hover { color: var(--err); background: #fff1f0; }
+.icon-btn--add { color: var(--ok); }
+.icon-btn--add:hover { background: #e6f7ee; }
+.icon-btn-group { display: inline-flex; gap: 4px; align-items: center; }
+
+/* ── State Editor (top compact area) ── */
+.state-compact { display:grid; grid-template-columns:1fr 1fr; gap:var(--md); margin-bottom:var(--lg); }
+.state-compact__box { border:2px solid var(--border); background:#fafaf8; padding:var(--md); }
+.state-compact__title { font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); margin-bottom:var(--xs); }
+.state-compact__text { font-size:13px; line-height:1.5; color:var(--text); max-height:80px; overflow:hidden; position:relative; }
+.state-compact__text--expand { max-height:none; }
+.state-compact textarea { width:100%; min-height:80px; border:1px solid var(--border); padding:var(--sm); font:500 13px/1.5 inherit; resize:vertical; }
+
+/* ── Team Focus ── */
+.team-focus { display:grid; grid-template-columns:200px 1fr; border:2px solid var(--border-strong); background:#faf8f3; margin-bottom:var(--lg); }
+.team-focus__label { color:#fff; background:#0a0a0a; padding:var(--md); font:900 12px inherit; text-transform:uppercase; letter-spacing:.08em; display:flex; align-items:center; }
+.team-focus__value { padding:var(--md); font-size:16px; font-weight:700; color:var(--text); }
+.team-focus textarea { width:100%; min-height:44px; border:1px solid var(--border); background:#fff; font:500 14px/1.5 inherit; padding:var(--sm); resize:vertical; }
+
+/* ── BC Cards ── */
+.bc-card { border:2px solid var(--border-strong); margin-bottom:var(--md); background:#fff; }
+.bc-card:not(.bc-card--open) .bc-body,
+.bc-card:not(.bc-card--open) .progress-band,
+.bc-card:not(.bc-card--open) .state-lines { display:none; }
+.bc-card--focused { }
+.bc-card--collapsed-by-focus { display:none; }
+.bc-header { display:flex; align-items:center; gap:var(--sm); padding:var(--sm) var(--md); background:var(--bg-alt); border-bottom:1px solid var(--border); }
+.bc-header .drag-handle { cursor:grab; color:var(--text-muted); font-size:14px; user-select:none; padding:0 4px; }
+.bc-header .drag-handle:active { cursor:grabbing; }
+.bc-toggle { width:28px; height:28px; border:2px solid var(--border); background:var(--bg); font-size:14px; font-weight:900; color:var(--text); cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+.bc-toggle:hover { background:var(--hi-soft); border-color:var(--text); }
+.bc-title-input { width:100%; border:none; background:transparent; font:900 13px/1.1 'Inter',system-ui,sans-serif; text-transform:uppercase; letter-spacing:.04em; color:var(--text); flex:1; }
+.bc-title-input:focus { outline:none; }
+.bc-title-text { flex:1; font:900 13px/1.1 'Inter',system-ui,sans-serif; text-transform:uppercase; letter-spacing:.04em; color:var(--text); }
+.bc-actions { display:flex; gap:16px; align-items:center; margin-left:auto; flex-shrink:0; }
+.bc-actions .btn--sm { white-space:nowrap; }
+
+/* ── Progress Band ── */
+.progress-band { max-width:560px; padding:var(--sm) var(--md) 0; margin:0 0 var(--sm); }
+.progress-band__label { font-size:11px; font-weight:700; margin-bottom:3px; }
+.progress-band__track { height:8px; border:1px solid var(--border); background:var(--bg-alt); }
+.progress-band__fill { height:100%; background:var(--hi); }
+.progress-band__pct { font-size:11px; font-weight:800; color:var(--text-muted); margin-top:3px; }
+
+/* ── State Lines (per BC) ── */
+.state-lines { padding:0 var(--md) var(--md); font-size:12px; line-height:1.5; color:#444; }
+.state-lines strong { font-weight:800; }
+.state-lines--editable { display:grid; grid-template-columns:1fr 1fr; gap:var(--md); }
+.state-line-editor { display:flex; flex-direction:column; gap:6px; }
+.state-line-editor__label { font-size:12px; font-weight:800; }
+.state-line-editor__field { width:100%; min-height:80px; border:1px solid var(--border); background:#fff; font:500 13px/1.5 inherit; padding:8px 10px; resize:vertical; }
+.state-line-editor__text { min-height:60px; border:1px solid var(--border); background:#fafafa; font-size:13px; padding:8px 10px; white-space:pre-wrap; }
+
+/* ── AoI Blocks ── */
+.aoi-block { border-top:1px solid var(--border); }
+.aoi-head { display:grid; grid-template-columns:var(--plan-status-col) minmax(220px,1fr) var(--plan-person-col) var(--plan-person-col) var(--plan-date-col) var(--plan-comment-col) var(--plan-icon-col) var(--plan-icon-col); gap:0; align-items:center; border-bottom:1px solid var(--border); }
+.aoi-head__col { padding:6px 8px; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); }
+.aoi-head__col--spacer { padding:0; }
+.aoi-title-wrap { display:flex; align-items:center; gap:var(--xs); background:#f0f0f0; }
+.aoi-title-wrap .drag-handle { cursor:grab; color:var(--text-muted); font-size:12px; padding:0 4px; user-select:none; }
+.aoi-title-wrap .drag-handle:active { cursor:grabbing; }
+.aoi-title-input { flex:1; width:100%; border:none; background:transparent; color:var(--text-muted); font-style:italic; font-size:12px; font-weight:600; padding:7px 6px; }
+.aoi-title-text { flex:1; min-height:37px; display:flex; align-items:center; padding:7px 6px; color:var(--text-muted); font-size:12px; font-style:italic; font-weight:600; }
+.aoi-actions { display:flex; gap:4px; align-items:center; padding-right:var(--sm); flex-shrink:0; }
+.aoi-actions .btn--sm { font-size:10px; min-height:28px; padding:2px 8px; }
+
+/* ── Plan Table ── */
+.plan-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+.plan-col-status { width:var(--plan-status-col); }
+.plan-col-action { width:auto; }
+.plan-col-person { width:var(--plan-person-col); }
+.plan-col-date { width:var(--plan-date-col); }
+.plan-col-comment { width:var(--plan-comment-col); }
+.plan-col-icon { width:var(--plan-icon-col); }
+.plan-table th, .plan-table td { border-top:1px solid var(--border); padding:0; vertical-align:top; background:#fff; }
+.plan-table th { padding:6px 8px; background:transparent; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); text-align:left; }
+.plan-table th.status-col, .plan-table td.status-col { width:var(--plan-status-col); text-align:center; padding:0; }
+.cell-input, .cell-select, .cell-date { width:100%; min-height:36px; border:none; background:transparent; padding:4px 8px; font:500 13px inherit; color:var(--text); }
+.cell-display { min-height:36px; padding:8px; font-size:13px; color:var(--text); display:flex; align-items:center; }
+.cell-display--muted { color:var(--text-muted); }
+.cell-action { min-height:36px; resize:vertical; }
+.cell-comment { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+.icon-cell { display:flex; align-items:center; justify-content:center; min-height:36px; font-size:13px; color:#999; }
+
+/* ── Action row drag handle ── */
+.action-drag-cell { display:flex; align-items:center; justify-content:center; min-height:36px; }
+.action-drag-cell .drag-handle { cursor:grab; color:var(--text-muted); font-size:11px; user-select:none; }
+.action-drag-cell .drag-handle:active { cursor:grabbing; }
+
+/* ── Status dots ── */
+.status-dot-btn { width:100%; min-height:36px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; cursor:pointer; }
+.status-dot-btn[disabled] { cursor:default; }
+.status-dot-btn:hover .status-dot, .status-dot-btn:focus-visible .status-dot { transform:scale(1.12); }
+.status-dot { width:12px; height:12px; border-radius:999px; border:1px solid rgba(0,0,0,0.18); transition:transform .12s ease; }
+.status-dot--not_started { background:var(--idle); }
+.status-dot--in_progress { background:var(--warn); }
+.status-dot--overdue { background:var(--err); }
+.status-dot--done { background:var(--ok); }
+.status-not_started { background:var(--idle); }
+.status-in_progress { background:var(--warn); }
+.status-overdue { background:var(--err); }
+.status-done { background:var(--ok); }
+
+/* ── Email reminder icon ── */
+.email-toggle { border:none; background:transparent; cursor:pointer; font-size:18px; min-height:36px; display:flex; align-items:center; justify-content:center; width:100%; transition:opacity .15s; position:relative; }
+.email-toggle--off { opacity:0.25; }
+.email-toggle--on { opacity:1; }
+.email-toggle--on:hover::after { content:'Påminnelse aktiv'; position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:var(--accent); color:var(--accent-inv); font-size:10px; font-weight:700; padding:2px 6px; white-space:nowrap; pointer-events:none; }
+
+/* ── Comment popup ── */
+.comment-pop { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:var(--lg); z-index:5000; }
+.comment-pop--open { display:flex; }
+.comment-pop__card { width:min(520px,100%); background:#fff; border:3px solid var(--border-strong); padding:var(--xl); }
+.comment-pop__title { font-size:16px; font-weight:900; text-transform:uppercase; margin-bottom:var(--sm); }
+.comment-pop__text { line-height:1.6; margin-bottom:var(--lg); white-space:pre-wrap; }
+
+/* ── Confirm dialog ── */
+.confirm-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:var(--lg); z-index:8000; }
+.confirm-overlay--open { display:flex; }
+.confirm-card { width:min(440px,100%); background:#fff; border:3px solid var(--border-strong); padding:var(--xl); }
+.confirm-card__title { font-size:16px; font-weight:900; text-transform:uppercase; margin-bottom:var(--sm); }
+.confirm-card__text { font-size:14px; line-height:1.6; margin-bottom:var(--lg); }
+.confirm-card__actions { display:flex; gap:var(--md); justify-content:flex-end; }
+
+/* ── Matrix Modal (full-screen) ── */
+.matrix-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; z-index:7000; padding:var(--xl); overflow-y:auto; }
+.matrix-overlay--open { display:flex; align-items:flex-start; justify-content:center; }
+.matrix-card { width:100%; max-width:1200px; background:#fff; border:3px solid var(--border-strong); margin:auto; }
+.matrix-header { display:flex; align-items:center; justify-content:space-between; padding:var(--lg); background:var(--bg-alt); border-bottom:2px solid var(--border-strong); }
+.matrix-header__title { font-size:18px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
+.matrix-close { width:40px; height:40px; border:2px solid var(--border-strong); background:#fff; font-size:20px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.matrix-close:hover { background:var(--hi); }
+.matrix-body { padding:var(--lg); overflow-x:auto; }
+.matrix-table { width:100%; border-collapse:collapse; }
+.matrix-table th, .matrix-table td { border:1px solid var(--border); padding:var(--sm); vertical-align:top; font-size:13px; }
+.matrix-table th { background:var(--bg-alt); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); text-align:left; white-space:nowrap; }
+.matrix-table td { background:#fff; }
+.matrix-table input, .matrix-table select, .matrix-table textarea { width:100%; border:1px solid var(--border); padding:6px 8px; font:500 13px/1.4 inherit; background:#fff; }
+.matrix-table textarea { min-height:60px; resize:vertical; }
+.matrix-table select { min-height:36px; }
+.matrix-table .status-cell { min-width:32px; text-align:center; }
+.matrix-table .status-cell .status-dot { display:inline-block; }
+
+/* ── Edit Modal (full-screen) ── */
+.edit-modal { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.6); }
+.edit-modal--open { display: flex; align-items: center; justify-content: center; }
+.edit-modal__panel {
+  width: 95vw; height: 90vh; background: var(--bg); border: 2px solid var(--border-strong);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.edit-modal__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--md) var(--lg); border-bottom: 3px solid var(--border-strong);
+  background: var(--bg-alt); flex-shrink: 0;
+}
+.edit-modal__title { font-size: 18px; font-weight: 900; text-transform: uppercase; }
+.edit-modal__toolbar { display: flex; align-items: center; gap: var(--sm); }
+.edit-modal__body { flex: 1; overflow-y: auto; padding: var(--lg); }
+
+/* ── BC section header in view mode ── */
+.bc-section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--md); }
+.bc-section-title { font-size:14px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
+
+/* ── Done Panel ── */
+.done-panel { border:2px solid var(--border); margin-top:var(--xl); }
+.done-head { padding:var(--sm) var(--md); background:var(--bg-alt); font-size:12px; font-weight:900; text-transform:uppercase; }
+.done-list { padding:var(--md); color:var(--text-muted); }
+
+/* ── Role bar ── */
+.role-bar { position:fixed; bottom:0; left:0; right:0; z-index:9999; background:#1a1a2e; border-top:3px solid var(--hi); padding:var(--sm) var(--lg); display:flex; gap:var(--md); align-items:center; font-family:'Courier New',monospace; font-size:12px; color:#aaa; }
+.role-bar__btns { display:flex; gap:2px; }
+.role-btn { padding:var(--sm) var(--md); border:2px solid #555; background:#2a2a40; color:#ccc; font:700 12px 'Courier New',monospace; cursor:pointer; }
+.role-btn--active { background:var(--hi); color:#000; border-color:var(--hi); }
+
+/* ── Role-based visibility ── */
+.role-user [data-min-role="team-leader"], .role-user [data-min-role="org-admin"], .role-user [data-min-role="integ-admin"], .role-user [data-min-role="super-admin"] { display:none !important; }
+.role-team-leader [data-min-role="org-admin"], .role-team-leader [data-min-role="integ-admin"], .role-team-leader [data-min-role="super-admin"] { display:none !important; }
+.role-org-admin [data-min-role="integ-admin"], .role-org-admin [data-min-role="super-admin"] { display:none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display:none !important; }
+
+/* ── Drag & drop ── */
+.drag-handle { cursor:grab; color:var(--text-muted); user-select:none; touch-action:none; }
+.drag-handle:active { cursor:grabbing; }
+.dragging { opacity:0.4; pointer-events:none; }
+.drag-over { outline:2px dashed var(--hi); outline-offset:-2px; }
+.drag-ghost { position:fixed; z-index:10000; pointer-events:none; background:var(--bg); border:2px solid var(--hi); padding:6px 12px; font-size:12px; font-weight:700; box-shadow:4px 4px 0 rgba(0,0,0,0.15); max-width:300px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+
+/* ── Placeholders ── */
+.text-module textarea::placeholder, .bc-title-input::placeholder, .aoi-title-input::placeholder, .cell-input::placeholder, .search::placeholder { color:var(--text-muted); opacity:1; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline:2px solid var(--hi); outline-offset:2px; }
+
+/* ── Responsive ── */
+@media (max-width:1200px) {
+  .state-compact { grid-template-columns:1fr; }
+  .state-lines--editable { grid-template-columns:1fr; }
+  .team-focus { grid-template-columns:1fr; }
+  .team-focus__label { background:#0a0a0a; }
+  .plan-table { display:block; overflow-x:auto; white-space:nowrap; }
+}
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ═══ Sidebar ═══ -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__header"><a href="my-dashboard.html" class="sidebar__logo">ITT</a></div>
+  <div class="sidebar__selectors">
+    <div class="sidebar__selector" id="org-selector-wrap"><span class="sidebar__selector-label">Org</span><select id="org-select"></select></div>
+    <div class="sidebar__selector" id="team-selector-wrap"><span class="sidebar__selector-label">Team</span><select id="team-select"></select></div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <div class="lang-switcher"><button class="lang-btn lang-btn--active" data-lang="sv">SV</button><button class="lang-btn" data-lang="en">EN</button></div>
+  </div>
+</aside>
+
+<!-- ═══ Page Wrap ═══ -->
+<div class="page-wrap">
+  <!-- ── Progress Line ── -->
+  <div class="progress-line" id="progress-line"></div>
+
+  <main class="main" id="main-content">
+    <h1 class="page-title" id="page-title">Handlingsplan</h1>
+
+    <div class="toolbar">
+      <div class="toolbar__left">
+        <select class="field" id="filter-person"></select>
+        <select class="field" id="filter-status"></select>
+        <input class="search" id="search" type="search" placeholder="Sök åtgärd">
+      </div>
+      <div class="toolbar__right" data-min-role="team-leader">
+        <button class="icon-btn" id="btn-open-edit" title="Redigera handlingsplan">&#9998;</button>
+        <button class="icon-btn" id="toggle-all" title="Fäll ihop/öppna alla">&#9660;</button>
+        <button class="icon-btn" id="btn-focus" title="Fokusera">&#9678;</button>
+      </div>
+    </div>
+
+    <!-- State compact (starting point / desired state) -->
+    <section class="state-compact" id="state-compact"></section>
+
+    <!-- Team focus -->
+    <div class="team-focus" id="team-focus-wrap">
+      <div class="team-focus__label" id="team-focus-label">Team Focus</div>
+      <div class="team-focus__value" id="team-focus-value"></div>
+    </div>
+
+    <!-- BC section header -->
+    <div class="bc-section-header" data-min-role="team-leader">
+      <div class="bc-section-title" id="bc-section-title"></div>
+    </div>
+
+    <!-- BC list -->
+    <div id="bc-list"></div>
+
+    <!-- Done panel -->
+    <div class="done-panel">
+      <div class="done-head" id="done-title">Avklarade steg</div>
+      <div class="done-list" id="done-list"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══ Edit Modal (full-screen) ═══ -->
+<div class="edit-modal" id="edit-modal">
+  <div class="edit-modal__panel">
+    <div class="edit-modal__header">
+      <div class="edit-modal__title" id="edit-modal-title">Redigera handlingsplan</div>
+      <div class="edit-modal__toolbar">
+        <button class="icon-btn icon-btn--add" id="modal-btn-new-action" title="Ny åtgärd">+</button>
+        <button class="icon-btn icon-btn--add" id="modal-btn-new-bc" title="Nytt bästa bidrag">+ BC</button>
+        <button class="icon-btn" id="modal-toggle-all" title="Fäll ihop/öppna alla">&#9660;</button>
+        <button class="icon-btn" id="modal-btn-focus" title="Fokusera">&#9678;</button>
+        <button class="icon-btn" id="edit-modal-close" title="Stäng" style="font-size:20px;font-weight:900;">&#10005;</button>
+      </div>
+    </div>
+    <div class="edit-modal__body" id="edit-modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══ Comment popup ═══ -->
+<div class="comment-pop" id="comment-pop">
+  <div class="comment-pop__card">
+    <div class="comment-pop__title" id="comment-title">Kommentar</div>
+    <div class="comment-pop__text" id="comment-text"></div>
+    <button class="btn btn--outline" id="comment-close">Stäng</button>
+  </div>
+</div>
+
+<!-- ═══ Confirm dialog ═══ -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-card">
+    <div class="confirm-card__title" id="confirm-title">Bekräfta</div>
+    <div class="confirm-card__text" id="confirm-text"></div>
+    <div class="confirm-card__actions">
+      <button class="btn btn--outline btn--sm" id="confirm-cancel">Avbryt</button>
+      <button class="btn btn--danger btn--sm" id="confirm-ok">Arkivera</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Matrix modal ═══ -->
+<div class="matrix-overlay" id="matrix-overlay">
+  <div class="matrix-card">
+    <div class="matrix-header">
+      <div class="matrix-header__title" id="matrix-title">Matrisredigering</div>
+      <button class="matrix-close" id="matrix-close" title="Stäng">&#10005;</button>
+    </div>
+    <div class="matrix-body" id="matrix-body"></div>
+  </div>
+</div>
+
+<!-- ═══ Role bar ═══ -->
+<div class="role-bar">
+  <span>Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<!-- ═══ Scripts ═══ -->
+<script src="mock-data.js"></script>
+<script src="../v7/mock-data-workspace.js"></script>
+<script src="i18n-sv.js"></script>
+<script src="i18n-en.js"></script>
+<script>
+/* ═══════════════════════════════════════
+   V8 Action Plan — Integral Teamwork Toolkit
+   ═══════════════════════════════════════ */
+
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+const WS_STORAGE_KEY = 'itt-workspace-v8';
+const cloneWs = data => JSON.parse(JSON.stringify(data));
+try {
+  const storedWs = localStorage.getItem(WS_STORAGE_KEY);
+  if (storedWs) Object.assign(WS, cloneWs(JSON.parse(storedWs)));
+} catch (err) {}
+function persistWs() { localStorage.setItem(WS_STORAGE_KEY, JSON.stringify(WS)); }
+
+const ACTIVE_MODULE = 'actionPlan';
+const CURRENT_SECTION = 3;
+const $ = id => document.getElementById(id);
+
+/* ── V8 shared infrastructure ── */
+const MODULES = [
+  { key:'strategic', file:'strategic.html', section:1, fullKey:'mod.strategic' },
+  { key:'locomotiveGoals', file:'locomotive-goals.html', section:1, fullKey:'mod.locomotiveGoals' },
+  { key:'newsflash', file:'newsflash.html', section:1, fullKey:'mod.newsflash' },
+  { key:'bestContribution', file:'our-dashboard.html', section:2, fullKey:'mod.bestContribution' },
+  { key:'goalsMetrics', file:'goals-metrics.html', section:2, fullKey:'mod.goalsMetrics' },
+  { key:'actionPlan', file:'action-plan.html', section:3, fullKey:'mod.actionPlan' },
+  { key:'documents', file:'documents.html', section:3, fullKey:'mod.documents' },
+  { key:'ideas', file:'ideas.html', section:3, fullKey:'mod.ideas' },
+  { key:'reflections', file:'reflections.html', section:4, fullKey:'mod.reflections' },
+  { key:'attendance', file:'attendance.html', section:4, fullKey:'mod.attendance' },
+  { key:'archive', file:'archive.html', section:4, fullKey:'mod.archive' },
+];
+const SECTION_LABELS = {
+  1: { sv:'Vart är vi på väg och varför?', en:'Where are we headed and why?' },
+  2: { sv:'Vår Dashboard', en:'Our Dashboard' },
+  3: { sv:'Delprojekt & Handlingsplan', en:'Subprojects & Action Plan' },
+  4: { sv:'Reflektioner & Lärande', en:'Reflections & Learning' },
+};
+const PROGRESS_STOPS = [
+  { section: 1, label: { sv: 'Strategiskt Fokus', en: 'Strategic Focus' }, file: 'strategic.html' },
+  { section: 2, label: { sv: 'Vår Dashboard', en: 'Our Dashboard' }, file: 'our-dashboard.html' },
+  { section: 3, label: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, file: 'action-plan.html' },
+  { section: 4, label: { sv: 'Reflektioner & Lärande', en: 'Reflections & Learning' }, file: 'reflections.html' },
+];
+
+/* ── State ── */
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  teamId: localStorage.getItem('itt-team') || 'alpha',
+  person:'all', status:'all', search:'',
+  openBc:{}, editModalOpen:false, focusedBcId:null,
+};
+
+/* ── Helpers ── */
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS.sv[key] || key;
+  if (params) Object.keys(params).forEach(k => str = str.replace(new RegExp('\\{'+k+'\\}','g'), params[k]));
+  return str;
+}
+const canEdit = () => S.role !== 'user';
+const isEditMode = () => canEdit() && S.editModalOpen;
+const actor = () => ACTORS[S.role];
+const userById = id => DB.users.find(u => u.id === id);
+const fullName = u => u ? `${u.firstName} ${u.lastName}` : '—';
+const statusOptions = ['not_started','in_progress','overdue','done'];
+const statusLabel = s => t({ not_started:'ap.notStarted', in_progress:'ap.inProgress', overdue:'ap.overdue', done:'ap.done' }[s] || s);
+const nextStatus = s => statusOptions[(Math.max(0, statusOptions.indexOf(s)) + 1) % statusOptions.length];
+const bcCompletion = bcId => {
+  const items = WS.actions.filter(a => a.teamId === S.teamId && a.bcId === bcId);
+  if (!items.length) return 0;
+  return Math.round((items.filter(a => a.status === 'done').length / items.length) * 100);
+};
+const visibleBCs = () => WS.bestContributions.filter(bc => bc.teamId === S.teamId && bc.archived !== true);
+function esc(str) { return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function displayValue(v) { return String(v || '').trim() ? esc(v).replace(/\n/g,'<br>') : '—'; }
+function ensureTextModule() {
+  if (!WS.textModules[S.teamId]) WS.textModules[S.teamId] = { currentState:'', desiredState:'', teamFocus:'', reflections:[] };
+  if (WS.textModules[S.teamId].teamFocus === undefined) WS.textModules[S.teamId].teamFocus = '';
+  return WS.textModules[S.teamId];
+}
+function ensureBcNotes(bc) {
+  if (bc.startingPointText === undefined) bc.startingPointText = '';
+  if (bc.desiredStateText === undefined) bc.desiredStateText = '';
+  return bc;
+}
+
+/* ── Language ── */
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  renderAll();
+}
+document.addEventListener('click', e => { if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang); });
+
+/* ── Org / Team selectors ── */
+function orgsForActor() { const a = actor(); if (S.role === 'super-admin') return DB.organizations; return DB.organizations.filter(o => a.orgs.includes(o.id)); }
+function teamsForActor() {
+  const a = actor(); const u = userById(a.userId);
+  if (['super-admin','integ-admin','org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+function membersForTeam() { return DB.users.filter(u => u.memberships.some(m => m.teamId === S.teamId) && u.registerStatus !== 'soft_deleted'); }
+function renderSelectors() {
+  const orgs = orgsForActor(); const orgWrap = $('org-selector-wrap'); const orgSel = $('org-select');
+  if (!['super-admin','integ-admin','org-admin'].includes(S.role) || orgs.length <= 1) { orgWrap.style.display = 'none'; if (orgs[0]) S.orgId = orgs[0].id; }
+  else { orgWrap.style.display = ''; if (!orgs.find(o => o.id === S.orgId)) S.orgId = orgs[0].id; orgSel.innerHTML = orgs.map(o => `<option value="${o.id}" ${o.id===S.orgId?'selected':''}>${o.title}</option>`).join(''); }
+  const teams = teamsForActor(); const teamWrap = $('team-selector-wrap'); const teamSel = $('team-select');
+  if (!teams.find(t => t.id === S.teamId)) S.teamId = teams[0]?.id || 'alpha';
+  if (teams.length <= 1) { teamWrap.style.display = 'none'; }
+  else { teamWrap.style.display = ''; teamSel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id===S.teamId?'selected':''}>${t.title}</option>`).join(''); }
+}
+$('org-select').addEventListener('change', e => { S.orgId = e.target.value; localStorage.setItem('itt-org', S.orgId); S.teamId = teamsForActor()[0]?.id || 'alpha'; localStorage.setItem('itt-team', S.teamId); renderAll(); });
+$('team-select').addEventListener('change', e => { S.teamId = e.target.value; localStorage.setItem('itt-team', S.teamId); renderAll(); });
+
+/* ── Sidebar ── */
+
+// ============================================================
+// MEETING TIMER
+// ============================================================
+const SECTION_ALLOC = { 1: 720, 2: 720, 3: 1440, 4: 720 };
+
+function isMeetingActive() { return localStorage.getItem("itt-meeting-active") === "true"; }
+
+function startMeeting() {
+  const now = Date.now();
+  localStorage.setItem("itt-meeting-active", "true");
+  localStorage.setItem("itt-meeting-start", String(now));
+  localStorage.setItem("itt-meeting-section-times", JSON.stringify({1:0,2:0,3:0,4:0}));
+  localStorage.setItem("itt-meeting-section-enter", String(now));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+  renderAll();
+}
+
+function stopMeeting() {
+  flushSectionTime();
+  localStorage.removeItem("itt-meeting-active");
+  localStorage.removeItem("itt-meeting-start");
+  localStorage.removeItem("itt-meeting-section-enter");
+  localStorage.removeItem("itt-meeting-current-section");
+  renderAll();
+}
+
+function flushSectionTime() {
+  if (!isMeetingActive()) return;
+  const enter = parseInt(localStorage.getItem("itt-meeting-section-enter") || "0");
+  const sec = parseInt(localStorage.getItem("itt-meeting-current-section") || "0");
+  if (!enter || !sec) return;
+  const elapsed = (Date.now() - enter) / 1000;
+  const times = JSON.parse(localStorage.getItem("itt-meeting-section-times") || "{}");
+  times[sec] = (times[sec] || 0) + elapsed;
+  localStorage.setItem("itt-meeting-section-times", JSON.stringify(times));
+  localStorage.setItem("itt-meeting-section-enter", String(Date.now()));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+}
+
+function getSectionFill(section) {
+  const times = JSON.parse(localStorage.getItem("itt-meeting-section-times") || "{}");
+  if (!Object.keys(times).length) return 0;
+  let spent = times[section] || 0;
+  if (isMeetingActive() && section === CURRENT_SECTION) {
+    const enter = parseInt(localStorage.getItem("itt-meeting-section-enter") || "0");
+    if (enter) spent += (Date.now() - enter) / 1000;
+  }
+  const alloc = SECTION_ALLOC[section] || 720;
+  return Math.min(100, (spent / alloc) * 100);
+}
+
+if (isMeetingActive()) {
+  const prevSec = parseInt(localStorage.getItem("itt-meeting-current-section") || "0");
+  if (prevSec && prevSec !== CURRENT_SECTION) { flushSectionTime(); }
+  localStorage.setItem("itt-meeting-section-enter", String(Date.now()));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+}
+
+setInterval(() => { if (isMeetingActive()) renderProgressLine(); }, 5000);
+
+function renderSidebar() {
+  let html = `<a href="my-dashboard.html" class="sidebar__link">${t('nav.myDashboard')}</a>`;
+
+  if (isMeetingActive()) {
+    html += `<a href="#" class="sidebar__link sidebar__link--meeting-stop" onclick="event.preventDefault();stopMeeting();">&#9632; Avsluta möte</a>`;
+  } else {
+    html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`;
+  }
+  html += `<a href="admin.html" class="sidebar__link" data-min-role="team-leader">&#9881; ${t('nav.admin')}</a>`;
+  html += `<div class="sidebar__divider"></div>`;
+  let last = 0;
+  MODULES.forEach(m => {
+    if (m.section !== last) {
+      html += `<div class="sidebar__section-label">${currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv}</div>`;
+      last = m.section;
+    }
+    html += `<a href="${m.file}" class="sidebar__link${m.key===ACTIVE_MODULE?' sidebar__link--active':''}">${t(m.fullKey)}</a>`;
+  });
+  $('sidebar-nav').innerHTML = html;
+}
+
+/* ── Progress Line ── */
+function renderProgressLine() {
+  let html = '';
+  const meetingActive = isMeetingActive();
+  const hasMeetingData = !!localStorage.getItem('itt-meeting-section-times');
+  const meeting = meetingActive || hasMeetingData;
+  PROGRESS_STOPS.forEach((stop, i) => {
+    let cls = 'progress-stop';
+    const fill = meeting ? getSectionFill(stop.section) : 0;
+    if (meeting && fill > 0 && stop.section !== CURRENT_SECTION) {
+      cls += ' progress-stop--fill';
+    } else if (meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--fill-current';
+    } else if (hasMeetingData && !meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else if (stop.section < CURRENT_SECTION) {
+      cls += ' progress-stop--visited';
+    } else if (stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else {
+      cls += ' progress-stop--future';
+    }
+    const label = currentLang === 'en' ? stop.label.en : stop.label.sv;
+    const style = meeting ? ` style="--fill:${fill.toFixed(1)}%"` : '';
+    html += `<a href="${stop.file}" class="${cls}"${style}>${label}</a>`;
+  });
+  $('progress-line').innerHTML = html;
+}
+
+/* ── State Compact (top area) — always read-only on the main page ── */
+function renderStateCompact() {
+  const txt = ensureTextModule();
+  $('state-compact').innerHTML = `
+    <div class="state-compact__box">
+      <div class="state-compact__title">${t('ds.currentTitle')}</div>
+      <div class="state-compact__text">${displayValue(txt.currentState)}</div>
+    </div>
+    <div class="state-compact__box">
+      <div class="state-compact__title">${t('ds.desiredTitle')}</div>
+      <div class="state-compact__text">${displayValue(txt.desiredState)}</div>
+    </div>
+  `;
+}
+
+/* ── Team Focus — always read-only on the main page ── */
+function renderFocus() {
+  const txt = ensureTextModule();
+  const val = txt.teamFocus || '';
+  $('team-focus-label').textContent = t('ap.teamFocus');
+  $('team-focus-value').innerHTML = `<div>${displayValue(val)}</div>`;
+}
+
+/* ── Filters ── */
+function renderFilters() {
+  const members = membersForTeam();
+  $('filter-person').innerHTML = `<option value="all">${t('ap.filterPerson')}</option>` + members.map(u => `<option value="${u.id}" ${S.person===u.id?'selected':''}>${fullName(u)}</option>`).join('');
+  $('filter-status').innerHTML = `<option value="all">${t('ap.filterStatus')}</option>` + statusOptions.map(s => `<option value="${s}" ${S.status===s?'selected':''}>${t({not_started:'ap.notStarted',in_progress:'ap.inProgress',overdue:'ap.overdue',done:'ap.done'}[s])}</option>`).join('');
+}
+
+/* ── Filtered actions ── */
+function filteredActions(bcId, aoiId) {
+  return WS.actions
+    .filter(a => a.teamId === S.teamId && a.bcId === bcId && a.aiId === aoiId)
+    .filter(a => S.person === 'all' || a.responsibleId === S.person || a.supportId === S.person)
+    .filter(a => S.status === 'all' ? a.status !== 'done' : a.status === S.status)
+    .filter(a => !S.search || a.title.toLowerCase().includes(S.search) || (a.comment || '').toLowerCase().includes(S.search));
+}
+
+/* ── Person & status options HTML ── */
+function personOptions(selected) {
+  return `<option value=""></option>` + membersForTeam().map(u => `<option value="${u.id}" ${u.id===selected?'selected':''}>${fullName(u)}</option>`).join('');
+}
+
+/* ── Render BC state lines ── */
+function renderStateLines(bc, editMode) {
+  const notes = ensureBcNotes(bc);
+  if (!editMode) {
+    return `<div class="state-lines"><div><strong>${t('ds.currentTitle')}:</strong> ${displayValue(notes.startingPointText)}</div><div><strong>${t('ds.desiredTitle')}:</strong> ${displayValue(notes.desiredStateText)}</div></div>`;
+  }
+  return `<div class="state-lines state-lines--editable">
+    <label class="state-line-editor">
+      <span class="state-line-editor__label">${t('ds.currentTitle')}</span>
+      <textarea class="state-line-editor__field" data-bc-text="startingPointText" data-bc-id="${bc.id}" placeholder="${t('ds.currentPlaceholder')}">${esc(notes.startingPointText)}</textarea>
+    </label>
+    <label class="state-line-editor">
+      <span class="state-line-editor__label">${t('ds.desiredTitle')}</span>
+      <textarea class="state-line-editor__field" data-bc-text="desiredStateText" data-bc-id="${bc.id}" placeholder="${t('ds.desiredPlaceholder')}">${esc(notes.desiredStateText)}</textarea>
+    </label>
+  </div>`;
+}
+
+/* ── Render cell display ── */
+function renderCellDisplay(value, extraClass = '') {
+  return `<div class="cell-display${extraClass ? ` ${extraClass}` : ''}">${displayValue(value)}</div>`;
+}
+
+/* ── Render BC List (read-only view for main page) ── */
+function renderBCList() {
+  const list = $('bc-list');
+  const teamBcs = visibleBCs();
+  $('bc-section-title').textContent = currentLang === 'en' ? 'Best Contributions' : 'Bästa bidrag';
+  if (!teamBcs.length) { list.innerHTML = `<div class="done-list">${t('bc.empty')}</div>`; return; }
+
+  list.innerHTML = teamBcs.map(bc => {
+    const open = S.openBc[bc.id] !== undefined ? S.openBc[bc.id] : true;
+    const pct = bcCompletion(bc.id);
+    const isFocused = S.focusedBcId === bc.id;
+    const isHiddenByFocus = S.focusedBcId && S.focusedBcId !== bc.id;
+    const cardClass = `bc-card ${open ? 'bc-card--open' : ''} ${isFocused ? 'bc-card--focused' : ''} ${isHiddenByFocus ? 'bc-card--collapsed-by-focus' : ''}`;
+
+    return `<section class="${cardClass}" data-bc="${bc.id}">
+      <div class="bc-header">
+        <button class="bc-toggle" data-toggle="${bc.id}">${open ? '−' : '+'}</button>
+        <div class="bc-title-text">${displayValue(bc.title)}</div>
+      </div>
+      <div class="progress-band"><div class="progress-band__label">${t('ap.progressDegree')}</div><div class="progress-band__track"><div class="progress-band__fill" style="width:${pct}%"></div></div><div class="progress-band__pct">${pct}%</div></div>
+      ${renderStateLines(bc, false)}
+      <div class="bc-body">
+        ${bc.areaOfImprovement.filter(aoi => aoi.archived !== true).map(aoi => renderAOI(bc, aoi, false)).join('')}
+      </div>
+    </section>`;
+  }).join('');
+}
+
+/* ── Render AoI ── */
+function renderAOI(bc, aoi, editMode) {
+  const actions = filteredActions(bc.id, aoi.id);
+  return `<div class="aoi-block" ${editMode ? `data-aoi-block="${aoi.id}" data-drag-type="aoi" data-drag-id="${aoi.id}" data-drag-parent="${bc.id}"` : ''}>
+    <div class="aoi-head">
+      <div class="aoi-head__col aoi-head__col--spacer"></div>
+      <div class="aoi-title-wrap">
+        ${editMode ? `<span class="drag-handle" title="Dra för att flytta">&#x2982;&#x2982;</span>` : ''}
+        ${editMode
+          ? `<input class="aoi-title-input" data-aoi-title="${aoi.id}" value="${esc(aoi.title)}" placeholder="${t('ap.aoiPlaceholder')}">`
+          : `<div class="aoi-title-text">${displayValue(aoi.title)}</div>`
+        }
+        ${editMode ? `<div class="aoi-actions">
+          <button class="icon-btn" data-matrix-aoi="${bc.id}|${aoi.id}" title="Matrisredigering">&#9998;</button>
+          <button class="icon-btn icon-btn--danger" data-archive-aoi="${bc.id}|${aoi.id}" title="Arkivera">&#11015;</button>
+        </div>` : ''}
+      </div>
+      <div class="aoi-head__col">${t('ap.responsible')}</div>
+      <div class="aoi-head__col">${t('ap.support')}</div>
+      <div class="aoi-head__col">${t('ap.deadline')}</div>
+      <div class="aoi-head__col">${t('ap.commentShort')}</div>
+      <div class="aoi-head__col"></div>
+      <div class="aoi-head__col"></div>
+    </div>
+    <table class="plan-table">
+      <colgroup>
+        <col class="plan-col-status">
+        <col class="plan-col-action">
+        <col class="plan-col-person">
+        <col class="plan-col-person">
+        <col class="plan-col-date">
+        <col class="plan-col-comment">
+        <col class="plan-col-icon">
+        <col class="plan-col-icon">
+      </colgroup>
+      <tbody>${actions.map(a => renderActionRow(a, aoi, bc, editMode)).join('')}</tbody>
+    </table>
+    ${editMode ? `<div style="padding:4px 0 4px 8px;"><button class="icon-btn icon-btn--add" data-add-action="${bc.id}|${aoi.id}" data-min-role="team-leader" title="${t('ap.addAction')}">+</button></div>` : ''}
+  </div>`;
+}
+
+/* ── Render Action Row ── */
+function renderActionRow(a, aoi, bc, editMode) {
+  const comment = a.comment || '';
+  const responsible = fullName(userById(a.responsibleId));
+  const support = fullName(userById(a.supportId));
+  const emailOn = a.emailReminder !== false;
+  return `<tr data-action="${a.id}" ${editMode ? `data-drag-type="action" data-drag-id="${a.id}" data-drag-parent="${aoi.id}" data-drag-bc="${bc.id}"` : ''}>
+    <td class="status-col"><button class="status-dot-btn" data-status-dot="${a.id}" title="${statusLabel(a.status)}" ${editMode ? '' : 'disabled'}><span class="status-dot status-dot--${a.status}"></span></button></td>
+    <td>${editMode
+      ? `<div style="display:flex;align-items:flex-start;gap:4px;"><span class="drag-handle" style="padding-top:8px;font-size:11px;" title="Dra">&#x2982;&#x2982;</span><textarea class="cell-input cell-action" data-field="title" data-id="${a.id}" placeholder="${t('ap.actionPlaceholder')}">${esc(a.title)}</textarea></div>`
+      : renderCellDisplay(a.title, !a.title && 'cell-display--muted')
+    }</td>
+    <td>${editMode ? `<select class="cell-select" data-field="responsibleId" data-id="${a.id}">${personOptions(a.responsibleId)}</select>` : renderCellDisplay(responsible, !a.responsibleId && 'cell-display--muted')}</td>
+    <td>${editMode ? `<select class="cell-select" data-field="supportId" data-id="${a.id}">${personOptions(a.supportId)}</select>` : renderCellDisplay(support, !a.supportId && 'cell-display--muted')}</td>
+    <td>${editMode ? `<input class="cell-date" type="date" data-field="deadline" data-id="${a.id}" value="${a.deadline || ''}">` : renderCellDisplay(a.deadline, !a.deadline && 'cell-display--muted')}</td>
+    <td>${editMode
+      ? `<input class="cell-input cell-comment" data-field="comment" data-id="${a.id}" value="${esc(comment)}" title="${esc(comment)}" placeholder="${t('ap.commentPlaceholder')}">`
+      : `<div class="cell-display cell-comment${comment ? '' : ' cell-display--muted'}" data-comment-preview="${a.id}" title="${esc(comment)}">${displayValue(comment)}</div>`
+    }</td>
+    <td><button class="email-toggle ${emailOn ? 'email-toggle--on' : 'email-toggle--off'}" data-email-toggle="${a.id}" title="${emailOn ? (currentLang === 'en' ? 'Reminder active' : 'Påminnelse aktiv') : (currentLang === 'en' ? 'Enable reminder' : 'Aktivera påminnelse')}">&#9993;</button></td>
+    <td>${editMode ? `<button class="icon-btn icon-btn--danger" data-delete-action="${a.id}" title="Radera">&#128465;</button>` : `<div class="icon-cell">—</div>`}</td>
+  </tr>`;
+}
+
+/* ── Render Done ── */
+function renderDone() {
+  const done = WS.actions.filter(a => a.teamId === S.teamId && a.status === 'done');
+  $('done-title').textContent = `${t('ap.completedSteps')} (${done.length})`;
+  $('done-list').innerHTML = done.length
+    ? done.map(a => `${esc(a.title)} · ${a.deadline || '—'}`).join('<br>')
+    : (currentLang === 'en' ? 'No completed steps yet.' : 'Inga avklarade steg ännu.');
+}
+
+/* ═══ Confirm Dialog ═══ */
+let confirmCallback = null;
+function showConfirm(title, text, okLabel, cb) {
+  $('confirm-title').textContent = title;
+  $('confirm-text').textContent = text;
+  $('confirm-ok').textContent = okLabel;
+  confirmCallback = cb;
+  $('confirm-overlay').classList.add('confirm-overlay--open');
+}
+$('confirm-cancel').onclick = () => { $('confirm-overlay').classList.remove('confirm-overlay--open'); confirmCallback = null; };
+$('confirm-ok').onclick = () => { $('confirm-overlay').classList.remove('confirm-overlay--open'); if (confirmCallback) confirmCallback(); confirmCallback = null; };
+
+/* ═══ Matrix Modal ═══ */
+let matrixAoiId = null;
+let matrixBcId = null;
+
+function openMatrixModal(bcId, aoiId) {
+  matrixBcId = bcId;
+  matrixAoiId = aoiId;
+  const bc = WS.bestContributions.find(b => b.id === bcId);
+  const aoi = bc?.areaOfImprovement.find(a => a.id === aoiId);
+  if (!aoi) return;
+
+  $('matrix-title').textContent = `${t('ap.matrixEdit')} — ${aoi.title}`;
+  const actions = WS.actions.filter(a => a.teamId === S.teamId && a.bcId === bcId && a.aiId === aoiId);
+  const members = membersForTeam();
+
+  let html = `<table class="matrix-table"><thead><tr>
+    <th style="width:30px;">#</th>
+    <th>${t('ap.action')}</th>
+    <th>${t('ap.responsible')}</th>
+    <th>${t('ap.support')}</th>
+    <th>${t('ap.deadline')}</th>
+    <th>${t('ap.statusColor')}</th>
+    <th>${t('ap.commentShort')}</th>
+  </tr></thead><tbody>`;
+
+  actions.forEach((a, i) => {
+    const pOpts = `<option value=""></option>` + members.map(u => `<option value="${u.id}" ${u.id===a.responsibleId?'selected':''}>${fullName(u)}</option>`).join('');
+    const sOpts = `<option value=""></option>` + members.map(u => `<option value="${u.id}" ${u.id===a.supportId?'selected':''}>${fullName(u)}</option>`).join('');
+    const stOpts = statusOptions.map(s => `<option value="${s}" ${s===a.status?'selected':''}>${statusLabel(s)}</option>`).join('');
+    html += `<tr data-matrix-action="${a.id}">
+      <td style="text-align:center;color:var(--text-muted);">${i+1}</td>
+      <td><textarea data-mx-field="title" data-mx-id="${a.id}">${esc(a.title)}</textarea></td>
+      <td><select data-mx-field="responsibleId" data-mx-id="${a.id}">${pOpts}</select></td>
+      <td><select data-mx-field="supportId" data-mx-id="${a.id}">${sOpts}</select></td>
+      <td><input type="date" data-mx-field="deadline" data-mx-id="${a.id}" value="${a.deadline || ''}"></td>
+      <td class="status-cell"><select data-mx-field="status" data-mx-id="${a.id}">${stOpts}</select></td>
+      <td><textarea data-mx-field="comment" data-mx-id="${a.id}">${esc(a.comment || '')}</textarea></td>
+    </tr>`;
+  });
+
+  if (!actions.length) {
+    html += `<tr><td colspan="7" style="text-align:center;padding:var(--lg);color:var(--text-muted);">${currentLang === 'en' ? 'No actions in this area.' : 'Inga åtgärder i detta område.'}</td></tr>`;
+  }
+
+  html += `</tbody></table>`;
+  $('matrix-body').innerHTML = html;
+  $('matrix-overlay').classList.add('matrix-overlay--open');
+
+  // Attach matrix field events
+  document.querySelectorAll('[data-mx-field]').forEach(el => {
+    el.addEventListener('change', () => {
+      const a = WS.actions.find(x => x.id === el.dataset.mxId);
+      if (!a) return;
+      a[el.dataset.mxField] = el.value;
+      persistWs();
+    });
+  });
+}
+
+$('matrix-close').onclick = () => {
+  $('matrix-overlay').classList.remove('matrix-overlay--open');
+  if (S.editModalOpen) renderEditModalBody();
+  renderAll();
+};
+// Close matrix on overlay click
+$('matrix-overlay').addEventListener('click', e => {
+  if (e.target === $('matrix-overlay')) {
+    $('matrix-overlay').classList.remove('matrix-overlay--open');
+    if (S.editModalOpen) renderEditModalBody();
+    renderAll();
+  }
+});
+
+/* ═══ Edit Modal ═══ */
+function openEditModal() {
+  if (!canEdit()) return;
+  S.editModalOpen = true;
+  $('edit-modal').classList.add('edit-modal--open');
+  $('edit-modal-title').textContent = currentLang === 'en' ? 'Edit action plan' : 'Redigera handlingsplan';
+  renderEditModalBody();
+  // Update toolbar icons
+  updateModalToolbar();
+}
+
+function closeEditModal() {
+  S.editModalOpen = false;
+  $('edit-modal').classList.remove('edit-modal--open');
+  renderAll();
+}
+
+function updateModalToolbar() {
+  const toggleBtn = $('modal-toggle-all');
+  toggleBtn.innerHTML = allOpen() ? '&#9650;' : '&#9660;';
+  toggleBtn.title = allOpen() ? (currentLang === 'en' ? 'Collapse all' : 'Fäll ihop alla') : (currentLang === 'en' ? 'Expand all' : 'Öppna alla');
+  const focusBtn = $('modal-btn-focus');
+  focusBtn.title = S.focusedBcId ? (currentLang === 'en' ? 'Show all' : 'Visa alla') : (currentLang === 'en' ? 'Focus' : 'Fokusera');
+}
+
+function renderEditModalBody() {
+  const body = $('edit-modal-body');
+  const txt = ensureTextModule();
+  const teamBcs = visibleBCs();
+
+  let html = '';
+
+  // State compact (editable)
+  html += `<section class="state-compact" style="margin-bottom:var(--lg);">
+    <div class="state-compact__box">
+      <div class="state-compact__title">${t('ds.currentTitle')}</div>
+      <textarea data-text-field="currentState" placeholder="${t('ds.currentPlaceholder')}">${esc(txt.currentState || '')}</textarea>
+    </div>
+    <div class="state-compact__box">
+      <div class="state-compact__title">${t('ds.desiredTitle')}</div>
+      <textarea data-text-field="desiredState" placeholder="${t('ds.desiredPlaceholder')}">${esc(txt.desiredState || '')}</textarea>
+    </div>
+  </section>`;
+
+  // Team focus (editable)
+  html += `<div class="team-focus" style="margin-bottom:var(--lg);">
+    <div class="team-focus__label">${t('ap.teamFocus')}</div>
+    <div class="team-focus__value"><textarea data-team-focus placeholder="${t('ds.desiredPlaceholder')}">${esc(txt.teamFocus || '')}</textarea></div>
+  </div>`;
+
+  // BC list (editable)
+  if (!teamBcs.length) {
+    html += `<div class="done-list">${t('bc.empty')}</div>`;
+  } else {
+    html += teamBcs.map(bc => {
+      const open = S.openBc[bc.id] !== undefined ? S.openBc[bc.id] : true;
+      const pct = bcCompletion(bc.id);
+      const isFocused = S.focusedBcId === bc.id;
+      const isHiddenByFocus = S.focusedBcId && S.focusedBcId !== bc.id;
+      const cardClass = `bc-card ${open ? 'bc-card--open' : ''} ${isFocused ? 'bc-card--focused' : ''} ${isHiddenByFocus ? 'bc-card--collapsed-by-focus' : ''}`;
+
+      return `<section class="${cardClass}" data-bc="${bc.id}" data-drag-type="bc" data-drag-id="${bc.id}">
+        <div class="bc-header">
+          <span class="drag-handle" title="Dra för att flytta">&#x2982;&#x2982;</span>
+          <button class="bc-toggle" data-toggle="${bc.id}">${open ? '−' : '+'}</button>
+          <input class="bc-title-input" data-bc-title="${bc.id}" value="${esc(bc.title)}" placeholder="${t('bc.titlePlaceholder')}">
+          <div class="bc-actions">
+            <div class="icon-btn-group">
+              <button class="icon-btn" data-edit-bc="${bc.id}" title="Redigera">&#9998;</button>
+              <button class="icon-btn icon-btn--danger" data-archive-bc="${bc.id}" title="Arkivera">&#11015;</button>
+            </div>
+            <button class="icon-btn icon-btn--add" data-add-aoi="${bc.id}" data-min-role="team-leader" title="${t('ap.newAoi')}">+</button>
+          </div>
+        </div>
+        <div class="progress-band"><div class="progress-band__label">${t('ap.progressDegree')}</div><div class="progress-band__track"><div class="progress-band__fill" style="width:${pct}%"></div></div><div class="progress-band__pct">${pct}%</div></div>
+        ${renderStateLines(bc, true)}
+        <div class="bc-body">
+          ${bc.areaOfImprovement.filter(aoi => aoi.archived !== true).map(aoi => renderAOI(bc, aoi, true)).join('')}
+        </div>
+      </section>`;
+    }).join('');
+  }
+
+  body.innerHTML = html;
+  attachModalEvents();
+  initDragDrop();
+}
+
+/* ═══ Drag & Drop — Pure mouse events (no HTML5 DnD API) ═══ */
+/* Works reliably inside overflow:auto containers and fixed-position modals */
+let drag = { active:false, type:null, id:null, parentId:null, bcId:null, el:null, ghost:null, startY:0 };
+let hoverTimer = null;
+
+function initDragDrop() {
+  const container = $('edit-modal-body');
+  if (!container) return;
+
+  container.querySelectorAll('.drag-handle').forEach(handle => {
+    handle.addEventListener('mousedown', e => {
+      e.preventDefault();
+      const el = handle.closest('[data-drag-type]');
+      if (!el) return;
+
+      drag.active = true;
+      drag.type = el.dataset.dragType;
+      drag.id = el.dataset.dragId;
+      drag.parentId = el.dataset.dragParent || null;
+      drag.bcId = el.dataset.dragBc || null;
+      drag.el = el;
+      drag.startY = e.clientY;
+
+      // Create ghost
+      const ghost = document.createElement('div');
+      ghost.className = 'drag-ghost';
+      ghost.textContent = el.querySelector('.bc-title-input, .aoi-title-input, .aoi-title-text, .cell-action, .bc-title-text')?.value
+        || el.querySelector('.bc-title-input, .aoi-title-input, .aoi-title-text, .cell-action, .bc-title-text')?.textContent
+        || drag.id;
+      ghost.style.left = e.clientX + 12 + 'px';
+      ghost.style.top = e.clientY - 10 + 'px';
+      document.body.appendChild(ghost);
+      drag.ghost = ghost;
+
+      el.classList.add('dragging');
+    });
+  });
+}
+
+// Global mousemove — move ghost, highlight drop targets
+document.addEventListener('mousemove', e => {
+  if (!drag.active) return;
+  drag.ghost.style.left = e.clientX + 12 + 'px';
+  drag.ghost.style.top = e.clientY - 10 + 'px';
+
+  // Find drop target of same type under cursor
+  // Temporarily hide ghost so elementFromPoint hits the real element
+  drag.ghost.style.display = 'none';
+  const hit = document.elementFromPoint(e.clientX, e.clientY);
+  drag.ghost.style.display = '';
+
+  // Clear all highlights
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+
+  if (!hit) return;
+  const target = hit.closest('[data-drag-type="' + drag.type + '"]');
+  if (target && target.dataset.dragId !== drag.id) {
+    target.classList.add('drag-over');
+  }
+
+  // Auto-expand collapsed BC on hover (2s)
+  if (drag.type && hit) {
+    const bcCard = hit.closest('.bc-card');
+    if (bcCard && !bcCard.classList.contains('bc-card--open')) {
+      const bcId = bcCard.dataset.bc;
+      if (!hoverTimer) {
+        hoverTimer = setTimeout(() => { S.openBc[bcId] = true; renderEditModalBody(); hoverTimer = null; }, 2000);
+      }
+    } else if (hoverTimer && (!bcCard || bcCard.classList.contains('bc-card--open'))) {
+      clearTimeout(hoverTimer); hoverTimer = null;
+    }
+  }
+});
+
+// Global mouseup — perform drop
+document.addEventListener('mouseup', e => {
+  if (!drag.active) return;
+
+  // Find drop target
+  if (drag.ghost) { drag.ghost.style.display = 'none'; }
+  const hit = document.elementFromPoint(e.clientX, e.clientY);
+  if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; }
+
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  if (drag.el) drag.el.classList.remove('dragging');
+
+  if (hit) {
+    const target = hit.closest('[data-drag-type="' + drag.type + '"]');
+    if (target && target.dataset.dragId !== drag.id) {
+      if (drag.type === 'bc') {
+        reorderBCs(drag.id, target.dataset.dragId);
+      } else if (drag.type === 'aoi') {
+        reorderAoIs(drag.id, drag.parentId, target.dataset.dragId, target.dataset.dragParent);
+      } else if (drag.type === 'action') {
+        reorderActions(drag.id, target.dataset.dragId, target.dataset.dragParent, target.dataset.dragBc);
+      }
+    }
+  }
+
+  if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
+  drag = { active:false, type:null, id:null, parentId:null, bcId:null, el:null, ghost:null, startY:0 };
+});
+
+function reorderBCs(draggedId, targetId) {
+  const bcs = WS.bestContributions;
+  const di = bcs.findIndex(b => b.id === draggedId);
+  const ti = bcs.findIndex(b => b.id === targetId);
+  if (di < 0 || ti < 0) return;
+  const [item] = bcs.splice(di, 1);
+  bcs.splice(ti, 0, item);
+  persistWs();
+  renderEditModalBody();
+}
+
+function reorderAoIs(draggedId, fromBcId, targetId, toBcId) {
+  const fromBc = WS.bestContributions.find(b => b.id === fromBcId);
+  const toBc = WS.bestContributions.find(b => b.id === toBcId);
+  if (!fromBc || !toBc) return;
+  const di = fromBc.areaOfImprovement.findIndex(a => a.id === draggedId);
+  if (di < 0) return;
+  const [item] = fromBc.areaOfImprovement.splice(di, 1);
+  const ti = toBc.areaOfImprovement.findIndex(a => a.id === targetId);
+  toBc.areaOfImprovement.splice(ti >= 0 ? ti : toBc.areaOfImprovement.length, 0, item);
+  // Update actions references if moved to different BC
+  if (fromBcId !== toBcId) {
+    WS.actions.forEach(a => { if (a.aiId === draggedId && a.bcId === fromBcId) a.bcId = toBcId; });
+  }
+  persistWs();
+  renderEditModalBody();
+}
+
+function reorderActions(draggedId, targetId, targetAoiId, targetBcId) {
+  const di = WS.actions.findIndex(a => a.id === draggedId);
+  if (di < 0) return;
+  const [item] = WS.actions.splice(di, 1);
+  // Update parent if moved to different AoI
+  item.aiId = targetAoiId;
+  item.bcId = targetBcId;
+  const ti = WS.actions.findIndex(a => a.id === targetId);
+  WS.actions.splice(ti >= 0 ? ti : WS.actions.length, 0, item);
+  persistWs();
+  renderEditModalBody();
+}
+
+/* ═══ Events (read-only main page) ═══ */
+function attachEvents() {
+  // Toggle BC
+  document.querySelectorAll('#bc-list [data-toggle]').forEach(btn => btn.onclick = () => {
+    S.openBc[btn.dataset.toggle] = !(S.openBc[btn.dataset.toggle] !== undefined ? S.openBc[btn.dataset.toggle] : true);
+    renderBCList();
+    attachEvents();
+  });
+
+  // Comment preview
+  document.querySelectorAll('#bc-list [data-comment-preview]').forEach(el => el.onclick = () => {
+    const a = WS.actions.find(x => x.id === el.dataset.commentPreview);
+    $('comment-title').textContent = t('ap.commentShort');
+    $('comment-text').textContent = a?.comment || '';
+    $('comment-pop').classList.add('comment-pop--open');
+  });
+
+  // Email toggle (view mode - read only status dots are disabled, but email toggle still works)
+  document.querySelectorAll('#bc-list [data-email-toggle]').forEach(btn => btn.onclick = () => {
+    const a = WS.actions.find(x => x.id === btn.dataset.emailToggle);
+    if (!a) return;
+    a.emailReminder = a.emailReminder === false ? true : false;
+    persistWs();
+    btn.classList.toggle('email-toggle--on', a.emailReminder);
+    btn.classList.toggle('email-toggle--off', !a.emailReminder);
+  });
+}
+
+/* ═══ Events (edit modal) ═══ */
+function attachModalEvents() {
+  const container = $('edit-modal-body');
+
+  // Toggle BC inside modal
+  container.querySelectorAll('[data-toggle]').forEach(btn => btn.onclick = () => {
+    S.openBc[btn.dataset.toggle] = !(S.openBc[btn.dataset.toggle] !== undefined ? S.openBc[btn.dataset.toggle] : true);
+    renderEditModalBody();
+  });
+
+  // Team focus
+  container.querySelectorAll('[data-team-focus]').forEach(el => el.onchange = () => {
+    const txt = ensureTextModule(); txt.teamFocus = el.value; persistWs();
+  });
+
+  // State text fields
+  container.querySelectorAll('[data-text-field]').forEach(el => el.onchange = () => {
+    const txt = ensureTextModule(); txt[el.dataset.textField] = el.value; persistWs();
+  });
+
+  // BC title
+  container.querySelectorAll('[data-bc-title]').forEach(el => el.onchange = () => {
+    const bc = WS.bestContributions.find(b => b.id === el.dataset.bcTitle);
+    if (bc) bc.title = el.value;
+    persistWs();
+  });
+
+  // BC text (startingPoint / desiredState)
+  container.querySelectorAll('[data-bc-text]').forEach(el => el.onchange = () => {
+    const bc = WS.bestContributions.find(b => b.id === el.dataset.bcId);
+    if (!bc) return;
+    bc[el.dataset.bcText] = el.value;
+    persistWs();
+  });
+
+  // AoI title
+  container.querySelectorAll('[data-aoi-title]').forEach(el => el.onchange = () => {
+    WS.bestContributions.forEach(bc => bc.areaOfImprovement.forEach(aoi => {
+      if (aoi.id === el.dataset.aoiTitle) aoi.title = el.value;
+    }));
+    persistWs();
+  });
+
+  // Action fields
+  container.querySelectorAll('[data-field]').forEach(el => el.onchange = () => {
+    const a = WS.actions.find(x => x.id === el.dataset.id);
+    if (!a) return;
+    a[el.dataset.field] = el.value;
+    persistWs();
+  });
+
+  // Add action
+  container.querySelectorAll('[data-add-action]').forEach(btn => btn.onclick = () => {
+    const [bcId, aoiId] = btn.dataset.addAction.split('|');
+    WS.actions.unshift({ id:'a_'+Math.random().toString(36).slice(2,7), teamId:S.teamId, bcId, aiId:aoiId, title:'', description:'', responsibleId:'', supportId:'', deadline:'', status:'not_started', comment:'', emailReminder:true });
+    persistWs();
+    renderEditModalBody();
+  });
+
+  // Add AoI
+  container.querySelectorAll('[data-add-aoi]').forEach(btn => btn.onclick = () => {
+    const bc = WS.bestContributions.find(b => b.id === btn.dataset.addAoi);
+    if (!bc) return;
+    bc.areaOfImprovement.push({ id:'ai_'+Math.random().toString(36).slice(2,7), title: currentLang === 'en' ? 'New area' : 'Nytt område' });
+    S.openBc[bc.id] = true;
+    persistWs();
+    renderEditModalBody();
+  });
+
+  // Delete action
+  container.querySelectorAll('[data-delete-action]').forEach(btn => btn.onclick = () => {
+    WS.actions = WS.actions.filter(a => a.id !== btn.dataset.deleteAction);
+    persistWs();
+    renderEditModalBody();
+  });
+
+  // Archive BC (with confirmation)
+  container.querySelectorAll('[data-archive-bc]').forEach(btn => btn.onclick = () => {
+    const bc = WS.bestContributions.find(b => b.id === btn.dataset.archiveBc);
+    if (!bc) return;
+    showConfirm(
+      currentLang === 'en' ? 'Archive best contribution' : 'Arkivera bästa bidrag',
+      `${t('arc.confirmArchive')} "${bc.title}"?`,
+      t('btn.archive'),
+      () => {
+        bc.archived = true;
+        bc.archivedAt = new Date().toISOString().slice(0,10);
+        persistWs();
+        renderEditModalBody();
+      }
+    );
+  });
+
+  // Archive AoI (with confirmation)
+  container.querySelectorAll('[data-archive-aoi]').forEach(btn => btn.onclick = () => {
+    const [bcId, aoiId] = btn.dataset.archiveAoi.split('|');
+    const bc = WS.bestContributions.find(b => b.id === bcId);
+    if (!bc) return;
+    const aoi = bc.areaOfImprovement.find(a => a.id === aoiId);
+    if (!aoi) return;
+    showConfirm(
+      currentLang === 'en' ? 'Archive area of improvement' : 'Arkivera förbättringsområde',
+      `${t('arc.confirmArchive')} "${aoi.title}"?`,
+      t('btn.archive'),
+      () => {
+        aoi.archived = true;
+        aoi.archivedAt = new Date().toISOString().slice(0,10);
+        persistWs();
+        renderEditModalBody();
+      }
+    );
+  });
+
+  // Edit BC (scroll to BC inside modal)
+  container.querySelectorAll('[data-edit-bc]').forEach(btn => btn.onclick = () => {
+    const bcId = btn.dataset.editBc;
+    S.openBc[bcId] = true;
+    renderEditModalBody();
+    const card = container.querySelector(`[data-bc="${bcId}"]`);
+    if (card) card.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+
+  // Matrix edit for AoI
+  container.querySelectorAll('[data-matrix-aoi]').forEach(btn => btn.onclick = () => {
+    const [bcId, aoiId] = btn.dataset.matrixAoi.split('|');
+    openMatrixModal(bcId, aoiId);
+  });
+
+  // Status dot
+  container.querySelectorAll('[data-status-dot]').forEach(btn => btn.onclick = () => {
+    const a = WS.actions.find(x => x.id === btn.dataset.statusDot);
+    if (!a) return;
+    a.status = nextStatus(a.status);
+    persistWs();
+    renderEditModalBody();
+  });
+
+  // Email toggle
+  container.querySelectorAll('[data-email-toggle]').forEach(btn => btn.onclick = () => {
+    const a = WS.actions.find(x => x.id === btn.dataset.emailToggle);
+    if (!a) return;
+    a.emailReminder = a.emailReminder === false ? true : false;
+    persistWs();
+    btn.classList.toggle('email-toggle--on', a.emailReminder);
+    btn.classList.toggle('email-toggle--off', !a.emailReminder);
+  });
+}
+
+/* ═══ renderAll ═══ */
+function renderAll() {
+  document.body.className = 'role-' + S.role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === S.role));
+
+  renderSelectors();
+  renderSidebar();
+  renderProgressLine();
+  renderFilters();
+  renderStateCompact();
+  renderFocus();
+  renderBCList();
+  renderDone();
+  attachEvents();
+
+  $('page-title').textContent = t('ap.title');
+  $('toggle-all').innerHTML = allOpen() ? '&#9650;' : '&#9660;';
+  $('toggle-all').title = allOpen() ? (currentLang === 'en' ? 'Collapse all' : 'Fäll ihop alla') : (currentLang === 'en' ? 'Expand all' : 'Öppna alla');
+  $('btn-focus').title = S.focusedBcId ? (currentLang === 'en' ? 'Show all' : 'Visa alla') : (currentLang === 'en' ? 'Focus' : 'Fokusera');
+  $('btn-open-edit').title = currentLang === 'en' ? 'Edit action plan' : 'Redigera handlingsplan';
+  $('search').placeholder = t('ap.searchPlaceholder');
+  $('nav-admin').innerHTML = '&#9881; ' + t('nav.admin');
+  $('skip-link').textContent = t('skip');
+}
+
+function allOpen() { return visibleBCs().every(b => S.openBc[b.id] !== false); }
+
+/* ═══ Button bindings ═══ */
+$('toggle-all').onclick = () => { const open = !allOpen(); visibleBCs().forEach(b => S.openBc[b.id] = open); renderAll(); };
+
+$('btn-focus').onclick = () => {
+  if (S.focusedBcId) {
+    S.focusedBcId = null;
+  } else {
+    const bcs = visibleBCs();
+    const openBc = bcs.find(b => S.openBc[b.id] !== false);
+    S.focusedBcId = openBc ? openBc.id : (bcs[0]?.id || null);
+  }
+  renderAll();
+};
+
+$('btn-open-edit').onclick = () => {
+  openEditModal();
+};
+
+// Edit modal close
+$('edit-modal-close').onclick = () => { closeEditModal(); };
+// Close on backdrop click
+$('edit-modal').addEventListener('click', e => {
+  if (e.target === $('edit-modal')) closeEditModal();
+});
+
+// Modal toolbar buttons
+$('modal-toggle-all').onclick = () => {
+  const open = !allOpen();
+  visibleBCs().forEach(b => S.openBc[b.id] = open);
+  renderEditModalBody();
+  updateModalToolbar();
+};
+
+$('modal-btn-focus').onclick = () => {
+  if (S.focusedBcId) {
+    S.focusedBcId = null;
+  } else {
+    const bcs = visibleBCs();
+    const openBc = bcs.find(b => S.openBc[b.id] !== false);
+    S.focusedBcId = openBc ? openBc.id : (bcs[0]?.id || null);
+  }
+  renderEditModalBody();
+  updateModalToolbar();
+};
+
+$('modal-btn-new-bc').onclick = () => {
+  const id = 'bc_' + Math.random().toString(36).slice(2,7);
+  WS.bestContributions.unshift({ id, teamId:S.teamId, title: currentLang === 'en' ? 'New best contribution' : 'Nytt bästa bidrag', startingPointText:'', desiredStateText:'', areaOfImprovement:[{ id:'ai_'+Math.random().toString(36).slice(2,7), title: currentLang === 'en' ? 'New area' : 'Nytt område' }] });
+  S.openBc[id] = true;
+  persistWs();
+  renderEditModalBody();
+};
+
+$('modal-btn-new-action').onclick = () => {
+  const bc = visibleBCs()[0];
+  if (!bc) return;
+  const aoi = bc.areaOfImprovement.filter(a => a.archived !== true)[0];
+  if (!aoi) return;
+  WS.actions.unshift({ id:'a_'+Math.random().toString(36).slice(2,7), teamId:S.teamId, bcId:bc.id, aiId:aoi.id, title:'', description:'', responsibleId:'', supportId:'', deadline:'', status:'not_started', comment:'', emailReminder:true });
+  S.openBc[bc.id] = true;
+  persistWs();
+  renderEditModalBody();
+};
+
+$('filter-person').onchange = e => { S.person = e.target.value; renderAll(); if (S.editModalOpen) renderEditModalBody(); };
+$('filter-status').onchange = e => { S.status = e.target.value; renderAll(); if (S.editModalOpen) renderEditModalBody(); };
+$('search').oninput = e => { S.search = e.target.value.toLowerCase(); renderAll(); if (S.editModalOpen) renderEditModalBody(); };
+$('comment-close').onclick = () => $('comment-pop').classList.remove('comment-pop--open');
+
+document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLang(btn.dataset.lang)));
+document.querySelectorAll('.role-btn').forEach(btn => btn.onclick = () => { S.role = btn.dataset.role; localStorage.setItem('itt-role', S.role); renderAll(); });
+
+// ── Init ──
+document.documentElement.lang = currentLang;
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === currentLang));
+renderAll();
+</script>
+</body>
+</html>
