@@ -145,6 +145,9 @@ body {
 
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
 button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+
+.sidebar__link--meeting { background: var(--hi) !important; color: #000 !important; font-weight: 900; text-align: center; }
+.sidebar__link--meeting-stop { background: #c00 !important; color: #fff !important; font-weight: 900; text-align: center; }
 </style>
 </head>
 <body class="role-super-admin">
@@ -401,10 +404,39 @@ $('team-select').addEventListener('change', e => {
   renderAll();
 });
 
+
+// ============================================================
+// MEETING TIMER (sidebar link only — no progress bar on this page)
+// ============================================================
+function isMeetingActive() { return localStorage.getItem('itt-meeting-active') === 'true'; }
+
+function startMeeting() {
+  const now = Date.now();
+  localStorage.setItem('itt-meeting-active', 'true');
+  localStorage.setItem('itt-meeting-start', String(now));
+  localStorage.setItem('itt-meeting-section-times', JSON.stringify({1:0,2:0,3:0,4:0}));
+  localStorage.setItem('itt-meeting-section-enter', String(now));
+  localStorage.setItem('itt-meeting-current-section', '0');
+  renderAll();
+}
+
+function stopMeeting() {
+  localStorage.removeItem('itt-meeting-active');
+  localStorage.removeItem('itt-meeting-start');
+  localStorage.removeItem('itt-meeting-section-enter');
+  localStorage.removeItem('itt-meeting-current-section');
+  renderAll();
+}
+
 function renderSidebar() {
   let html = '';
   const dashActive = ACTIVE_MODULE === 'myDashboard' ? ' sidebar__link--active' : '';
   html += `<a href="my-dashboard.html" class="sidebar__link${dashActive}">${t('nav.myDashboard')}</a>`;
+  if (isMeetingActive()) {
+    html += `<a href="#" class="sidebar__link sidebar__link--meeting-stop" onclick="event.preventDefault();stopMeeting();">&#9632; Avsluta möte</a>`;
+  } else {
+    html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`;
+  }
   html += `<a href="admin.html" class="sidebar__link" data-min-role="team-leader">${t('nav.admin')}</a>`;
   html += '<div class="sidebar__divider"></div>';
   let lastSection = 0;
