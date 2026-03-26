@@ -227,7 +227,8 @@ const LANG_SV = {
   'mod.documents': 'Teamdokument',
   'mod.ideas': 'Idélogg',
   'mod.attendance': 'Närvaro',
-  'mod.reflections': 'Reflektioner & Spelregler',
+  'mod.reflections': 'Reflektioner',
+  'mod.teamRules': 'Spelregler',
   'mod.completedBestContributions': 'Avslutade bästa bidrag',
 
   // Module names (short, for subnav)
@@ -241,6 +242,7 @@ const LANG_SV = {
   'mod.short.ideas': 'Idéer',
   'mod.short.attendance': 'Närvaro',
   'mod.short.reflections': 'Reflektion',
+  'mod.short.teamRules': 'Spelregler',
   'mod.short.completedBestContributions': 'Avslutade',
 
   // Action plan
@@ -395,11 +397,11 @@ const LANG_SV = {
   'mod.spelregler': 'Spelregler',
   'mod.archive': 'Arkiv',
   'section.1': 'Strategiskt fokus',
-  'section.2': 'Vårt bästa bidrag',
+  'section.2': 'Bästa bidrag',
   'section.3': 'Delprojekt & Handlingsplan',
   'section.4': 'Reflektioner & Lärdomar',
   'progress.section1': 'Strategiskt Fokus',
-  'progress.section2': 'Vårt bästa bidrag',
+  'progress.section2': 'Bästa bidrag',
   'progress.section3': 'Delprojekt & Handlingsplan',
   'progress.section4': 'Reflektioner & Lärdomar',
   'nav.myDashboard': 'Personlig Dashboard',

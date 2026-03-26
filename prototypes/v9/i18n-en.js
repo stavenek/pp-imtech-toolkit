@@ -227,7 +227,8 @@ const LANG_EN = {
   'mod.documents': 'Team Documents',
   'mod.ideas': 'Log of Ideas',
   'mod.attendance': 'Attendance',
-  'mod.reflections': 'Reflections & Team Rules',
+  'mod.reflections': 'Reflections',
+  'mod.teamRules': 'Team Rules',
   'mod.completedBestContributions': 'Completed Best Contributions',
 
   // Module names (short, for subnav)
@@ -241,6 +242,7 @@ const LANG_EN = {
   'mod.short.ideas': 'Ideas',
   'mod.short.attendance': 'Attend.',
   'mod.short.reflections': 'Reflect.',
+  'mod.short.teamRules': 'Rules',
   'mod.short.completedBestContributions': 'Completed',
 
   // Action plan
@@ -401,11 +403,11 @@ const LANG_EN = {
   'mod.spelregler': 'Team Rules',
   'mod.archive': 'Archive',
   'section.1': 'Strategic Focus',
-  'section.2': 'Our Best Contribution',
+  'section.2': 'Best Contribution',
   'section.3': 'Subprojects & Action Plan',
   'section.4': 'Reflections & Learnings',
   'progress.section1': 'Strategic Focus',
-  'progress.section2': 'Our Best Contribution',
+  'progress.section2': 'Best Contribution',
   'progress.section3': 'Subprojects & Action Plan',
   'progress.section4': 'Reflections & Learnings',
   'nav.myDashboard': 'Personal Dashboard',

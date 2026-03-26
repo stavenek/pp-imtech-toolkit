@@ -43,7 +43,7 @@ body {
 .sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
 .sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
 .sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
-.sidebar__section-label { padding: 6px var(--lg) 2px; color: var(--hi); font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label { padding: 6px var(--lg) 2px; color: var(--hi); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
 .sidebar__section-label:first-child { padding-top: var(--sm); }
 .sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
 .sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
@@ -83,6 +83,21 @@ body {
 .btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
 
 /* --- GOAL CARDS --- */
+/* --- LOCO IMAGE GRID --- */
+.loco-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--xl); margin-bottom: var(--xl); }
+.loco-card { border: 3px solid var(--border-strong); }
+.loco-card__img-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; border-bottom: 3px solid var(--border-strong); }
+.loco-card__img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.loco-card__edit { position: absolute; top: var(--sm); right: var(--sm); background: rgba(255,255,255,0.9); border: 2px solid var(--border-strong); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; z-index: 2; }
+.loco-card__edit:hover { background: var(--hi); }
+.loco-card__body { padding: var(--lg); }
+.loco-card__body-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--md); }
+.loco-card__body-title { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.loco-card__body-edit { background: none; border: none; cursor: pointer; font-size: 14px; color: var(--text-muted); padding: 4px 6px; min-width: 28px; min-height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+.loco-card__body-edit:hover { color: var(--text); background: var(--hi-soft); }
+.loco-card__bullets { list-style: disc; padding-left: var(--lg); }
+.loco-card__bullets li { font-size: 13px; line-height: 1.7; color: var(--text-muted); margin-bottom: var(--xs); }
+
 .goal-card { border: 3px solid var(--border-strong); padding: var(--xl); margin-bottom: var(--xl); max-width: 800px; position: relative; }
 .goal-card__header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--md); }
 .goal-card__title { font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1.2; flex: 1; }
@@ -380,13 +395,14 @@ const MODULES = [
   { key: 'documents', file: 'documents.html', section: 3, fullKey: 'mod.documents' },
   { key: 'ideas', file: 'ideas.html', section: 3, fullKey: 'mod.ideas' },
   { key: 'reflections', file: 'reflections.html', section: 4, fullKey: 'mod.reflections' },
+  { key: 'teamRules', file: 'team-rules.html', section: 4, fullKey: 'mod.teamRules' },
   { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
   { key: 'archive', file: 'archive.html', section: 4, fullKey: 'mod.archive' },
 ];
 
 const SECTION_LABELS = {
   1: { sv: 'Strategiskt fokus', en: 'Strategic Focus' },
-  2: { sv: 'Vårt bästa bidrag', en: 'Our Best Contribution' },
+  2: { sv: 'Bästa bidrag', en: 'Best Contribution' },
   3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' },
   4: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' },
 };
@@ -518,30 +534,46 @@ const LOCOMOTIVE_GOALS = [
 // 7. RENDER CONTENT
 // ============================================================
 function renderContent() {
-  let html = '';
-  LOCOMOTIVE_GOALS.forEach(goal => {
-    html += `
-      <div class="goal-card">
-        <div class="goal-card__header">
-          <div class="goal-card__title">${goal.title}</div>
-          <button class="goal-card__edit" data-min-role="org-admin" data-edit-goal="${goal.id}" aria-label="${t('lg.editGoal')}: ${goal.title}">&#9998;</button>
+  let html = `
+    <div class="loco-grid">
+      <div class="loco-card">
+        <div class="loco-card__img-wrap">
+          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=450&fit=crop" alt="Lokomotivmål bild 1">
+          <button class="loco-card__edit" data-min-role="org-admin" title="Redigera bild">&#9998;</button>
         </div>
-        <div class="goal-card__desc">${goal.description}</div>
-        <div class="goal-card__link">
-          <a href="${goal.url}" target="_blank" class="btn btn--outline btn--sm">Öppna material &rarr;</a>
+        <div class="loco-card__body">
+          <div class="loco-card__body-header">
+            <div class="loco-card__body-title">Strategiska prioriteringar</div>
+            <button class="loco-card__body-edit" data-min-role="org-admin" title="Redigera">&#9998;</button>
+          </div>
+          <ul class="loco-card__bullets">
+            <li>Öka marknadsandelen med 15% under Q2</li>
+            <li>Lansera ny produktlinje innan sommaren</li>
+            <li>Förbättra kundnöjdheten till över 90%</li>
+          </ul>
         </div>
-        <div class="goal-card__meta">${t('lg.lastUpdated')}: ${goal.updatedDate}</div>
       </div>
-    `;
-  });
-  $('content').innerHTML = html;
+      <div class="loco-card">
+        <div class="loco-card__img-wrap">
+          <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=450&fit=crop" alt="Lokomotivmål bild 2">
+          <button class="loco-card__edit" data-min-role="org-admin" title="Redigera bild">&#9998;</button>
+        </div>
+        <div class="loco-card__body">
+          <div class="loco-card__body-header">
+            <div class="loco-card__body-title">Operativa mål</div>
+            <button class="loco-card__body-edit" data-min-role="org-admin" title="Redigera">&#9998;</button>
+          </div>
+          <ul class="loco-card__bullets">
+            <li>Reducera ledtider med 20% genom processförbättringar</li>
+            <li>Implementera automatiserad kvalitetskontroll</li>
+            <li>Stärka tvärfunktionellt samarbete mellan avdelningar</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
 
-  // Bind edit buttons
-  document.querySelectorAll('[data-edit-goal]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      toast(t('lg.editGoal') + ' (demo)');
-    });
-  });
+  $('content').innerHTML = html;
 }
 
 // ============================================================

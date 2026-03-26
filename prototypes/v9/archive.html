@@ -43,7 +43,7 @@ body {
 .sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
 .sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
 .sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
-.sidebar__section-label { padding: 6px var(--lg) 2px; color: var(--hi); font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.sidebar__section-label { padding: 6px var(--lg) 2px; color: var(--hi); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
 .sidebar__section-label:first-child { padding-top: var(--sm); }
 .sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
 .sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
@@ -423,13 +423,14 @@ const MODULES = [
   { key: 'documents', file: 'documents.html', section: 3, fullKey: 'mod.documents' },
   { key: 'ideas', file: 'ideas.html', section: 3, fullKey: 'mod.ideas' },
   { key: 'reflections', file: 'reflections.html', section: 4, fullKey: 'mod.reflections' },
+  { key: 'teamRules', file: 'team-rules.html', section: 4, fullKey: 'mod.teamRules' },
   { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
   { key: 'archive', file: 'archive.html', section: 4, fullKey: 'mod.archive' },
 ];
 
 const SECTION_LABELS = {
   1: { sv: 'Strategiskt fokus', en: 'Strategic Focus' },
-  2: { sv: 'Vårt bästa bidrag', en: 'Our Best Contribution' },
+  2: { sv: 'Bästa bidrag', en: 'Best Contribution' },
   3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' },
   4: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' },
 };
