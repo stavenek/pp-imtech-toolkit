@@ -248,7 +248,6 @@ const MODULES = [
   { key: 'reflections', file: 'reflections.html', section: 4, fullKey: 'mod.reflections' },
   { key: 'teamRules', file: 'team-rules.html', section: 4, fullKey: 'mod.teamRules' },
   { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
-  { key: 'archive', file: 'archive.html', section: 4, fullKey: 'mod.archive' },
 ];
 const SECTION_LABELS = { 1: { sv: 'Strategiskt fokus', en: 'Strategic Focus' }, 2: { sv: 'Bästa bidrag', en: 'Best Contribution' }, 3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, 4: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' } };
 const PROGRESS_STOPS = [
@@ -370,7 +369,6 @@ function renderSidebar() {
   } else {
     html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`;
   }
-  html += `<a href="admin.html" class="sidebar__link" data-min-role="team-leader">${t('nav.admin')}</a>`;
   html += '<div class="sidebar__divider"></div>';
   let lastSection = 0;
   const preRead = hasPreReadDocs();
@@ -380,6 +378,9 @@ function renderSidebar() {
     const preReadClass = (m.key === 'documents' && preRead) ? ' sidebar__link--preread' : '';
     html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}${preReadClass}">${t(m.fullKey)}</a>`;
   });
+  html += '<div class="sidebar__divider"></div>';
+  html += '<a href="admin.html" class="sidebar__link" data-min-role="team-leader">' + t('nav.admin') + '</a>';
+  html += '<a href="archive.html" class="sidebar__link' + (ACTIVE_MODULE === 'archive' ? ' sidebar__link--active' : '') + '">' + t('mod.archive') + '</a>';
   $('sidebar-nav').innerHTML = html;
 }
 

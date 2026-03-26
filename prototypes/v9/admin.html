@@ -558,7 +558,6 @@ const MODULES = [
   { key: 'reflections', file: 'reflections.html', section: 4, fullKey: 'mod.reflections' },
   { key: 'teamRules', file: 'team-rules.html', section: 4, fullKey: 'mod.teamRules' },
   { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
-  { key: 'archive', file: 'archive.html', section: 4, fullKey: 'mod.archive' },
 ];
 const SECTION_LABELS = {
   1: { sv: 'Strategiskt fokus', en: 'Strategic Focus' },
@@ -624,8 +623,6 @@ function renderSidebar() {
   } else {
     html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`;
   }
-  const adminActive = ACTIVE_MODULE === 'admin' ? ' sidebar__link--active' : '';
-  html += `<a href="admin.html" class="sidebar__link${adminActive}" data-min-role="team-leader" id="nav-admin-sidebar">${t('nav.admin')}</a>`;
   html += '<div class="sidebar__divider"></div>';
   let lastSection = 0;
   MODULES.forEach(m => {
@@ -636,6 +633,10 @@ function renderSidebar() {
     }
     html += `<a href="${m.file}" class="sidebar__link">${t(m.fullKey)}</a>`;
   });
+  html += '<div class="sidebar__divider"></div>';
+  const adminActive = ACTIVE_MODULE === 'admin' ? ' sidebar__link--active' : '';
+  html += '<a href="admin.html" class="sidebar__link' + adminActive + '" data-min-role="team-leader">' + t('nav.admin') + '</a>';
+  html += '<a href="archive.html" class="sidebar__link' + (ACTIVE_MODULE === 'archive' ? ' sidebar__link--active' : '') + '">' + t('mod.archive') + '</a>';
   $('sidebar-nav').innerHTML = html;
   renderSidebarSelectors();
 }
