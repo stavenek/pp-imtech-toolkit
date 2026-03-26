@@ -116,7 +116,7 @@ body {
 .empty { text-align: center; color: var(--text-muted); padding: var(--xl); border: 2px dashed var(--border); background: #fff; }
 .toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
 .toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); }
-.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: var(--sm) var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: 2px var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
 .role-bar__label { font-weight: 700; white-space: nowrap; }
 .role-bar__btns { display: flex; gap: 2px; }
 .role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; }
@@ -149,7 +149,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .sidebar__link--meeting { background: var(--hi) !important; color: #000 !important; font-weight: 900; text-align: center; }
 .sidebar__link--meeting-stop { background: #c00 !important; color: #fff !important; font-weight: 900; text-align: center; }
 
-.integ-chat { position: fixed; top: 0; bottom: 0; right: 0; width: 500px; background: #fff; border-left: 3px solid #0a0a0a; box-shadow: -6px 0 24px rgba(0,0,0,0.2); z-index: 1200; display: none; flex-direction: column; }
+.integ-chat { position: fixed; top: 0; bottom: 40px; right: 0; width: 500px; background: #fff; border-left: 3px solid #0a0a0a; box-shadow: -6px 0 24px rgba(0,0,0,0.2); z-index: 1200; display: none; flex-direction: column; }
 .integ-chat--open { display: flex; }
 .integ-chat__header { background: #0a0a0a; color: #fff; padding: 12px 16px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
 .integ-chat__close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
@@ -200,7 +200,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
     <section class="section">
       <div class="section__header">
         <h2 class="section__title"><a href="our-dashboard.html" id="title-focus">Bästa bidrag</a></h2>
-        <a href="our-dashboard.html" class="section__link" id="link-edit" data-min-role="team-leader">Redigera &rarr;</a>
+        <a href="our-dashboard.html" style="cursor:pointer; font-size:16px; text-decoration:none;" data-min-role="team-leader" title="Redigera" id="link-edit">&#9998;</a>
       </div>
       <div class="section__body">
         <div class="focus-grid" id="focus-grid"></div>
@@ -211,7 +211,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
     <section class="section">
       <div class="section__header">
         <h2 class="section__title"><a href="goals-metrics.html" id="title-goals">Mål &amp; Mätetal</a></h2>
-        <a href="goals-metrics.html" class="section__link" id="link-metrics" data-min-role="team-leader">Se alla &rarr;</a>
+        <a href="goals-metrics.html" style="cursor:pointer; font-size:16px; text-decoration:none;" data-min-role="team-leader" title="Redigera" id="link-metrics">&#9998;</a>
       </div>
       <div class="section__body">
         <div class="chart-legend" id="metrics-chart-legend"></div>
@@ -226,7 +226,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
     <section class="section">
       <div class="section__header">
         <h2 class="section__title"><a href="action-plan.html" id="title-my-actions">Mina åtgärder</a></h2>
-        <a href="action-plan.html" class="section__link" id="link-actions" data-min-role="team-leader">Visa alla &rarr;</a>
+        <a href="action-plan.html" style="cursor:pointer; font-size:16px; text-decoration:none;" data-min-role="team-leader" title="Redigera" id="link-actions">&#9998;</a>
       </div>
       <div class="section__body">
         <table class="data-table">
@@ -247,6 +247,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
     <section class="section">
       <div class="section__header">
         <h2 class="section__title"><a href="newsflash.html" id="title-news">Senaste teamframsteg</a></h2>
+        <span style="cursor:pointer; font-size:16px;" title="Redigera">&#9998;</span>
       </div>
       <div class="section__body" id="news-list"></div>
     </section>
@@ -477,7 +478,7 @@ function renderSidebar() {
   } else {
     html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`;
   }
-  html += `<a href="admin.html" class="sidebar__link" data-min-role="team-leader">${t('nav.admin')}</a>`;
+  html += `<a href="admin.html" class="sidebar__link">${t('nav.admin')}</a>`;
   html += '<div class="sidebar__divider"></div>';
   let lastSection = 0;
   MODULES.forEach(m => {
@@ -607,11 +608,11 @@ function renderNews() {
 function updateStaticText() {
   $('skip-link').textContent = t('skip');
   $('title-focus').textContent = currentLang === 'en' ? 'Best Contribution' : 'Bästa bidrag';
-  $('link-edit').textContent = t('dash.edit');
+  $('link-edit').innerHTML = '&#9998;';
   $('title-goals').textContent = t('dash.goalsPreview');
-  $('link-metrics').textContent = t('dash.viewMetrics');
+  $('link-metrics').innerHTML = '&#9998;';
   $('title-my-actions').textContent = t('dash.myActions');
-  $('link-actions').textContent = t('dash.viewAll');
+  $('link-actions').innerHTML = '&#9998;';
   $('title-news').textContent = currentLang === 'en' ? 'Latest Team Progress' : 'Senaste teamframsteg';
   $('metrics-chart-y-label').textContent = currentLang === 'en' ? 'value' : 'värde';
   $('col-action').textContent = t('ap.action');
