@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyhetsflash v8 — ITT</title>
+<title>Nyheter v9 — ITT</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,17 +26,17 @@ body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height
 .sidebar { position: fixed; top: var(--progress-h); left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
 .sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
 .sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
-.sidebar__selectors { padding: var(--sm) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selectors { padding: var(--xs) var(--lg); border-bottom: 1px solid #333; }
 .sidebar__selector { margin-bottom: var(--sm); }
 .sidebar__selector:last-child { margin-bottom: 0; }
 .sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
 .sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
 .sidebar__selector select:focus { outline: 2px solid var(--hi); }
 .sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
-.sidebar__link { display: block; padding: 4px var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link { display: block; padding: 2px var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
 .sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
 .sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
-.sidebar__section-label { padding: 12px var(--lg) var(--xs); color: var(--hi); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: default; }
+.sidebar__section-label { padding: 6px var(--lg) 2px; color: var(--hi); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: default; }
 .sidebar__section-label:first-child { padding-top: var(--sm); }
 .sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
 .sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
@@ -137,20 +137,35 @@ body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height
 
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
 button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+
+.integ-chat { position: fixed; top: 0; bottom: 0; right: 0; width: 500px; background: #fff; border-left: 3px solid #0a0a0a; box-shadow: -6px 0 24px rgba(0,0,0,0.2); z-index: 1200; display: none; flex-direction: column; }
+.integ-chat--open { display: flex; }
+.integ-chat__header { background: #0a0a0a; color: #fff; padding: 12px 16px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.integ-chat__close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+.integ-chat__close:hover { color: #ffcc00; }
+.integ-chat__body { flex: 1; overflow-y: auto; padding: 16px; font-size: 14px; color: #333; }
+.integ-chat__msg { background: #f0f0f0; border-radius: 8px 8px 8px 0; padding: 10px 14px; margin-bottom: 8px; max-width: 85%; line-height: 1.5; }
+.integ-chat__input-wrap { flex-shrink: 0; padding: 12px; border-top: 2px solid #e0e0e0; display: flex; gap: 8px; }
+.integ-chat__input { flex: 1; border: 2px solid #ccc; padding: 8px 12px; font-size: 14px; font-family: inherit; outline: none; }
+.integ-chat__input:focus { border-color: #0a0a0a; }
+.integ-chat__send { background: #0a0a0a; color: #fff; border: none; padding: 8px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+.integ-chat__send:hover { background: #333; }
+
+.sidebar__preread { display: inline-block; width: 8px; height: 8px; background: #e6001a; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
 </style>
 </head>
 <body class="role-super-admin">
 <a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
 
 <aside class="sidebar" aria-label="Huvudnavigering">
-  <div class="sidebar__header"><a href="my-dashboard.html" class="sidebar__logo" id="nav-logo">ITT</a></div>
+  
   <div class="sidebar__selectors" id="sidebar-selectors">
     <div class="sidebar__selector" id="org-selector-wrap"><span class="sidebar__selector-label">Org</span><select id="org-select" aria-label="Välj organisation"></select></div>
     <div class="sidebar__selector" id="team-selector-wrap"><span class="sidebar__selector-label">Team</span><select id="team-select" aria-label="Välj team"></select></div>
   </div>
   <nav class="sidebar__nav" id="sidebar-nav"></nav>
   <div class="sidebar__footer">
-    <a href="admin.html" class="sidebar__link" data-min-role="team-leader" id="nav-admin">&#9881; Admin</a>
+    <a href="#" class="sidebar__link" id="nav-integ" onclick="event.preventDefault();toggleIntegChat();">Integ</a>
     <div class="lang-switcher"><button class="lang-btn lang-btn--active" data-lang="sv">SV</button><button class="lang-btn" data-lang="en">EN</button></div>
   </div>
 </aside>
@@ -158,22 +173,22 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 <div class="page-wrap">
   <div class="progress-line" id="progress-line"></div>
   <main class="main" id="main-content">
-    <h1 class="page-title" id="page-title">Nyhetsflash</h1>
-    <div style="margin-bottom:var(--lg);" data-min-role="team-leader"><button class="btn btn--hi" id="btn-new-news">+ Ny nyhetsflash</button></div>
+    <h1 class="page-title" id="page-title">Nyheter</h1>
+    <div style="margin-bottom:var(--lg);" data-min-role="team-leader"><button class="btn btn--hi" id="btn-new-news">+ Ny nyhet</button></div>
     <div id="news-list"></div>
   </main>
 </div>
 
 <div class="overlay" id="overlay"></div>
-<div class="slide-over" id="so-news" role="dialog" aria-modal="true" aria-label="Nyhetsflash">
-  <div class="so-header"><div class="so-title" id="so-news-title">Skapa nyhetsflash</div><button class="so-close" aria-label="Stäng" id="so-news-close">&times;</button></div>
+<div class="slide-over" id="so-news" role="dialog" aria-modal="true" aria-label="Nyheter">
+  <div class="so-header"><div class="so-title" id="so-news-title">Skapa nyhet</div><button class="so-close" aria-label="Stäng" id="so-news-close">&times;</button></div>
   <div class="so-body">
     <div class="form-group"><label class="form-label" for="news-date" id="lbl-news-date">Datum</label><input type="date" class="form-input" id="news-date"></div>
     <div class="form-group"><label class="form-label" for="news-title-input" id="lbl-news-title">Titel</label><input type="text" class="form-input" id="news-title-input" required></div>
     <div class="form-group"><label class="form-label" for="news-content-input" id="lbl-news-content">Innehåll</label><textarea class="form-textarea" id="news-content-input"></textarea></div>
   </div>
   <div class="so-footer" id="so-news-footer"><button class="btn btn--hi" id="so-news-save">Spara</button><button class="btn btn--outline" id="so-news-cancel">Avbryt</button></div>
-  <div class="so-danger" id="so-news-danger" style="display:none;"><button class="btn btn--danger" id="so-news-delete" style="width:100%;justify-content:center;">Radera nyhetsflash</button></div>
+  <div class="so-danger" id="so-news-danger" style="display:none;"><button class="btn btn--danger" id="so-news-delete" style="width:100%;justify-content:center;">Radera nyhet</button></div>
 </div>
 
 <div class="dialog-overlay" id="confirm-dialog">
@@ -182,6 +197,13 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 
 <div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
 
+
+<!-- Integ Chat Panel -->
+<div class="integ-chat" id="integ-chat">
+  <div class="integ-chat__header">Integ Chat <button class="integ-chat__close" onclick="toggleIntegChat()">&times;</button></div>
+  <div class="integ-chat__body"><div class="integ-chat__msg">Hello! How can I help you?</div></div>
+  <div class="integ-chat__input-wrap"><input class="integ-chat__input" placeholder="Type a message..." /><button class="integ-chat__send">Send</button></div>
+</div>
 <div class="role-bar">
   <span class="role-bar__label">Visa som:</span>
   <div class="role-bar__btns" id="role-btns">
@@ -193,10 +215,10 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   </div>
 </div>
 
-<script src="i18n-sv.js"></script>
-<script src="i18n-en.js"></script>
-<script src="mock-data.js"></script>
-<script src="mock-data-workspace.js"></script>
+<script src="i18n-sv.js?v=1774551162"></script>
+<script src="i18n-en.js?v=1774551162"></script>
+<script src="mock-data.js?v=2"></script>
+<script src="mock-data-workspace.js?v=2"></script>
 <script>
 const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
 let currentLang = localStorage.getItem('itt-lang') || 'sv';
@@ -208,7 +230,6 @@ const CURRENT_SECTION = 1;
 const MODULES = [
   { key: 'strategic', file: 'strategic.html', section: 1, fullKey: 'mod.strategic' },
   { key: 'locomotiveGoals', file: 'locomotive-goals.html', section: 1, fullKey: 'mod.locomotiveGoals' },
-  { key: 'newsflash', file: 'newsflash.html', section: 1, fullKey: 'mod.newsflash' },
   { key: 'bestContribution', file: 'our-dashboard.html', section: 2, fullKey: 'mod.bestContribution' },
   { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, fullKey: 'mod.goalsMetrics' },
   { key: 'actionPlan', file: 'action-plan.html', section: 3, fullKey: 'mod.actionPlan' },
@@ -218,12 +239,12 @@ const MODULES = [
   { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
   { key: 'archive', file: 'archive.html', section: 4, fullKey: 'mod.archive' },
 ];
-const SECTION_LABELS = { 1: { sv: 'Vart är vi på väg och varför?', en: 'Where are we headed and why?' }, 2: { sv: 'Vår Dashboard', en: 'Our Dashboard' }, 3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, 4: { sv: 'Reflektioner & Lärande', en: 'Reflections & Learning' } };
+const SECTION_LABELS = { 1: { sv: 'Strategiskt fokus', en: 'Strategic Focus' }, 2: { sv: 'Vårt bästa bidrag', en: 'Our Best Contribution' }, 3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, 4: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' } };
 const PROGRESS_STOPS = [
   { section: 1, label: { sv: 'Strategiskt Fokus', en: 'Strategic Focus' }, file: 'strategic.html' },
-  { section: 2, label: { sv: 'Vår Dashboard', en: 'Our Dashboard' }, file: 'our-dashboard.html' },
+  { section: 2, label: { sv: 'Vårt bästa bidrag', en: 'Our Best Contribution' }, file: 'our-dashboard.html' },
   { section: 3, label: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, file: 'action-plan.html' },
-  { section: 4, label: { sv: 'Reflektioner & Lärande', en: 'Reflections & Learning' }, file: 'reflections.html' },
+  { section: 4, label: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' }, file: 'reflections.html' },
 ];
 
 const S = { role: localStorage.getItem('itt-role') || 'super-admin', orgId: localStorage.getItem('itt-org') || '', teamId: localStorage.getItem('itt-team') || 'alpha', editingNewsId: null };
@@ -237,7 +258,7 @@ function confirmDialog(title, text, confirmLabel, onConfirm) { $('dialog-title')
 $('dialog-cancel').addEventListener('click', () => { $('confirm-dialog').classList.remove('dialog-overlay--visible'); });
 
 function setLang(lang) { currentLang = lang; localStorage.setItem('itt-lang', lang); document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang)); document.documentElement.lang = lang; updateStaticText(); renderSidebar(); renderProgressLine(); renderNewsList(); }
-function updateStaticText() { $('skip-link').textContent = t('skip'); $('nav-admin').textContent = t('nav.admin'); $('page-title').textContent = t('nf.title'); $('btn-new-news').textContent = t('nf.new'); $('dialog-cancel').textContent = t('btn.cancel'); $('lbl-news-date').textContent = t('nf.date'); $('lbl-news-title').textContent = t('nf.titleField'); $('lbl-news-content').textContent = t('nf.content'); $('so-news-save').textContent = t('btn.save'); $('so-news-cancel').textContent = t('btn.cancel'); }
+function updateStaticText() { $('skip-link').textContent = t('skip'); $('nav-integ').textContent = 'Integ'; $('page-title').textContent = t('nf.title'); $('btn-new-news').textContent = t('nf.new'); $('dialog-cancel').textContent = t('btn.cancel'); $('lbl-news-date').textContent = t('nf.date'); $('lbl-news-title').textContent = t('nf.titleField'); $('lbl-news-content').textContent = t('nf.content'); $('so-news-save').textContent = t('btn.save'); $('so-news-cancel').textContent = t('btn.cancel'); }
 document.addEventListener('click', e => { if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang); });
 
 function renderOrgSelector() { const orgs = orgsForActor(); const sel = $('org-select'); const wrap = $('org-selector-wrap'); const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role); if (!isHighRole || orgs.length <= 1) { wrap.style.display = 'none'; if (orgs.length === 1) S.orgId = orgs[0].id; else if (orgs.length === 0) S.orgId = ''; return; } wrap.style.display = ''; if (!S.orgId || !orgs.find(o => o.id === S.orgId)) { S.orgId = orgs[0].id; localStorage.setItem('itt-org', S.orgId); } sel.innerHTML = orgs.map(o => `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`).join(''); }
@@ -309,7 +330,8 @@ if (isMeetingActive()) {
 // Live timer update every 5 seconds
 setInterval(() => { if (isMeetingActive()) renderProgressLine(); }, 5000);
 
-function renderSidebar() { let html = ''; html += `<a href="my-dashboard.html" class="sidebar__link">${t('nav.myDashboard')}</a>`; if (isMeetingActive()) { html += `<a href="#" class="sidebar__link sidebar__link--meeting-stop" onclick="event.preventDefault();stopMeeting();">&#9632; Avsluta möte</a>`; } else { html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`; } html += `<a href="admin.html" class="sidebar__link" data-min-role="team-leader">${t('nav.admin')}</a>`; html += '<div class="sidebar__divider"></div>'; let lastSection = 0; MODULES.forEach(m => { if (m.section !== lastSection) { const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv; html += `<div class="sidebar__section-label">${l}</div>`; lastSection = m.section; } const isActive = m.key === ACTIVE_MODULE; html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}</a>`; }); $('sidebar-nav').innerHTML = html; }
+function renderSidebar() { let html = ''; html += `<a href="my-dashboard.html" class="sidebar__link">${t('nav.myDashboard')}</a>`; if (isMeetingActive()) { html += `<a href="#" class="sidebar__link sidebar__link--meeting-stop" onclick="event.preventDefault();stopMeeting();">&#9632; Avsluta möte</a>`; } else { html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`; } html += `<a href="admin.html" class="sidebar__link" data-min-role="team-leader">${t('nav.admin')}</a>`; html += '<div class="sidebar__divider"></div>'; let lastSection = 0; MODULES.forEach(m => { if (m.section !== lastSection) { const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv; html += `<div class="sidebar__section-label">${l}</div>`; lastSection = m.section; } const isActive = m.key === ACTIVE_MODULE; const preread = (m.key === 'documents' && typeof WS !== 'undefined') ? WS.documents.filter(d => d.teamId === S.teamId && d.isPreRead).length : 0;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}${preread ? '<span class="sidebar__preread"></span>' : ''}</a>`; }); $('sidebar-nav').innerHTML = html; }
 
 function renderProgressLine() {
   let html = '';
@@ -354,6 +376,12 @@ function escHtml(str) { const div = document.createElement('div'); div.textConte
 
 document.addEventListener('click', e => { const editBtn = e.target.closest('[data-edit]'); if (editBtn) { openSlideOver(editBtn.dataset.edit); return; } const deleteBtn = e.target.closest('[data-delete]'); if (deleteBtn) { const newsId = deleteBtn.dataset.delete; confirmDialog(t('nf.confirmDelete'), t('nf.confirmDelete'), t('btn.confirm'), () => { const idx = WS.newsflashes.findIndex(n => n.id === newsId); if (idx !== -1) WS.newsflashes.splice(idx, 1); toast(t('nf.title') + ' raderad'); renderNewsList(); }); return; } });
 $('btn-new-news').addEventListener('click', () => openSlideOver(null));
+
+
+function toggleIntegChat() {
+  const chat = document.getElementById('integ-chat');
+  if (chat) chat.classList.toggle('integ-chat--open');
+}
 
 function renderAll() { renderOrgSelector(); renderTeamSelector(); renderSidebar(); renderProgressLine(); renderNewsList(); }
 function setRole(role) { S.role = role; localStorage.setItem('itt-role', role); document.body.className = 'role-' + role; document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role)); const orgs = orgsForActor(); if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) { S.orgId = orgs[0].id; localStorage.setItem('itt-org', S.orgId); } const teams = teamsForActor(); if (teams.length > 0 && !teams.find(t => t.id === S.teamId)) { S.teamId = teams[0].id; localStorage.setItem('itt-team', S.teamId); } updateStaticText(); renderAll(); }

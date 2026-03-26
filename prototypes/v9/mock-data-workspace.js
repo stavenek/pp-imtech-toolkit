@@ -234,10 +234,17 @@ const WS = {
     { id:'d23', teamId:'support', title:'FAQ-dokument v2', url:'https://company.com/faq-v2.pdf', type:'pdf', createdDate:'2026-02-15', createdBy:'u24', isPreRead:true, preReadDate:'2026-03-15' },
   ],
   newsflashes: [
-    // Alpha (3 newsflashes)
-    { id:'n1', teamId:'alpha', date:'2026-02-15', title:'Nytt mål för Q1', content:'Vi har justerat våra Q1-mål baserat på feedback från ledningsgruppen. Det nya fokusområdet är kundkommunikation.', createdBy:'u3' },
-    { id:'n2', teamId:'alpha', date:'2026-02-01', title:'Välkommen Oscar!', content:'Oscar Gren ansluter till teamet som ny utvecklare. Välkommen!', createdBy:'u3' },
-    { id:'n3', teamId:'alpha', date:'2026-01-20', title:'Systemuppgradering planerad', content:'IT-avdelningen planerar en systemuppgradering den 1 mars. Förbered er för kort driftavbrott.', createdBy:'u1' },
+    // Alpha (10 newsflashes)
+    { id:'n1', teamId:'alpha', date:'2026-03-15', title:'Nytt mål för Q1', content:'Vi har justerat våra Q1-mål baserat på feedback från ledningsgruppen. Det nya fokusområdet är kundkommunikation.', createdBy:'u3' },
+    { id:'n2', teamId:'alpha', date:'2026-03-01', title:'Välkommen Oscar!', content:'Oscar Gren ansluter till teamet som ny utvecklare. Välkommen!', createdBy:'u3' },
+    { id:'n3', teamId:'alpha', date:'2026-02-20', title:'Systemuppgradering planerad', content:'IT-avdelningen planerar en systemuppgradering den 1 mars. Förbered er för kort driftavbrott.', createdBy:'u1' },
+    { id:'n30', teamId:'alpha', date:'2026-02-15', title:'Sprint review genomförd', content:'Vi avslutade sprint 4 med alla user stories klara. Bra samarbete!', createdBy:'u3' },
+    { id:'n31', teamId:'alpha', date:'2026-02-10', title:'Ny kundkontakt etablerad', content:'Vi har inlett samarbete med en ny strategisk kund inom tillverkningssektorn.', createdBy:'u3' },
+    { id:'n32', teamId:'alpha', date:'2026-02-01', title:'Utbildningsdag planerad', content:'Den 20 februari kör vi en gemensam utbildningsdag kring kommunikationsverktyg.', createdBy:'u1' },
+    { id:'n33', teamId:'alpha', date:'2026-01-25', title:'Processförbättring', content:'Vi har identifierat tre flaskhalsar i vår rapporteringsprocess som vi nu åtgärdar.', createdBy:'u3' },
+    { id:'n34', teamId:'alpha', date:'2026-01-20', title:'Teambuilding genomförd', content:'Fantastisk teamdag med fokus på samarbete och kommunikation. Tack alla!', createdBy:'u3' },
+    { id:'n35', teamId:'alpha', date:'2026-01-15', title:'Kickoff 2026', content:'Vi har satt nya mål för året och alla är engagerade i det nya fokusområdet.', createdBy:'u1' },
+    { id:'n36', teamId:'alpha', date:'2026-01-05', title:'God nytt år!', content:'Välkomna tillbaka efter ledigheten. Vi har ett spännande år framför oss!', createdBy:'u3' },
     // Beta (3 newsflashes)
     { id:'n4', teamId:'beta', date:'2026-02-10', title:'Produktlansering framflyttad', content:'Vi flyttar lanseringsdatum från mars till april.', createdBy:'u5' },
     { id:'n7', teamId:'beta', date:'2026-01-28', title:'Ny testmiljö tillgänglig', content:'Staging-miljön är nu uppe med senaste koden. Alla uppmanas testa sina features där.', createdBy:'u8' },
