@@ -72,7 +72,7 @@ body {
 .sidebar__link--meeting-stop { background: #c00 !important; color: #fff !important; font-weight: 900; text-align: center; }
 
 /* --- MAIN --- */
-.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); padding-bottom: 64px; }
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) 0; }
 .page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
 
 /* --- BUTTONS --- */
@@ -137,6 +137,34 @@ body {
 .role-org-admin [data-min-role="super-admin"] { display: none !important; }
 .role-integ-admin [data-min-role="super-admin"] { display: none !important; }
 
+/* --- ICON BUTTONS --- */
+.icon-btn { background: none; border: none; cursor: pointer; padding: 4px 6px; font-size: 14px; color: var(--text-muted); border-radius: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 28px; min-height: 28px; }
+.icon-btn:hover { color: var(--text); background: var(--hi-soft); }
+
+/* --- HERO SECTION --- */
+.hero-section { display: flex; flex-direction: column; }
+.hero-sub-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 0; flex: 1; min-height: 0; }
+.hero-sub-box { border: 3px solid var(--border-strong); padding: var(--xl); display: flex; flex-direction: column; }
+.hero-sub-box:first-child { border-right: none; }
+.hero-sub-box__title { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--sm); display: flex; align-items: center; gap: var(--sm); }
+.hero-sub-box__subtitle { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.hero-sub-box__text { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-top: var(--md); flex: 1; }
+
+/* --- HERO CAROUSEL --- */
+.hero-carousel { position: relative; aspect-ratio: 16/9; max-height: 50vh; margin: 0 auto; overflow: hidden; border: 3px solid var(--border-strong); margin-bottom: var(--md); }
+.hero-carousel__track { display: flex; width: 300%; height: 100%; transition: transform .5s ease; }
+.hero-carousel__slide { flex: 0 0 33.3333%; height: 100%; }
+.hero-carousel__slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-carousel__btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: 2px solid #fff; width: 44px; height: 44px; font-size: 20px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; z-index: 2; }
+.hero-carousel__btn:hover { background: rgba(0,0,0,0.85); }
+.hero-carousel__btn--prev { left: var(--md); }
+.hero-carousel__btn--next { right: var(--md); }
+.hero-carousel__edit { position: absolute; top: var(--md); right: var(--md); z-index: 2; background: rgba(255,255,255,0.9); border: 2px solid var(--border-strong); min-width: 36px; min-height: 36px; font-size: 16px; }
+.hero-carousel__edit:hover { background: var(--hi); }
+.hero-carousel__dots { position: absolute; bottom: var(--md); left: 50%; transform: translateX(-50%); display: flex; gap: var(--sm); z-index: 2; }
+.hero-carousel__dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5); border: 2px solid #fff; cursor: pointer; transition: background .2s; }
+.hero-carousel__dot--active { background: var(--hi); border-color: var(--hi); }
+
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   .content-grid { grid-template-columns: 1fr; }
@@ -198,7 +226,36 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   <!-- ===== MAIN ===== -->
   <main class="main" id="main-content">
     <h1 class="page-title" id="page-title">Strategiskt Resonemang</h1>
-    <div id="content"></div>
+
+    <!-- Hero Section: Carousel + Sub Boxes -->
+    <div class="hero-section">
+      <div class="hero-carousel" id="hero-carousel">
+        <div class="hero-carousel__track" id="hero-track">
+          <div class="hero-carousel__slide"><img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&h=500&fit=crop" alt="Strategisk bild 1"></div>
+          <div class="hero-carousel__slide"><img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=500&fit=crop" alt="Strategisk bild 2"></div>
+          <div class="hero-carousel__slide"><img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=500&fit=crop" alt="Strategisk bild 3"></div>
+        </div>
+        <button class="hero-carousel__btn hero-carousel__btn--prev" id="hero-prev" aria-label="Föregående bild">&#8249;</button>
+        <button class="hero-carousel__btn hero-carousel__btn--next" id="hero-next" aria-label="Nästa bild">&#8250;</button>
+        <button class="icon-btn hero-carousel__edit" data-min-role="org-admin" title="Redigera bild">&#9998;</button>
+        <div class="hero-carousel__dots" id="hero-dots">
+          <span class="hero-carousel__dot hero-carousel__dot--active" data-slide="0"></span>
+          <span class="hero-carousel__dot" data-slide="1"></span>
+          <span class="hero-carousel__dot" data-slide="2"></span>
+        </div>
+      </div>
+      <div class="hero-sub-boxes">
+        <div class="hero-sub-box">
+          <div class="hero-sub-box__title">Newsflash <span class="hero-sub-box__subtitle">(from management)</span> <button class="icon-btn" data-min-role="org-admin" title="Redigera">&#9998;</button></div>
+          <div class="hero-sub-box__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+        </div>
+        <div class="hero-sub-box">
+          <div class="hero-sub-box__title">Market monitoring <span class="hero-sub-box__subtitle">(by our own team)</span> <button class="icon-btn" data-min-role="org-admin" title="Redigera">&#9998;</button></div>
+          <div class="hero-sub-box__text">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- ===== CONFIRM DIALOG ===== -->
@@ -535,68 +592,7 @@ function renderProgressLine() {
 // 7. RENDER CONTENT
 // ============================================================
 function renderContent() {
-  const teamId = S.teamId;
-  const links = WS.strategicLinks[teamId];
-  const canEdit = ['super-admin','integ-admin','org-admin'].includes(S.role);
-
-  let linkCardHtml = '';
-  if (links) {
-    linkCardHtml = `
-      <div class="link-card" id="card-strategic">
-        <div class="link-card__title">${t('str.strategic')}</div>
-        <div class="link-card__desc">${t('str.strategicDesc')}</div>
-        <div class="link-card__url">
-          <div class="form-group">
-            <label class="form-label" for="url-strategic">URL</label>
-            <input type="url" class="form-input" id="url-strategic" value="${links.strategic.url}" ${canEdit ? '' : 'readonly'} ${canEdit ? '' : 'tabindex="-1"'} data-min-role="org-admin">
-            ${canEdit ? '' : `<input type="url" class="form-input" value="${links.strategic.url}" readonly tabindex="-1" style="display:block;" id="url-strategic-readonly">`}
-          </div>
-          <div style="display:flex;gap:var(--sm);flex-shrink:0;padding-bottom:0;">
-            <button class="btn btn--hi btn--sm" data-min-role="org-admin" id="save-strategic">${t('btn.save')}</button>
-            <button class="btn btn--outline btn--sm" id="open-strategic">${t('str.openLink')}</button>
-          </div>
-        </div>
-        <div class="link-card__meta">${t('str.lastUpdated')}: ${links.strategic.updatedDate}</div>
-      </div>
-    `;
-  }
-
-  $('content').innerHTML = `
-    ${linkCardHtml}
-    <div class="content-grid">
-      <div class="content-box">
-        <div class="content-box__title">Strategiskt Resonemang</div>
-        <div class="content-box__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
-      </div>
-      <div class="content-box">
-        <div class="content-box__title">Strategisk Sammanfattning</div>
-        <div class="content-box__text">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</div>
-      </div>
-      <div class="content-box">
-        <div class="content-box__title">Omvärldsfaktorer</div>
-        <div class="content-box__text">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</div>
-      </div>
-      <div class="content-box">
-        <div class="content-box__title">Slutsatser</div>
-        <div class="content-box__text">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi.</div>
-      </div>
-    </div>
-  `;
-
-  // Event: save strategic URL
-  $('save-strategic')?.addEventListener('click', () => {
-    const val = $('url-strategic').value;
-    WS.strategicLinks[teamId].strategic.url = val;
-    WS.strategicLinks[teamId].strategic.updatedDate = new Date().toISOString().slice(0, 10);
-    toast(t('str.saved'));
-    renderContent();
-  });
-
-  // Event: open links
-  $('open-strategic')?.addEventListener('click', () => {
-    const url = WS.strategicLinks[teamId]?.strategic.url;
-    if (url) window.open(url, '_blank');
-  });
+  // Page content is entirely in the hero section (carousel + sub-boxes)
 }
 
 // ============================================================
@@ -639,6 +635,26 @@ function setRole(role) {
 document.querySelectorAll('.role-btn').forEach(b => {
   b.addEventListener('click', () => setRole(b.dataset.role));
 });
+
+// ============================================================
+// HERO CAROUSEL
+// ============================================================
+(function initCarousel() {
+  let current = 0;
+  const total = 3;
+  const track = $('hero-track');
+  const dots = document.querySelectorAll('.hero-carousel__dot');
+
+  function goTo(idx) {
+    current = ((idx % total) + total) % total;
+    track.style.transform = `translateX(-${current * 33.3333}%)`;
+    dots.forEach((d, i) => d.classList.toggle('hero-carousel__dot--active', i === current));
+  }
+
+  $('hero-prev').addEventListener('click', () => goTo(current - 1));
+  $('hero-next').addEventListener('click', () => goTo(current + 1));
+  dots.forEach(d => d.addEventListener('click', () => goTo(parseInt(d.dataset.slide))));
+})();
 
 // ============================================================
 // 10. INIT
