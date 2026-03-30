@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nyheter v10 — ITT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+  --sidebar-w: 240px; --progress-h: 32px;
+}
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6; color: var(--text); background: var(--bg); display: flex; min-height: 100vh; }
+
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+.sidebar { position: fixed; top: var(--progress-h); left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--xs) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: 2px var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__section-label { padding: 6px var(--lg) 2px; color: var(--hi); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: default; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; padding-top: var(--progress-h); }
+
+/* --- PROGRESS BOXES --- */
+.progress-line { display: flex; gap: 4px; padding: 2px var(--sm); background: var(--bg-alt); border-bottom: 2px solid var(--border); position: fixed; top: 0; left: 0; right: 0; z-index: 1100; }
+.progress-stop { display: flex; align-items: center; justify-content: center; padding: 2px var(--sm); border: 2px solid var(--border-strong); background: var(--bg); cursor: pointer; text-decoration: none; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; transition: box-shadow .15s, transform .15s; }
+.progress-stop:nth-child(1) { width: 20%; }
+.progress-stop:nth-child(2) { width: 20%; }
+.progress-stop:nth-child(3) { width: 40%; }
+.progress-stop:nth-child(4) { width: 20%; }
+.progress-stop:hover { box-shadow: 4px 4px 0 var(--accent); transform: translate(-2px, -2px); }
+.progress-stop--visited { background: #22c55e; border-color: #16a34a; color: #fff; }
+.progress-stop--current { background: var(--accent); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.progress-stop--future { background: var(--bg); border-color: var(--border); color: var(--text-muted); }
+.progress-stop--fill { background: linear-gradient(to right, #22c55e var(--fill, 0%), #1a3a1a var(--fill, 0%)); border-color: #16a34a; color: #fff; }
+.progress-stop--fill-current { background: linear-gradient(to right, #22c55e var(--fill, 0%), var(--accent) var(--fill, 0%)); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.sidebar__link--meeting { background: var(--accent) !important; color: var(--accent-inv) !important; font-weight: 900; text-align: center; }
+.sidebar__link--meeting-stop { background: #c00 !important; color: #fff !important; font-weight: 900; text-align: center; }
+
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); padding-bottom: 64px; }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+
+.form-group { margin-bottom: var(--md); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--xs); display: block; }
+.form-input, .form-textarea { width: 100%; padding: var(--sm) var(--md); border: 2px solid var(--border-strong); background: var(--bg-alt); color: var(--text); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-input:focus, .form-textarea:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+.form-textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+
+.news-post { display: grid; grid-template-columns: minmax(0, 1fr) 148px; gap: var(--lg); border: 3px solid var(--border-strong); padding: var(--xl); margin-bottom: var(--lg); align-items: start; }
+.news-post__main { min-width: 0; }
+.news-post__date { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--sm); }
+.news-post__title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.news-post__content { font-size: 14px; line-height: 1.6; color: var(--text); margin-bottom: var(--lg); }
+.news-post__actions { display: flex; gap: var(--sm); justify-content: flex-end; }
+.news-post__media { display: flex; flex-direction: column; gap: var(--sm); }
+.news-post__image-link { display: block; border: 2px solid var(--border-strong); background: var(--bg-alt); overflow: hidden; aspect-ratio: 1 / 1; }
+.news-post__image { width: 100%; height: 100%; object-fit: cover; display: block; }
+.news-post__image-meta { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+.news-post__image-meta a { color: var(--text); font-weight: 700; }
+
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; }
+.overlay--visible { display: block; }
+.slide-over { position: fixed; top: 0; right: -540px; width: 520px; max-width: 100vw; height: 100vh; background: var(--bg); border-left: 3px solid var(--border-strong); z-index: 2001; overflow-y: auto; transition: right .25s ease; display: flex; flex-direction: column; }
+.slide-over--open { right: 0; }
+.so-header { display: flex; justify-content: space-between; align-items: flex-start; padding: var(--xl); padding-bottom: var(--md); border-bottom: 3px solid var(--border-strong); flex-shrink: 0; }
+.so-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.so-close { background: none; border: 2px solid var(--border-strong); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: 900; color: var(--text); }
+.so-close:hover { background: var(--bg-alt); }
+.so-body { flex: 1; overflow-y: auto; padding: var(--xl); }
+.so-footer { padding: var(--lg) var(--xl); border-top: 2px solid var(--border); display: flex; gap: var(--md); flex-shrink: 0; }
+.so-danger { padding: var(--lg) var(--xl); border-top: 3px solid var(--err); flex-shrink: 0; }
+
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: 2px var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+.role-user [data-min-role="team-leader"], .role-user [data-min-role="org-admin"], .role-user [data-min-role="integ-admin"], .role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"], .role-team-leader [data-min-role="integ-admin"], .role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"], .role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+@media (max-width: 1024px) { .slide-over { width: 100vw; } }
+@media (max-width: 720px) { .news-post { grid-template-columns: 1fr; } .news-post__media { max-width: 180px; } }
+@media (max-width: 480px) { .main { padding: 0 var(--md) var(--2xl); } .page-title { font-size: 24px; padding: var(--lg) 0; } .news-post { padding: var(--lg); } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+
+.integ-chat { position: fixed; top: 0; bottom: 40px; right: 0; width: 500px; background: #fff; border-left: 3px solid #0a0a0a; box-shadow: -6px 0 24px rgba(0,0,0,0.2); z-index: 1200; display: none; flex-direction: column; }
+.integ-chat--open { display: flex; }
+.integ-chat__header { background: #0a0a0a; color: #fff; padding: 12px 16px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.integ-chat__close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+.integ-chat__close:hover { color: #ffcc00; }
+.integ-chat__body { flex: 1; overflow-y: auto; padding: 16px; font-size: 14px; color: #333; }
+.integ-chat__msg { background: #f0f0f0; border-radius: 8px 8px 8px 0; padding: 10px 14px; margin-bottom: 8px; max-width: 85%; line-height: 1.5; }
+.integ-chat__input-wrap { flex-shrink: 0; padding: 12px; border-top: 2px solid #e0e0e0; display: flex; gap: 8px; }
+.integ-chat__input { flex: 1; border: 2px solid #ccc; padding: 8px 12px; font-size: 14px; font-family: inherit; outline: none; }
+.integ-chat__input:focus { border-color: #0a0a0a; }
+.integ-chat__send { background: #0a0a0a; color: #fff; border: none; padding: 8px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+.integ-chat__send:hover { background: #333; }
+
+.sidebar__preread { display: inline-block; width: 8px; height: 8px; background: #e6001a; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<aside class="sidebar" aria-label="Huvudnavigering">
+  
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap"><span class="sidebar__selector-label">Org</span><select id="org-select" aria-label="Välj organisation"></select></div>
+    <div class="sidebar__selector" id="team-selector-wrap"><span class="sidebar__selector-label">Team</span><select id="team-select" aria-label="Välj team"></select></div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="#" class="sidebar__link" id="nav-integ" onclick="event.preventDefault();toggleIntegChat();">Integ</a>
+    <div class="lang-switcher"><button class="lang-btn lang-btn--active" data-lang="sv">SV</button><button class="lang-btn" data-lang="en">EN</button></div>
+  </div>
+</aside>
+
+<div class="page-wrap">
+  <div class="progress-line" id="progress-line"></div>
+  <main class="main" id="main-content">
+    <h1 class="page-title" id="page-title">Nyheter</h1>
+    <div style="margin-bottom:var(--lg);" data-min-role="team-leader"><button class="btn btn--hi" id="btn-new-news">+ Ny nyhet</button></div>
+    <div id="news-list"></div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="slide-over" id="so-news" role="dialog" aria-modal="true" aria-label="Nyheter">
+  <div class="so-header"><div class="so-title" id="so-news-title">Skapa nyhet</div><button class="so-close" aria-label="Stäng" id="so-news-close">&times;</button></div>
+  <div class="so-body">
+    <div class="form-group"><label class="form-label" for="news-date" id="lbl-news-date">Datum</label><input type="date" class="form-input" id="news-date"></div>
+    <div class="form-group"><label class="form-label" for="news-title-input" id="lbl-news-title">Titel</label><input type="text" class="form-input" id="news-title-input" required></div>
+    <div class="form-group"><label class="form-label" for="news-content-input" id="lbl-news-content">Innehåll</label><textarea class="form-textarea" id="news-content-input"></textarea></div>
+  </div>
+  <div class="so-footer" id="so-news-footer"><button class="btn btn--hi" id="so-news-save">Spara</button><button class="btn btn--outline" id="so-news-cancel">Avbryt</button></div>
+  <div class="so-danger" id="so-news-danger" style="display:none;"><button class="btn btn--danger" id="so-news-delete" style="width:100%;justify-content:center;">Radera nyhet</button></div>
+</div>
+
+<div class="dialog-overlay" id="confirm-dialog">
+  <div class="dialog"><div class="dialog__title" id="dialog-title">Bekräfta</div><div class="dialog__text" id="dialog-text"></div><div class="dialog__actions"><button class="btn btn--outline" id="dialog-cancel">Avbryt</button><button class="btn btn--danger" id="dialog-confirm">Bekräfta</button></div></div>
+</div>
+
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+
+<!-- Integ Chat Panel -->
+<div class="integ-chat" id="integ-chat">
+  <div class="integ-chat__header">Integ Chat <button class="integ-chat__close" onclick="toggleIntegChat()">&times;</button></div>
+  <div class="integ-chat__body"><div class="integ-chat__msg">Hello! How can I help you?</div></div>
+  <div class="integ-chat__input-wrap"><input class="integ-chat__input" placeholder="Type a message..." /><button class="integ-chat__send">Send</button></div>
+</div>
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="i18n-sv.js?v=1774551162"></script>
+<script src="i18n-en.js?v=1774551162"></script>
+<script src="mock-data.js?v=2"></script>
+<script src="mock-data-workspace.js?v=2"></script>
+<script>
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+function t(key, params) { let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key; if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); }); return str; }
+
+const ACTIVE_MODULE = 'newsflash';
+const CURRENT_SECTION = 1;
+
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, fullKey: 'mod.strategic' },
+  { key: 'locomotiveGoals', file: 'locomotive-goals.html', section: 1, fullKey: 'mod.locomotiveGoals' },
+  { key: 'bestContribution', file: 'our-dashboard.html', section: 2, fullKey: 'mod.bestContribution' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, fullKey: 'mod.ideas' },
+  { key: 'reflections', file: 'reflections.html', section: 4, fullKey: 'mod.reflections' },
+  { key: 'teamRules', file: 'team-rules.html', section: 4, fullKey: 'mod.teamRules' },
+  { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
+];
+const SECTION_LABELS = { 1: { sv: 'Strategiskt fokus', en: 'Strategic Focus' }, 2: { sv: 'Bästa bidrag', en: 'Best Contribution' }, 3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, 4: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' } };
+const PROGRESS_STOPS = [
+  { section: 1, label: { sv: 'Strategiskt Fokus', en: 'Strategic Focus' }, file: 'strategic.html' },
+  { section: 2, label: { sv: 'Bästa bidrag', en: 'Best Contribution' }, file: 'our-dashboard.html' },
+  { section: 3, label: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, file: 'action-plan.html' },
+  { section: 4, label: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' }, file: 'reflections.html' },
+];
+
+const S = { role: localStorage.getItem('itt-role') || 'super-admin', orgId: localStorage.getItem('itt-org') || '', teamId: localStorage.getItem('itt-team') || 'alpha', editingNewsId: null };
+const $ = id => document.getElementById(id);
+const actor = () => ACTORS[S.role];
+const actorUser = () => DB.users.find(u => u.id === actor().userId);
+function orgsForActor() { const a = actor(); if (S.role === 'super-admin') return DB.organizations; return DB.organizations.filter(o => a.orgs.includes(o.id)); }
+function teamsForActor() { const a = actor(); const u = actorUser(); if (['super-admin','integ-admin','org-admin'].includes(S.role)) { let teams = DB.teams.filter(t => a.orgs.includes(t.orgId)); if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId); return teams; } if (S.role === 'team-leader') { if (a.teams) return DB.teams.filter(t => a.teams.includes(t.id)); return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id)); } return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id)); }
+function toast(msg) { const c = $('toast-container'); const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg; c.appendChild(el); setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000); }
+function confirmDialog(title, text, confirmLabel, onConfirm) { $('dialog-title').textContent = title; $('dialog-text').textContent = text; $('dialog-confirm').textContent = confirmLabel; $('dialog-confirm').className = 'btn btn--danger'; $('confirm-dialog').classList.add('dialog-overlay--visible'); const handler = () => { $('confirm-dialog').classList.remove('dialog-overlay--visible'); $('dialog-confirm').removeEventListener('click', handler); onConfirm(); }; $('dialog-confirm').addEventListener('click', handler); }
+$('dialog-cancel').addEventListener('click', () => { $('confirm-dialog').classList.remove('dialog-overlay--visible'); });
+
+function setLang(lang) { currentLang = lang; localStorage.setItem('itt-lang', lang); document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang)); document.documentElement.lang = lang; updateStaticText(); renderSidebar(); renderProgressLine(); renderNewsList(); }
+function updateStaticText() { $('skip-link').textContent = t('skip'); $('nav-integ').textContent = 'Integ'; $('page-title').textContent = t('nf.title'); $('btn-new-news').textContent = t('nf.new'); $('dialog-cancel').textContent = t('btn.cancel'); $('lbl-news-date').textContent = t('nf.date'); $('lbl-news-title').textContent = t('nf.titleField'); $('lbl-news-content').textContent = t('nf.content'); $('so-news-save').textContent = t('btn.save'); $('so-news-cancel').textContent = t('btn.cancel'); }
+document.addEventListener('click', e => { if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang); });
+
+function renderOrgSelector() { const orgs = orgsForActor(); const sel = $('org-select'); const wrap = $('org-selector-wrap'); const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role); if (!isHighRole || orgs.length <= 1) { wrap.style.display = 'none'; if (orgs.length === 1) S.orgId = orgs[0].id; else if (orgs.length === 0) S.orgId = ''; return; } wrap.style.display = ''; if (!S.orgId || !orgs.find(o => o.id === S.orgId)) { S.orgId = orgs[0].id; localStorage.setItem('itt-org', S.orgId); } sel.innerHTML = orgs.map(o => `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`).join(''); }
+$('org-select').addEventListener('change', e => { S.orgId = e.target.value; localStorage.setItem('itt-org', S.orgId); const teams = teamsForActor(); if (teams.length > 0) { S.teamId = teams[0].id; localStorage.setItem('itt-team', S.teamId); } renderAll(); });
+function renderTeamSelector() { const teams = teamsForActor(); const sel = $('team-select'); const wrap = $('team-selector-wrap'); if (teams.length <= 1) { wrap.style.display = 'none'; if (teams.length === 1) S.teamId = teams[0].id; } else { wrap.style.display = ''; sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === S.teamId ? 'selected' : ''}>${t.title}</option>`).join(''); } if (!teams.find(t => t.id === S.teamId) && teams.length > 0) { S.teamId = teams[0].id; localStorage.setItem('itt-team', S.teamId); } }
+$('team-select').addEventListener('change', e => { S.teamId = e.target.value; localStorage.setItem('itt-team', S.teamId); renderNewsList(); });
+
+
+// ============================================================
+// MEETING TIMER
+// ============================================================
+const SECTION_ALLOC = { 1: 720, 2: 720, 3: 1440, 4: 720 }; // seconds (12+12+24+12 = 60 min)
+
+function isMeetingActive() { return localStorage.getItem('itt-meeting-active') === 'true'; }
+
+function startMeeting() {
+  const now = Date.now();
+  localStorage.setItem('itt-meeting-active', 'true');
+  localStorage.setItem('itt-meeting-start', String(now));
+  localStorage.setItem('itt-meeting-section-times', JSON.stringify({1:0,2:0,3:0,4:0}));
+  localStorage.setItem('itt-meeting-section-enter', String(now));
+  localStorage.setItem('itt-meeting-current-section', '1');
+  location.href = 'strategic.html';
+}
+
+function stopMeeting() {
+  flushSectionTime();
+  localStorage.removeItem('itt-meeting-active');
+  localStorage.removeItem('itt-meeting-start');
+  localStorage.removeItem('itt-meeting-section-enter');
+  localStorage.removeItem('itt-meeting-current-section');
+  renderAll();
+}
+
+function flushSectionTime() {
+  if (!isMeetingActive()) return;
+  const enter = parseInt(localStorage.getItem('itt-meeting-section-enter') || '0');
+  const sec = parseInt(localStorage.getItem('itt-meeting-current-section') || '0');
+  if (!enter || !sec || enter < 1000000000000) return;
+  const elapsed = (Date.now() - enter) / 1000;
+  const times = JSON.parse(localStorage.getItem('itt-meeting-section-times') || '{}');
+  times[sec] = (times[sec] || 0) + elapsed;
+  localStorage.setItem('itt-meeting-section-times', JSON.stringify(times));
+  localStorage.setItem('itt-meeting-section-enter', String(Date.now()));
+  localStorage.setItem('itt-meeting-current-section', String(CURRENT_SECTION));
+}
+
+function getSectionFill(section) {
+  const times = JSON.parse(localStorage.getItem('itt-meeting-section-times') || '{}');
+  if (!Object.keys(times).length) return 0;
+  let spent = times[section] || 0;
+  // Add live elapsed for current section
+  if (isMeetingActive() && section === CURRENT_SECTION) {
+    const enter = parseInt(localStorage.getItem('itt-meeting-section-enter') || '0');
+    if (enter) spent += (Date.now() - enter) / 1000;
+  }
+  const alloc = SECTION_ALLOC[section] || 720;
+  return Math.min(100, (spent / alloc) * 100);
+}
+
+// Flush time from previous section on page load
+if (isMeetingActive()) {
+  const prevSec = parseInt(localStorage.getItem('itt-meeting-current-section') || '0');
+  if (prevSec && prevSec !== CURRENT_SECTION) { flushSectionTime(); }
+  localStorage.setItem('itt-meeting-section-enter', String(Date.now()));
+  localStorage.setItem('itt-meeting-current-section', String(CURRENT_SECTION));
+}
+
+// Live timer update every 5 seconds
+setInterval(() => { if (isMeetingActive()) renderProgressLine(); }, 5000);
+
+function renderSidebar() { let html = ''; html += `<a href="my-dashboard.html" class="sidebar__link">${t('nav.myDashboard')}</a>`; if (isMeetingActive()) { html += `<a href="#" class="sidebar__link sidebar__link--meeting-stop" onclick="event.preventDefault();stopMeeting();">&#9632; Avsluta möte</a>`; } else { html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`; } html += '<div class="sidebar__divider"></div>'; let lastSection = 0; MODULES.forEach(m => { if (m.section !== lastSection) { const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv; html += `<div class="sidebar__section-label">${l}</div>`; lastSection = m.section; } const isActive = m.key === ACTIVE_MODULE; const preread = (m.key === 'documents' && typeof WS !== 'undefined') ? WS.documents.filter(d => d.teamId === S.teamId && d.isPreRead).length : 0;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}${preread ? '<span class="sidebar__preread"></span>' : ''}</a>`; }); html += '<div class="sidebar__divider"></div>'; html += '<a href="admin.html" class="sidebar__link" data-min-role="team-leader">' + t('nav.admin') + '</a>'; html += '<a href="archive.html" class="sidebar__link' + (ACTIVE_MODULE === 'archive' ? ' sidebar__link--active' : '') + '">' + t('mod.archive') + '</a>'; $('sidebar-nav').innerHTML = html; }
+
+function renderProgressLine() {
+  let html = '';
+  const meetingActive = isMeetingActive();
+  const hasMeetingData = !!localStorage.getItem('itt-meeting-section-times');
+  const meeting = meetingActive || hasMeetingData;
+  PROGRESS_STOPS.forEach((stop, i) => {
+    let cls = 'progress-stop';
+    const fill = meeting ? getSectionFill(stop.section) : 0;
+    if (meeting && fill > 0 && stop.section !== CURRENT_SECTION) {
+      cls += ' progress-stop--fill';
+    } else if (meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--fill-current';
+    } else if (hasMeetingData && !meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else if (stop.section < CURRENT_SECTION) {
+      cls += ' progress-stop--visited';
+    } else if (stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else {
+      cls += ' progress-stop--future';
+    }
+    const label = currentLang === 'en' ? stop.label.en : stop.label.sv;
+    const style = meeting ? ` style="--fill:${fill.toFixed(1)}%"` : '';
+    html += `<a href="${stop.file}" class="${cls}"${style}>${label}</a>`;
+  });
+  $('progress-line').innerHTML = html;
+}
+
+function openSlideOver(newsId) { S.editingNewsId = newsId || null; const isEdit = !!newsId; const news = isEdit ? WS.newsflashes.find(n => n.id === newsId) : null; $('so-news-title').textContent = isEdit ? t('nf.editTitle') : t('nf.createTitle'); $('news-date').value = isEdit ? news.date : new Date().toISOString().slice(0, 10); $('news-title-input').value = isEdit ? news.title : ''; $('news-content-input').value = isEdit ? news.content : ''; $('so-news-danger').style.display = isEdit ? '' : 'none'; $('overlay').classList.add('overlay--visible'); $('so-news').classList.add('slide-over--open'); setTimeout(() => $('news-title-input').focus(), 300); }
+function closeSlideOver() { $('overlay').classList.remove('overlay--visible'); $('so-news').classList.remove('slide-over--open'); S.editingNewsId = null; }
+$('so-news-close').addEventListener('click', closeSlideOver);
+$('so-news-cancel').addEventListener('click', closeSlideOver);
+$('overlay').addEventListener('click', closeSlideOver);
+
+$('so-news-save').addEventListener('click', () => { const title = $('news-title-input').value.trim(); if (!title) { toast('Ange en titel.'); return; } const date = $('news-date').value; const content = $('news-content-input').value.trim(); if (S.editingNewsId) { const news = WS.newsflashes.find(n => n.id === S.editingNewsId); if (news) { news.date = date; news.title = title; news.content = content; } toast(t('nf.title') + ' uppdaterad'); } else { WS.newsflashes.push({ id: 'n' + Date.now(), teamId: S.teamId, date, title, content, createdBy: actor().userId }); toast(t('nf.title') + ' skapad'); } closeSlideOver(); renderNewsList(); });
+$('so-news-delete').addEventListener('click', () => { const newsId = S.editingNewsId; if (!newsId) return; closeSlideOver(); confirmDialog(t('nf.confirmDelete'), t('nf.confirmDelete'), t('btn.confirm'), () => { const idx = WS.newsflashes.findIndex(n => n.id === newsId); if (idx !== -1) WS.newsflashes.splice(idx, 1); toast(t('nf.title') + ' raderad'); renderNewsList(); }); });
+
+function renderNewsList() { const posts = WS.newsflashes.filter(n => n.teamId === S.teamId).sort((a, b) => b.date.localeCompare(a.date)); if (posts.length === 0) { $('news-list').innerHTML = '<div class="empty-state"><p>Inga nyhetsflash för detta team.</p></div>'; return; } $('news-list').innerHTML = posts.map(post => { const illustration = getIllustration(post.id); return `<article class="news-post" data-news-id="${post.id}"><div class="news-post__main"><div class="news-post__date">${post.date}</div><div class="news-post__title">${escHtml(post.title)}</div><div class="news-post__content">${escHtml(post.content)}</div><div class="news-post__actions" data-min-role="team-leader"><button class="btn btn--outline btn--sm" data-edit="${post.id}">${t('doc.edit')}</button><button class="btn btn--outline btn--sm" data-delete="${post.id}" style="color:var(--err);border-color:var(--err);">&times;</button></div></div><aside class="news-post__media"><a class="news-post__image-link" href="${illustration.href}" target="_blank" rel="noreferrer"><img class="news-post__image" src="${illustration.src}" alt="${illustration.alt}"></a><div class="news-post__image-meta"><a href="${illustration.href}" target="_blank" rel="noreferrer">${currentLang === 'en' ? 'Open illustration' : 'Öppna illustration'}</a></div></aside></article>`; }).join(''); }
+function getIllustration(newsId) { const ids = { n1: 12, n2: 32, n3: 18, n4: 24, n5: 41, n6: 22, n7: 36, n8: 14, n9: 28, n10: 19, n11: 43, n12: 27, n13: 37, n14: 15, n15: 11, n16: 33 }; const img = ids[newsId] || 8; const src = `https://i.pravatar.cc/320?img=${img}`; return { src, href: src, alt: currentLang === 'en' ? 'Placeholder portrait illustration' : 'Platshållarbild med porträtt' }; }
+function escHtml(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
+
+document.addEventListener('click', e => { const editBtn = e.target.closest('[data-edit]'); if (editBtn) { openSlideOver(editBtn.dataset.edit); return; } const deleteBtn = e.target.closest('[data-delete]'); if (deleteBtn) { const newsId = deleteBtn.dataset.delete; confirmDialog(t('nf.confirmDelete'), t('nf.confirmDelete'), t('btn.confirm'), () => { const idx = WS.newsflashes.findIndex(n => n.id === newsId); if (idx !== -1) WS.newsflashes.splice(idx, 1); toast(t('nf.title') + ' raderad'); renderNewsList(); }); return; } });
+$('btn-new-news').addEventListener('click', () => openSlideOver(null));
+
+
+function toggleIntegChat() {
+  const chat = document.getElementById('integ-chat');
+  if (chat) chat.classList.toggle('integ-chat--open');
+}
+
+function renderAll() { renderOrgSelector(); renderTeamSelector(); renderSidebar(); renderProgressLine(); renderNewsList(); }
+function setRole(role) { S.role = role; localStorage.setItem('itt-role', role); document.body.className = 'role-' + role; document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role)); const orgs = orgsForActor(); if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) { S.orgId = orgs[0].id; localStorage.setItem('itt-org', S.orgId); } const teams = teamsForActor(); if (teams.length > 0 && !teams.find(t => t.id === S.teamId)) { S.teamId = teams[0].id; localStorage.setItem('itt-team', S.teamId); } updateStaticText(); renderAll(); }
+document.querySelectorAll('.role-btn').forEach(b => { b.addEventListener('click', () => setRole(b.dataset.role)); });
+
+(function init() { const lang = localStorage.getItem('itt-lang') || 'sv'; document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang)); document.documentElement.lang = lang; setRole(S.role); })();
+</script>
+</body>
+</html>

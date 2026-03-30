@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mål & Mätetal v10 — ITT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a;
+  --text: #0a0a0a; --text-muted: #666666;
+  --border: #e0e0e0; --border-strong: #0a0a0a;
+  --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff;
+  --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18);
+  --ok: #00a854; --warn: #fa8c16; --err: #e6001a;
+  --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px;
+  --sidebar-w: 240px; --progress-h: 32px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6;
+  color: var(--text); background: var(--bg);
+  display: flex; min-height: 100vh; padding-bottom: 64px;
+}
+[hidden] { display: none !important; }
+
+/* --- SKIP LINK --- */
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+
+/* --- SIDEBAR --- */
+.sidebar { position: fixed; top: var(--progress-h); left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--xs) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: 2px var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__link--disabled { color: #555; cursor: default; pointer-events: none; }
+.sidebar__section-label { padding: 6px var(--lg) 2px; color: var(--hi); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: default; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+
+/* --- PAGE WRAP --- */
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; padding-top: var(--progress-h); }
+
+/* --- PROGRESS BOXES --- */
+.progress-line { display: flex; gap: 4px; padding: 2px var(--sm); background: var(--bg-alt); border-bottom: 2px solid var(--border); position: fixed; top: 0; left: 0; right: 0; z-index: 1100; }
+.progress-stop { display: flex; align-items: center; justify-content: center; padding: 2px var(--sm); border: 2px solid var(--border-strong); background: var(--bg); cursor: pointer; text-decoration: none; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; transition: box-shadow .15s, transform .15s; }
+.progress-stop:nth-child(1) { width: 20%; }
+.progress-stop:nth-child(2) { width: 20%; }
+.progress-stop:nth-child(3) { width: 40%; }
+.progress-stop:nth-child(4) { width: 20%; }
+.progress-stop:hover { box-shadow: 4px 4px 0 var(--accent); transform: translate(-2px, -2px); }
+.progress-stop--visited { background: #22c55e; border-color: #16a34a; color: #fff; }
+.progress-stop--current { background: var(--accent); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.progress-stop--future { background: var(--bg); border-color: var(--border); color: var(--text-muted); }
+.progress-stop--fill { background: linear-gradient(to right, #22c55e var(--fill, 0%), #1a3a1a var(--fill, 0%)); border-color: #16a34a; color: #fff; }
+.progress-stop--fill-current { background: linear-gradient(to right, #22c55e var(--fill, 0%), var(--accent) var(--fill, 0%)); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.sidebar__link--meeting { background: var(--accent) !important; color: var(--accent-inv) !important; font-weight: 900; text-align: center; }
+.sidebar__link--meeting-stop { background: #c00 !important; color: #fff !important; font-weight: 900; text-align: center; }
+
+/* --- MAIN --- */
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); padding-bottom: 80px; }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+
+/* --- BUTTONS --- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; min-height: 40px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--wide { width: 100%; background: #2547b2; border-color: #2547b2; color: #fff; }
+
+/* --- METRICS SHELL --- */
+.metrics-shell { display: grid; gap: var(--lg); }
+.metrics-panel { background: #f7f7f7; border: 1px solid #d6d6d6; padding: var(--md); }
+.metrics-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+.metrics-table th { font-size: 11px; font-weight: 900; color: #555; text-align: left; padding: 0 10px 4px 0; }
+.metrics-table td { padding-right: 10px; vertical-align: middle; }
+.metrics-table__name { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.metrics-table__check { width: 14px; height: 14px; accent-color: #2547b2; }
+.metric-input { width: 100%; min-height: 34px; border: 1px solid #d8dbe2; background: #e9edf3; border-radius: 4px; padding: 0 10px; font: inherit; }
+.metric-input:focus { outline: 2px solid #2547b2; outline-offset: 1px; background: #fff; }
+.metric-chip { height: 18px; border-radius: 4px; min-width: 66px; display: inline-block; }
+.metric-chip--1 { background: #57b7b7; }
+.metric-chip--2 { background: #ed9b32; }
+.metric-chip--3 { background: #d94fe8; }
+.metric-chip--4 { background: #d94b7f; }
+.metric-actions { display: flex; gap: 12px; color: #999; font-size: 16px; }
+.metric-actions button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0; font-size: 16px; }
+.metrics-subnote { text-align: center; font-size: 12px; color: #666; margin: 6px 0 10px; }
+.history-bar { display: grid; gap: var(--sm); }
+.history-select { width: 100%; min-height: 38px; border: 1px solid #d6d6d6; background: #efefef; padding: 0 10px; font: inherit; color: #444; }
+
+/* --- CHART CARD --- */
+.chart-card { border: 1px solid #d6d6d6; background: #fff; padding: var(--md); }
+
+/* Metrics carousel */
+.metrics-carousel { position: relative; }
+.metrics-carousel__nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.metrics-carousel__title { font-size: 14px; font-weight: 900; color: var(--text); text-align: center; flex: 1; }
+.metrics-carousel__btn { width: 32px; height: 32px; border: 2px solid var(--border-strong); background: #fff; cursor: pointer; font-size: 16px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+.metrics-carousel__btn:hover { background: var(--hi-soft); }
+.metrics-carousel__btn:disabled { opacity: 0.3; cursor: default; }
+.metrics-carousel__counter { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 8px; }
+.metrics-carousel__chart { position: relative; height: 300px; border: 2px solid var(--border); background: #fafafa; margin-top: 8px; }
+.metrics-carousel__chart svg { width: 100%; height: 100%; }
+.chart-toolbar { display: flex; align-items: center; gap: var(--lg); flex-wrap: wrap; margin-bottom: var(--md); padding-bottom: var(--md); border-bottom: 1px solid var(--border); }
+.chart-toolbar__group { display: flex; align-items: center; gap: var(--sm); }
+.chart-toolbar__label { font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* --- CHART TOGGLE (Segmented control) --- */
+.chart-toggle { display: inline-flex; border: 2px solid var(--border-strong); overflow: hidden; }
+.chart-toggle__btn { padding: var(--xs) var(--md); border: none; background: var(--bg); color: var(--text); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; min-height: 32px; }
+.chart-toggle__btn--active { background: var(--accent); color: var(--accent-inv); }
+.chart-toggle__btn:hover:not(.chart-toggle__btn--active) { background: var(--bg-alt); }
+
+/* --- TIME AXIS SELECT --- */
+.time-axis-select { min-height: 32px; border: 2px solid var(--border-strong); background: var(--bg); padding: var(--xs) var(--md); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%230a0a0a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 28px; }
+
+/* --- METRIC TABS (max 2 visible) --- */
+.metric-tabs { display: flex; gap: 2px; margin-bottom: var(--md); flex-wrap: wrap; }
+.metric-tab { padding: var(--sm) var(--md); border: 2px solid var(--border); background: var(--bg); color: var(--text-muted); font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; transition: all .15s; }
+.metric-tab--active { background: var(--accent); color: var(--accent-inv); border-color: var(--accent); }
+.metric-tab:hover:not(.metric-tab--active) { border-color: var(--border-strong); color: var(--text); }
+
+.chart-legend { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-bottom: 12px; font-size: 11px; color: #666; }
+.chart-legend__item { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend__swatch { width: 18px; height: 8px; border-radius: 999px; }
+.chart-wrap { position: relative; height: 360px; border-top: 2px solid #ef9ca8; background:
+  linear-gradient(to top, transparent 0, transparent calc(100% - 1px), #ececec calc(100% - 1px)),
+  repeating-linear-gradient(to top, #f9f9f9 0, #f9f9f9 31px, #ececec 32px); padding: 12px 12px 36px 44px; }
+.chart-y-label { position: absolute; left: 8px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: left top; font-size: 11px; color: #777; }
+.bar-chart { position: absolute; inset: 12px 12px 36px 44px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; }
+.bar-group { flex: 1; min-width: 0; display: flex; align-items: flex-end; justify-content: center; gap: 8px; height: 100%; position: relative; }
+.bar { width: min(28px, 100%); border-radius: 3px 3px 0 0; min-height: 2px; }
+.bar-group__date { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #777; white-space: nowrap; }
+
+/* --- REFERENCE LINES (target) --- */
+.chart-reference-line { position: absolute; left: 44px; right: 12px; height: 0; z-index: 2; pointer-events: none; }
+.chart-reference-line__label { position: absolute; right: -4px; top: -8px; font-size: 9px; font-weight: 700; padding: 1px 4px; white-space: nowrap; }
+
+/* --- LINE CHART SVG --- */
+.line-chart-svg { position: absolute; inset: 12px 12px 36px 44px; z-index: 1; }
+.line-chart-svg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.line-chart-svg circle { stroke-width: 1.5; }
+.line-chart-date { position: absolute; bottom: -30px; font-size: 10px; color: #777; white-space: nowrap; transform: translateX(-50%); }
+
+.section-empty { text-align: center; color: var(--text-muted); padding: var(--xl); border: 2px dashed var(--border); background: #fff; }
+
+/* --- TOAST --- */
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+/* --- ROLE SWITCHER BAR --- */
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: 2px var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+
+/* --- ROLE-BASED VISIBILITY --- */
+.role-user [data-min-role="team-leader"],
+.role-user [data-min-role="org-admin"],
+.role-user [data-min-role="integ-admin"],
+.role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"],
+.role-team-leader [data-min-role="integ-admin"],
+.role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"],
+.role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .metrics-table th:nth-child(5),
+  .metrics-table th:nth-child(6),
+  .metrics-table th:nth-child(7),
+  .metrics-table td:nth-child(5),
+  .metrics-table td:nth-child(6),
+  .metrics-table td:nth-child(7) { display: none; }
+}
+@media (max-width: 760px) {
+  .main { padding: 0 var(--md) var(--2xl); }
+  .page-title { font-size: 26px; }
+  .chart-wrap { height: 280px; padding-left: 30px; }
+  .bar-chart { inset: 12px 8px 36px 30px; gap: 10px; }
+  .bar { width: 16px; }
+  .chart-toolbar { flex-direction: column; align-items: flex-start; }
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+
+.integ-chat { position: fixed; top: 0; bottom: 40px; right: 0; width: 500px; background: #fff; border-left: 3px solid #0a0a0a; box-shadow: -6px 0 24px rgba(0,0,0,0.2); z-index: 1200; display: none; flex-direction: column; }
+.integ-chat--open { display: flex; }
+.integ-chat__header { background: #0a0a0a; color: #fff; padding: 12px 16px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.integ-chat__close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+.integ-chat__close:hover { color: #ffcc00; }
+.integ-chat__body { flex: 1; overflow-y: auto; padding: 16px; font-size: 14px; color: #333; }
+.integ-chat__msg { background: #f0f0f0; border-radius: 8px 8px 8px 0; padding: 10px 14px; margin-bottom: 8px; max-width: 85%; line-height: 1.5; }
+.integ-chat__input-wrap { flex-shrink: 0; padding: 12px; border-top: 2px solid #e0e0e0; display: flex; gap: 8px; }
+.integ-chat__input { flex: 1; border: 2px solid #ccc; padding: 8px 12px; font-size: 14px; font-family: inherit; outline: none; }
+.integ-chat__input:focus { border-color: #0a0a0a; }
+.integ-chat__send { background: #0a0a0a; color: #fff; border: none; padding: 8px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+.integ-chat__send:hover { background: #333; }
+
+.sidebar__preread { display: inline-block; width: 8px; height: 8px; background: #e6001a; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__selectors" id="sidebar-selectors">
+    <div class="sidebar__selector" id="org-selector-wrap">
+      <span class="sidebar__selector-label">Org</span>
+      <select id="org-select" aria-label="Välj organisation"></select>
+    </div>
+    <div class="sidebar__selector" id="team-selector-wrap">
+      <span class="sidebar__selector-label">Team</span>
+      <select id="team-select" aria-label="Välj team"></select>
+    </div>
+  </div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer">
+    <a href="#" class="sidebar__link" id="nav-integ" onclick="event.preventDefault();toggleIntegChat();">Integ</a>
+    <div class="lang-switcher">
+      <button class="lang-btn lang-btn--active" data-lang="sv">SV</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== PAGE WRAP ===== -->
+<div class="page-wrap">
+
+  <!-- ===== PROGRESS LINE ===== -->
+  <div class="progress-line" id="progress-line"></div>
+
+  <main class="main" id="main-content">
+    <h1 class="page-title" id="page-title">Mål & Mätetal</h1>
+
+    <div class="metrics-shell">
+      <section class="metrics-panel">
+        <table class="metrics-table" aria-label="Mål och mätetal" id="metrics-table">
+          <thead>
+            <tr>
+              <th id="col-best-contrib">Fokuserat mätetal</th>
+              <th id="col-current">Startläge</th>
+              <th id="col-target">Målvärde</th>
+              <th id="col-color"></th>
+              <th id="col-delete"></th>
+            </tr>
+          </thead>
+          <tbody id="metrics-tbody"></tbody>
+        </table>
+        <div class="metrics-subnote" id="goal-summary"></div>
+        <button class="btn btn--wide" id="new-measurement-btn">+ <span id="new-measurement-label">Skapa ny inmätning</span></button>
+      </section>
+
+      <section class="chart-card" style="border:2px solid var(--border-strong); padding:var(--md);">
+        <div class="metrics-carousel" id="metrics-carousel"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- ===== ROLE SWITCHER ===== -->
+
+<!-- Integ Chat Panel -->
+<div class="integ-chat" id="integ-chat">
+  <div class="integ-chat__header">Integ Chat <button class="integ-chat__close" onclick="toggleIntegChat()">&times;</button></div>
+  <div class="integ-chat__body"><div class="integ-chat__msg">Hello! How can I help you?</div></div>
+  <div class="integ-chat__input-wrap"><input class="integ-chat__input" placeholder="Type a message..." /><button class="integ-chat__send">Send</button></div>
+</div>
+<div class="role-bar">
+  <span class="role-bar__label">Visa som:</span>
+  <div class="role-bar__btns" id="role-btns">
+    <button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button>
+    <button class="role-btn" data-role="integ-admin">Integ Admin</button>
+    <button class="role-btn" data-role="org-admin">Org Admin</button>
+    <button class="role-btn" data-role="team-leader">TL</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+
+<script src="mock-data.js?v=2"></script>
+<script src="mock-data-workspace.js?v=2"></script>
+<script src="i18n-sv.js?v=1774551162"></script>
+<script src="i18n-en.js?v=1774551162"></script>
+<script>
+// ============================================================
+// 0. TRANSLATIONS
+// ============================================================
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+
+function t(key, params) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key;
+  if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); });
+  return str;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('itt-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang));
+  document.documentElement.lang = lang;
+  renderAll();
+}
+
+document.addEventListener('click', e => {
+  if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang);
+});
+
+// ============================================================
+// 1. STATE
+// ============================================================
+const S = {
+  role: localStorage.getItem('itt-role') || 'super-admin',
+  orgId: localStorage.getItem('itt-org') || '',
+  teamId: localStorage.getItem('itt-team') || 'alpha',
+  chartVisible: {},
+  chartType: 'bar',       // 'bar' | 'line'
+  timeAxis: 'monthly',    // 'weekly' | 'biweekly' | 'monthly'
+  metricPage: 0,          // which pair of metrics to show (0 = first two, 1 = next two, ...)
+};
+
+const ACTIVE_MODULE = 'goalsMetrics';
+const CURRENT_SECTION = 2;
+
+const WS_STORAGE_KEY = 'itt-workspace-v10';
+function persistWs() { localStorage.setItem(WS_STORAGE_KEY, JSON.stringify(WS)); }
+
+const $ = id => document.getElementById(id);
+const actor = () => ACTORS[S.role];
+const bcById = id => WS.bestContributions.find(b => b.id === id);
+
+/* ── V8 shared infrastructure ── */
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, fullKey: 'mod.strategic' },
+  { key: 'locomotiveGoals', file: 'locomotive-goals.html', section: 1, fullKey: 'mod.locomotiveGoals' },
+  { key: 'bestContribution', file: 'our-dashboard.html', section: 2, fullKey: 'mod.bestContribution' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, fullKey: 'mod.ideas' },
+  { key: 'reflections', file: 'reflections.html', section: 4, fullKey: 'mod.reflections' },
+  { key: 'teamRules', file: 'team-rules.html', section: 4, fullKey: 'mod.teamRules' },
+  { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
+];
+
+const SECTION_LABELS = {
+  1: { sv: 'Strategiskt fokus', en: 'Strategic Focus' },
+  2: { sv: 'Bästa bidrag', en: 'Best Contribution' },
+  3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' },
+  4: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' },
+};
+
+const PROGRESS_STOPS = [
+  { section: 1, label: { sv: 'Strategiskt Fokus', en: 'Strategic Focus' }, file: 'strategic.html' },
+  { section: 2, label: { sv: 'Bästa bidrag', en: 'Best Contribution' }, file: 'our-dashboard.html' },
+  { section: 3, label: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, file: 'action-plan.html' },
+  { section: 4, label: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' }, file: 'reflections.html' },
+];
+
+const CHART_COLORS = ['#57b7b7', '#ed9b32', '#d94fe8', '#d94b7f', '#7a8df5'];
+
+// ============================================================
+// 2. HELPERS
+// ============================================================
+function orgsForActor() {
+  const a = actor();
+  if (S.role === 'super-admin') return DB.organizations;
+  return DB.organizations.filter(o => a.orgs.includes(o.id));
+}
+
+function teamsForActor() {
+  const a = actor();
+  const u = DB.users.find(u => u.id === a.userId);
+  if (!u) return DB.teams;
+  if (['super-admin', 'integ-admin', 'org-admin'].includes(S.role)) {
+    let teams = DB.teams.filter(t => a.orgs.includes(t.orgId));
+    if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId);
+    return teams;
+  }
+  return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id));
+}
+
+function showToast(msg) {
+  const c = $('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+// ============================================================
+// 3. ORG + TEAM SELECTORS  (same pattern as action-plan)
+// ============================================================
+function renderSelectors() {
+  const orgs = orgsForActor();
+  const orgWrap = $('org-selector-wrap');
+  const orgSel = $('org-select');
+  if (!['super-admin', 'integ-admin', 'org-admin'].includes(S.role) || orgs.length <= 1) {
+    orgWrap.style.display = 'none';
+    if (orgs[0]) S.orgId = orgs[0].id;
+  } else {
+    orgWrap.style.display = '';
+    if (!orgs.find(o => o.id === S.orgId)) S.orgId = orgs[0].id;
+    orgSel.innerHTML = orgs.map(o => `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`).join('');
+  }
+
+  const teams = teamsForActor();
+  const teamWrap = $('team-selector-wrap');
+  const teamSel = $('team-select');
+  if (!teams.find(t => t.id === S.teamId)) S.teamId = teams[0]?.id || 'alpha';
+  if (teams.length <= 1) {
+    teamWrap.style.display = 'none';
+  } else {
+    teamWrap.style.display = '';
+    teamSel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === S.teamId ? 'selected' : ''}>${t.title}</option>`).join('');
+  }
+}
+
+$('org-select').addEventListener('change', e => {
+  S.orgId = e.target.value;
+  localStorage.setItem('itt-org', S.orgId);
+  const teams = teamsForActor();
+  if (teams.length > 0) {
+    S.teamId = teams[0].id;
+    localStorage.setItem('itt-team', S.teamId);
+  }
+  S.metricPage = 0;
+  renderAll();
+});
+
+$('team-select').addEventListener('change', e => {
+  S.teamId = e.target.value;
+  localStorage.setItem('itt-team', e.target.value);
+  S.metricPage = 0;
+  renderAll();
+});
+
+// ============================================================
+// 4. SIDEBAR  (same pattern as action-plan)
+// ============================================================
+
+// ============================================================
+// MEETING TIMER
+// ============================================================
+const SECTION_ALLOC = { 1: 720, 2: 720, 3: 1440, 4: 720 };
+
+function isMeetingActive() { return localStorage.getItem("itt-meeting-active") === "true"; }
+
+function startMeeting() {
+  const now = Date.now();
+  localStorage.setItem("itt-meeting-active", "true");
+  localStorage.setItem("itt-meeting-start", String(now));
+  localStorage.setItem("itt-meeting-section-times", JSON.stringify({1:0,2:0,3:0,4:0}));
+  localStorage.setItem("itt-meeting-section-enter", String(now));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+  renderAll();
+}
+
+function stopMeeting() {
+  flushSectionTime();
+  localStorage.removeItem("itt-meeting-active");
+  localStorage.removeItem("itt-meeting-start");
+  localStorage.removeItem("itt-meeting-section-enter");
+  localStorage.removeItem("itt-meeting-current-section");
+  renderAll();
+}
+
+function flushSectionTime() {
+  if (!isMeetingActive()) return;
+  const enter = parseInt(localStorage.getItem("itt-meeting-section-enter") || "0");
+  const sec = parseInt(localStorage.getItem("itt-meeting-current-section") || "0");
+  if (!enter || !sec || enter < 1000000000000) return;
+  const elapsed = (Date.now() - enter) / 1000;
+  const times = JSON.parse(localStorage.getItem("itt-meeting-section-times") || "{}");
+  times[sec] = (times[sec] || 0) + elapsed;
+  localStorage.setItem("itt-meeting-section-times", JSON.stringify(times));
+  localStorage.setItem("itt-meeting-section-enter", String(Date.now()));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+}
+
+function getSectionFill(section) {
+  const times = JSON.parse(localStorage.getItem("itt-meeting-section-times") || "{}");
+  if (!Object.keys(times).length) return 0;
+  let spent = times[section] || 0;
+  if (isMeetingActive() && section === CURRENT_SECTION) {
+    const enter = parseInt(localStorage.getItem("itt-meeting-section-enter") || "0");
+    if (enter) spent += (Date.now() - enter) / 1000;
+  }
+  const alloc = SECTION_ALLOC[section] || 720;
+  return Math.min(100, (spent / alloc) * 100);
+}
+
+if (isMeetingActive()) {
+  const prevSec = parseInt(localStorage.getItem("itt-meeting-current-section") || "0");
+  if (prevSec && prevSec !== CURRENT_SECTION) { flushSectionTime(); }
+  localStorage.setItem("itt-meeting-section-enter", String(Date.now()));
+  localStorage.setItem("itt-meeting-current-section", String(CURRENT_SECTION));
+}
+
+setInterval(() => { if (isMeetingActive()) renderProgressLine(); }, 5000);
+
+function renderSidebar() {
+  let html = `<a href="my-dashboard.html" class="sidebar__link">${t('nav.myDashboard')}</a>`;
+
+  if (isMeetingActive()) {
+    html += `<a href="#" class="sidebar__link sidebar__link--meeting-stop" onclick="event.preventDefault();stopMeeting();">&#9632; Avsluta möte</a>`;
+  } else {
+    html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`;
+  }
+  html += '<div class="sidebar__divider"></div>';
+
+  let lastSection = 0;
+  MODULES.forEach(m => {
+    if (m.section !== lastSection) {
+      const label = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv;
+      html += `<div class="sidebar__section-label">${label}</div>`;
+      lastSection = m.section;
+    }
+    const isActive = m.key === ACTIVE_MODULE;
+    const preread = (m.key === 'documents' && typeof WS !== 'undefined') ? WS.documents.filter(d => d.teamId === S.teamId && d.isPreRead).length : 0;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}${preread ? '<span class="sidebar__preread"></span>' : ''}</a>`;
+  });
+  html += '<div class="sidebar__divider"></div>';
+  html += '<a href="admin.html" class="sidebar__link" data-min-role="team-leader">' + t('nav.admin') + '</a>';
+  html += '<a href="archive.html" class="sidebar__link' + (ACTIVE_MODULE === 'archive' ? ' sidebar__link--active' : '') + '">' + t('mod.archive') + '</a>';
+
+  $('sidebar-nav').innerHTML = html;
+}
+
+// ============================================================
+// 5. PROGRESS BOXES
+// ============================================================
+function renderProgressLine() {
+  let html = '';
+  const meetingActive = isMeetingActive();
+  const hasMeetingData = !!localStorage.getItem('itt-meeting-section-times');
+  const meeting = meetingActive || hasMeetingData;
+  PROGRESS_STOPS.forEach((stop, i) => {
+    let cls = 'progress-stop';
+    const fill = meeting ? getSectionFill(stop.section) : 0;
+    if (meeting && fill > 0 && stop.section !== CURRENT_SECTION) {
+      cls += ' progress-stop--fill';
+    } else if (meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--fill-current';
+    } else if (hasMeetingData && !meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else if (stop.section < CURRENT_SECTION) {
+      cls += ' progress-stop--visited';
+    } else if (stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else {
+      cls += ' progress-stop--future';
+    }
+    const label = currentLang === 'en' ? stop.label.en : stop.label.sv;
+    const style = meeting ? ` style="--fill:${fill.toFixed(1)}%"` : '';
+    html += `<a href="${stop.file}" class="${cls}"${style}>${label}</a>`;
+  });
+  $('progress-line').innerHTML = html;
+}
+
+// ============================================================
+// 6. GOAL SUMMARY
+// ============================================================
+function renderGoalSummary() {
+  const tcs = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  const total = tcs.length;
+  const done = tcs.filter(tc => tc.targetValue && (tc.currentValue / tc.targetValue) >= 0.75).length;
+  $('goal-summary').textContent = t('gm.goalSummary', { done, total });
+}
+
+// ============================================================
+// 7. METRICS TABLE
+// ============================================================
+function renderMetricsTable() {
+  const tcs = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  const tbody = $('metrics-tbody');
+
+  if (!tcs.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="section-empty">${currentLang === 'en' ? 'No tracked measurements yet.' : 'Inga spårade mätetal ännu.'}</div></td></tr>`;
+    return;
+  }
+
+  let html = '';
+  tcs.forEach((tc, idx) => {
+    html += `<tr>
+      <td>
+        <label class="metrics-table__name">
+          <input class="metrics-table__check" type="checkbox" data-tc-visible="${tc.id}" ${S.chartVisible[tc.id] === false ? '' : 'checked'}>
+          <span>${tc.title}</span>
+        </label>
+      </td>
+      <td><input class="metric-input" type="text" value="${tc.currentValue}" data-field="currentValue" data-tc-id="${tc.id}"></td>
+      <td><input class="metric-input" type="text" value="${tc.targetValue}" data-field="targetValue" data-tc-id="${tc.id}"></td>
+      <td><span class="metric-chip metric-chip--${(idx % 4) + 1}"></span></td>
+      <td><div class="metric-actions"><button type="button" title="${currentLang === 'en' ? 'Delete' : 'Radera'}" data-delete-row="${tc.id}">&#128465;</button></div></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+  bindMetricsInputs();
+}
+
+// ============================================================
+// 8. TIME AXIS DATE GENERATION
+// ============================================================
+function getChartDates(tcs) {
+  const allDates = [...new Set(tcs.flatMap(tc => (tc.measurements || []).map(m => m.date)))].sort();
+  const timeAxis = S.timeAxis;
+
+  if (timeAxis === 'monthly') {
+    const months = {};
+    allDates.forEach(d => {
+      const key = d.substring(0, 7);
+      months[key] = d;
+    });
+    return Object.values(months).sort();
+  }
+
+  if (timeAxis === 'biweekly') {
+    if (allDates.length <= 1) return allDates;
+    const result = [];
+    for (let i = 0; i < allDates.length; i += 2) {
+      result.push(allDates[i]);
+    }
+    if (result[result.length - 1] !== allDates[allDates.length - 1]) {
+      result.push(allDates[allDates.length - 1]);
+    }
+    return result;
+  }
+
+  if (timeAxis === 'weekly') {
+    if (allDates.length < 2) return allDates;
+    const start = new Date(allDates[0]);
+    const end = new Date(allDates[allDates.length - 1]);
+    const weeks = [];
+    let cur = new Date(start);
+    while (cur <= end) {
+      weeks.push(cur.toISOString().substring(0, 10));
+      cur.setDate(cur.getDate() + 7);
+    }
+    const endStr = end.toISOString().substring(0, 10);
+    if (weeks[weeks.length - 1] !== endStr) weeks.push(endStr);
+    return weeks;
+  }
+
+  return allDates;
+}
+
+function getValueForDate(tc, date) {
+  const measurements = (tc.measurements || []).sort((a, b) => a.date.localeCompare(b.date));
+  let lastValue = 0;
+  for (const m of measurements) {
+    if (m.date <= date) lastValue = m.value;
+    else break;
+  }
+  return lastValue;
+}
+
+// ============================================================
+// 9. METRIC TABS (max 2 visible)
+// ============================================================
+function getVisibleTcs() {
+  const tcs = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  tcs.forEach(tc => {
+    if (S.chartVisible[tc.id] === undefined) S.chartVisible[tc.id] = true;
+  });
+  return tcs.filter(tc => S.chartVisible[tc.id] !== false);
+}
+
+function renderMetricTabs() {
+  const visibleTcs = getVisibleTcs();
+  const tabsEl = $('metric-tabs');
+
+  if (visibleTcs.length <= 2) {
+    tabsEl.innerHTML = '';
+    S.metricPage = 0;
+    return;
+  }
+
+  const pageCount = Math.ceil(visibleTcs.length / 2);
+  if (S.metricPage >= pageCount) S.metricPage = 0;
+
+  let html = '';
+  for (let i = 0; i < pageCount; i++) {
+    const pair = visibleTcs.slice(i * 2, i * 2 + 2);
+    const label = pair.map(tc => tc.title).join(' + ');
+    const isActive = i === S.metricPage;
+    html += `<button class="metric-tab${isActive ? ' metric-tab--active' : ''}" data-metric-page="${i}">${label}</button>`;
+  }
+  tabsEl.innerHTML = html;
+
+  tabsEl.querySelectorAll('[data-metric-page]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      S.metricPage = parseInt(btn.dataset.metricPage);
+      renderMetricTabs();
+      renderChart();
+    });
+  });
+}
+
+function getPagedTcs() {
+  const visibleTcs = getVisibleTcs();
+  if (visibleTcs.length <= 2) return visibleTcs;
+  return visibleTcs.slice(S.metricPage * 2, S.metricPage * 2 + 2);
+}
+
+// ============================================================
+// 10. CHART RENDERING
+// ============================================================
+let chartMetricsIdx = 0;
+function renderChart() {
+  const tracked = WS.trackedContributions.filter(tc => tc.teamId === S.teamId);
+  const container = $('metrics-carousel');
+
+  if (!tracked.length) {
+    container.innerHTML = `<div class="section-empty">${currentLang === 'en' ? 'No tracked metrics.' : 'Inga mätetal.'}</div>`;
+    return;
+  }
+
+  if (chartMetricsIdx >= tracked.length) chartMetricsIdx = 0;
+  const tc = tracked[chartMetricsIdx];
+  const color = CHART_COLORS[chartMetricsIdx % CHART_COLORS.length];
+  const measurements = (tc.measurements || []).sort((a, b) => a.date.localeCompare(b.date));
+  const target = tc.targetValue || 1;
+  const startVal = tc.currentValue || 0;
+
+  container.innerHTML = `
+    <div class="metrics-carousel__nav">
+      <button class="metrics-carousel__btn" id="mc-prev" ${tracked.length <= 1 ? 'disabled' : ''}>&#8249;</button>
+      <div class="metrics-carousel__title">${tc.title}</div>
+      <button class="metrics-carousel__btn" id="mc-next" ${tracked.length <= 1 ? 'disabled' : ''}>&#8250;</button>
+    </div>
+    <div class="metrics-carousel__chart" id="mc-chart"></div>
+    <div class="metrics-carousel__counter">${chartMetricsIdx + 1} / ${tracked.length}</div>
+  `;
+
+  // Draw bar chart with critical line
+  const chartEl = $('mc-chart');
+  const w = chartEl.offsetWidth || 400;
+  const h = chartEl.offsetHeight || 300;
+  const pad = { top: 16, right: 14, bottom: 28, left: 14 };
+  const cw = w - pad.left - pad.right;
+  const ch = h - pad.top - pad.bottom;
+  const latest = measurements.length ? measurements[measurements.length - 1].value : startVal;
+  const maxY = Math.max(target, latest, startVal) * 1.15 || 1;
+  const yScale = (v) => pad.top + ch - (v / maxY) * ch;
+  const n = measurements.length || 1;
+  const barGap = Math.max(4, cw * 0.03);
+  const barW = (cw - barGap * (n - 1)) / n;
+  const offsetX = pad.left;
+
+  let svg = `<svg viewBox="0 0 ${w} ${h}">`;
+  measurements.forEach((m, i) => {
+    const x = offsetX + i * (barW + barGap);
+    const barH = Math.max(2, (m.value / maxY) * ch);
+    const y = pad.top + ch - barH;
+    svg += `<rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="${color}" rx="2"/>`;
+    svg += `<text x="${x + barW / 2}" y="${y - 4}" text-anchor="middle" font-size="10" font-weight="700" fill="${color}">${m.value}</text>`;
+    svg += `<text x="${x + barW / 2}" y="${h - 6}" text-anchor="middle" font-size="9" fill="#999">${m.date.slice(5)}</text>`;
+  });
+  if (measurements.length >= 2) {
+    const firstVal = measurements[0].value;
+    const x1 = offsetX + barW / 2;
+    const x2 = offsetX + (n - 1) * (barW + barGap) + barW / 2;
+    svg += `<line x1="${x1}" y1="${yScale(firstVal)}" x2="${x2}" y2="${yScale(target)}" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.7"/>`;
+    svg += `<text x="${x2 + 2}" y="${yScale(target) - 4}" text-anchor="end" font-size="9" fill="#e74c3c" opacity="0.8">${currentLang === 'en' ? 'Target' : 'Mål'} ${target}</text>`;
+  } else if (measurements.length === 1) {
+    const firstVal = measurements[0].value;
+    const x1 = offsetX + barW / 2;
+    svg += `<line x1="${x1}" y1="${yScale(firstVal)}" x2="${w - pad.right}" y2="${yScale(target)}" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.7"/>`;
+    svg += `<text x="${w - pad.right}" y="${yScale(target) - 3}" text-anchor="end" font-size="9" fill="#e74c3c" opacity="0.7">${currentLang === 'en' ? 'Target' : 'Mål'} ${target}</text>`;
+  }
+  svg += `</svg>`;
+  chartEl.innerHTML = svg;
+
+  $('mc-prev').addEventListener('click', () => { chartMetricsIdx = (chartMetricsIdx - 1 + tracked.length) % tracked.length; renderChart(); });
+  $('mc-next').addEventListener('click', () => { chartMetricsIdx = (chartMetricsIdx + 1) % tracked.length; renderChart(); });
+}
+
+
+
+
+
+// ============================================================
+// 11. BIND INPUTS
+// ============================================================
+function bindMetricsInputs() {
+  document.querySelectorAll('[data-field][data-tc-id]').forEach(input => {
+    input.addEventListener('change', () => {
+      const tc = WS.trackedContributions.find(item => item.id === input.dataset.tcId);
+      if (!tc) return;
+      tc[input.dataset.field] = parseFloat(input.value) || input.value;
+      persistWs();
+      renderGoalSummary();
+      renderChart();
+    });
+  });
+  document.querySelectorAll('[data-tc-visible]').forEach(input => {
+    input.addEventListener('change', () => {
+      S.chartVisible[input.dataset.tcVisible] = input.checked;
+      S.metricPage = 0;
+      renderChart();
+    });
+  });
+  document.querySelectorAll('[data-delete-row]').forEach(button => {
+    button.addEventListener('click', () => showToast(currentLang === 'en' ? 'Delete is not active in prototype.' : 'Radera är inte aktivt i prototypen.'));
+  });
+}
+
+// ============================================================
+// 13. ROLE SWITCHER
+// ============================================================
+function setRole(role) {
+  S.role = role;
+  localStorage.setItem('itt-role', role);
+  document.body.className = 'role-' + role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role));
+
+  const orgs = orgsForActor();
+  if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) {
+    S.orgId = orgs[0].id;
+    localStorage.setItem('itt-org', S.orgId);
+  }
+
+  renderAll();
+}
+
+document.querySelectorAll('.role-btn').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role));
+});
+
+// ============================================================
+// 14. STATIC TEXT UPDATE
+// ============================================================
+function updateStaticText() {
+  $('skip-link').textContent = t('skip');
+  $('page-title').textContent = t('gm.title');
+  $('col-best-contrib').textContent = currentLang === 'en' ? 'Focused metric' : 'Fokuserat mätetal';
+  $('col-target').textContent = currentLang === 'en' ? 'Target value' : 'Målvärde';
+  $('col-current').textContent = currentLang === 'en' ? 'Starting point' : 'Startläge';
+  $('new-measurement-label').textContent = currentLang === 'en' ? 'Create new measurement' : 'Skapa ny inmätning';
+}
+
+// ============================================================
+// 15. RENDER ALL
+// ============================================================
+
+function toggleIntegChat() {
+  const chat = document.getElementById('integ-chat');
+  if (chat) chat.classList.toggle('integ-chat--open');
+}
+
+function renderAll() {
+  renderSelectors();
+  renderSidebar();
+  renderProgressLine();
+  updateStaticText();
+  renderGoalSummary();
+  renderMetricsTable();
+  renderChart();
+}
+
+// ============================================================
+// 16. INIT
+// ============================================================
+S.role = localStorage.getItem('itt-role') || 'super-admin';
+document.body.className = 'role-' + S.role;
+document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === S.role));
+renderAll();
+$('new-measurement-btn').addEventListener('click', () => showToast(currentLang === 'en' ? 'New measurement flow is not wired in prototype.' : 'Flödet för ny inmätning är inte kopplat i prototypen.'));
+</script>
+</body>
+</html>

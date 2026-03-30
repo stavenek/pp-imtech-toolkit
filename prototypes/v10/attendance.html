@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Närvaro v10 — ITT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #ffffff; --bg-alt: #f0f0f0; --bg-dark: #0a0a0a; --text: #0a0a0a; --text-muted: #666666; --border: #e0e0e0; --border-strong: #0a0a0a; --accent: #0a0a0a; --accent-hover: #333; --accent-inv: #ffffff; --hi: #ffcc00; --hi-soft: rgba(255,204,0,0.18); --ok: #00a854; --warn: #fa8c16; --err: #e6001a; --xs: 4px; --sm: 8px; --md: 16px; --lg: 24px; --xl: 32px; --2xl: 48px; --sidebar-w: 240px; --progress-h: 32px; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6; color: var(--text); background: var(--bg); display: flex; min-height: 100vh; }
+.skip-link { position: absolute; top: -100%; left: var(--md); background: var(--hi); color: var(--bg-dark); padding: var(--sm) var(--md); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; z-index: 10000; border: 2px solid var(--border-strong); text-decoration: none; }
+.skip-link:focus { top: var(--md); }
+.sidebar { position: fixed; top: var(--progress-h); left: 0; bottom: 0; width: var(--sidebar-w); background: var(--bg-dark); border-right: 3px solid var(--hi); display: flex; flex-direction: column; z-index: 1000; overflow-y: auto; padding-bottom: 64px; }
+.sidebar__header { padding: var(--md) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__logo { display: block; color: var(--hi); font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+.sidebar__selectors { padding: var(--xs) var(--lg); border-bottom: 1px solid #333; }
+.sidebar__selector { margin-bottom: var(--sm); }
+.sidebar__selector:last-child { margin-bottom: 0; }
+.sidebar__selector-label { color: #888; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; display: block; }
+.sidebar__selector select { width: 100%; background: #1a1a1a; color: #ccc; border: 1px solid #555; padding: var(--xs) var(--sm); font-family: inherit; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M2 3l3 4 3-4' stroke='%23ccc' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; cursor: pointer; min-height: 32px; }
+.sidebar__selector select:focus { outline: 2px solid var(--hi); }
+.sidebar__nav { flex: 1; padding: var(--sm) 0; overflow-y: auto; }
+.sidebar__link { display: block; padding: 2px var(--lg); color: #ccc; text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; transition: color .15s, background .15s; border-left: 3px solid transparent; }
+.sidebar__link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.sidebar__link--active { color: var(--hi); background: var(--hi-soft); border-left-color: var(--hi); font-weight: 700; }
+.sidebar__section-label { padding: 6px var(--lg) 2px; color: var(--hi); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: default; }
+.sidebar__section-label:first-child { padding-top: var(--sm); }
+.sidebar__divider { height: 1px; background: #333; margin: var(--sm) var(--lg); }
+.sidebar__footer { padding: var(--sm) 0; border-top: 1px solid #333; }
+.lang-switcher { display: flex; align-items: center; gap: 2px; padding: var(--sm) var(--lg); }
+.lang-btn { padding: var(--xs) var(--sm); border: 1px solid #555; background: transparent; color: #888; font-family: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; cursor: pointer; transition: all .15s; }
+.lang-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.lang-btn:hover:not(.lang-btn--active) { color: #fff; border-color: #888; }
+.page-wrap { flex: 1; margin-left: var(--sidebar-w); min-width: 0; padding-top: var(--progress-h); }
+/* --- PROGRESS BOXES --- */
+.progress-line { display: flex; gap: 4px; padding: 2px var(--sm); background: var(--bg-alt); border-bottom: 2px solid var(--border); position: fixed; top: 0; left: 0; right: 0; z-index: 1100; }
+.progress-stop { display: flex; align-items: center; justify-content: center; padding: 2px var(--sm); border: 2px solid var(--border-strong); background: var(--bg); cursor: pointer; text-decoration: none; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; transition: box-shadow .15s, transform .15s; }
+.progress-stop:nth-child(1) { width: 20%; }
+.progress-stop:nth-child(2) { width: 20%; }
+.progress-stop:nth-child(3) { width: 40%; }
+.progress-stop:nth-child(4) { width: 20%; }
+.progress-stop:hover { box-shadow: 4px 4px 0 var(--accent); transform: translate(-2px, -2px); }
+.progress-stop--visited { background: #22c55e; border-color: #16a34a; color: #fff; }
+.progress-stop--current { background: var(--accent); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.progress-stop--future { background: var(--bg); border-color: var(--border); color: var(--text-muted); }
+.progress-stop--fill { background: linear-gradient(to right, #22c55e var(--fill, 0%), #1a3a1a var(--fill, 0%)); border-color: #16a34a; color: #fff; }
+.progress-stop--fill-current { background: linear-gradient(to right, #22c55e var(--fill, 0%), var(--accent) var(--fill, 0%)); border-color: var(--border-strong); color: var(--accent-inv); font-weight: 900; }
+.sidebar__link--meeting { background: var(--accent) !important; color: var(--accent-inv) !important; font-weight: 900; text-align: center; }
+.sidebar__link--meeting-stop { background: #c00 !important; color: #fff !important; font-weight: 900; text-align: center; }
+.main { max-width: 1400px; margin: 0 auto; padding: 0 var(--lg) var(--2xl); padding-bottom: 64px; }
+.page-title { font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; padding: var(--xl) 0; border-bottom: 3px solid var(--border-strong); margin-bottom: var(--xl); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); margin-bottom: var(--lg); }
+.toolbar__left { display: flex; flex-wrap: wrap; align-items: center; gap: var(--md); flex: 1; }
+.toolbar__right { display: flex; gap: var(--sm); }
+.btn { display: inline-flex; align-items: center; gap: var(--sm); padding: var(--sm) var(--lg); border: 2px solid var(--border-strong); background: var(--accent); color: var(--accent-inv); font-family: inherit; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; min-height: 44px; text-decoration: none; transition: box-shadow .15s, transform .15s; }
+.btn:hover { box-shadow: 4px 4px 0 var(--hi); }
+.btn--hi { background: var(--hi); color: var(--bg-dark); border-color: var(--bg-dark); }
+.btn--danger { background: var(--err); color: #fff; border-color: var(--bg-dark); }
+.btn--outline { background: var(--bg); color: var(--text); }
+.btn--sm { min-height: 36px; padding: var(--xs) var(--md); font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.form-group { margin-bottom: var(--md); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--xs); display: block; }
+.form-input, .form-select { width: 100%; padding: var(--sm) var(--md); border: 2px solid var(--border-strong); background: var(--bg-alt); color: var(--text); font-family: inherit; font-size: 14px; min-height: 44px; }
+.form-input:focus, .form-select:focus { outline: 3px solid var(--hi); outline-offset: 2px; }
+textarea.form-input { min-height: 80px; resize: vertical; }
+.badge { display: inline-block; padding: var(--xs) var(--sm); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; border: 2px solid; white-space: nowrap; }
+.badge--leader { background: var(--hi-soft); color: var(--text); border-color: var(--hi); }
+.att-grid { width: 100%; border-collapse: collapse; }
+.att-grid th, .att-grid td { border: 2px solid var(--border-strong); padding: var(--sm) var(--md); text-align: center; font-size: 13px; }
+.att-grid thead th { background: var(--accent); color: var(--accent-inv); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+.att-grid .att-name { text-align: left; font-weight: 600; white-space: nowrap; }
+.att-check { color: var(--ok); font-weight: 900; font-size: 16px; }
+.att-cross { color: var(--err); font-weight: 900; font-size: 16px; }
+.att-pct { font-weight: 900; }
+.att-pct--good { background: var(--hi-soft); }
+.att-footer td { background: var(--bg-alt); font-weight: 900; font-size: 11px; text-transform: uppercase; }
+.trend-chart { border: 2px solid var(--border-strong); padding: var(--lg); margin-top: var(--xl); }
+.trend-chart__title { font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: var(--lg); }
+.trend-chart__area { position: relative; height: 150px; border-bottom: 2px solid var(--border); border-left: 2px solid var(--border); margin-left: 30px; }
+.trend-chart__point { position: absolute; width: 10px; height: 10px; background: var(--hi); border: 2px solid var(--border-strong); border-radius: 50%; transform: translate(-50%, 50%); z-index: 2; }
+.trend-chart__line { position: absolute; background: var(--hi); height: 2px; transform-origin: left center; z-index: 1; }
+.trend-chart__labels { display: flex; justify-content: space-between; padding-top: var(--sm); margin-left: 30px; font-size: 10px; color: var(--text-muted); font-weight: 700; }
+.trend-chart__y-axis { position: absolute; left: 0; top: 0; bottom: 0; width: 30px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: var(--text-muted); text-align: right; padding-right: var(--xs); }
+.meeting-item { border: 2px solid var(--border); margin-bottom: var(--sm); }
+.meeting-header { display: flex; align-items: center; gap: var(--md); padding: var(--sm) var(--md); cursor: pointer; font-size: 13px; user-select: none; }
+.meeting-header__date { font-weight: 900; }
+.meeting-header__count { color: var(--text-muted); }
+.meeting-header__arrow { margin-left: auto; font-size: 12px; transition: transform .2s; }
+.meeting-item--open .meeting-header__arrow { transform: rotate(180deg); }
+.meeting-body { padding: var(--sm) var(--md) var(--md); border-top: 1px solid var(--border); display: none; font-size: 13px; }
+.meeting-item--open .meeting-body { display: block; }
+.meeting-body__note { color: var(--text-muted); margin-bottom: var(--sm); font-style: italic; }
+.meeting-body__attendees { list-style: none; }
+.meeting-body__attendees li { padding: 2px 0; display: flex; align-items: center; gap: var(--sm); }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; }
+.overlay--visible { display: block; }
+.slide-over { position: fixed; top: 0; right: -540px; width: 520px; max-width: 100vw; height: 100vh; background: var(--bg); border-left: 3px solid var(--border-strong); z-index: 2001; overflow-y: auto; transition: right .25s ease; display: flex; flex-direction: column; }
+.slide-over--open { right: 0; }
+.so-header { display: flex; justify-content: space-between; align-items: flex-start; padding: var(--xl); padding-bottom: var(--md); border-bottom: 3px solid var(--border-strong); flex-shrink: 0; }
+.so-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.so-close { background: none; border: 2px solid var(--border-strong); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: 900; color: var(--text); }
+.so-close:hover { background: var(--bg-alt); }
+.so-body { flex: 1; overflow-y: auto; padding: var(--xl); }
+.so-footer { padding: var(--lg) var(--xl); border-top: 2px solid var(--border); display: flex; gap: var(--md); flex-shrink: 0; }
+.so-danger { padding: var(--lg) var(--xl); border-top: 3px solid var(--err); flex-shrink: 0; }
+.check-list { list-style: none; }
+.check-item { display: flex; align-items: center; gap: var(--sm); padding: var(--sm) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.check-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
+.dialog-overlay--visible { display: flex; animation: fade-in .2s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.dialog { background: var(--bg); border: 3px solid var(--border-strong); padding: var(--xl); max-width: 480px; width: 90%; }
+.dialog__title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: var(--md); }
+.dialog__text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: var(--xl); }
+.dialog__actions { display: flex; gap: var(--md); justify-content: flex-end; }
+.toast-container { position: fixed; top: 70px; right: var(--lg); z-index: 5000; display: flex; flex-direction: column; gap: var(--sm); }
+.toast { padding: var(--md) var(--lg); background: var(--accent); color: var(--accent-inv); font-size: 13px; font-weight: 700; border: 2px solid var(--border-strong); box-shadow: 4px 4px 0 var(--hi); animation: toast-in .3s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+.empty-state { text-align: center; padding: var(--2xl) var(--lg); color: var(--text-muted); border: 2px dashed var(--border); }
+.empty-state p { margin-bottom: var(--md); }
+.role-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: #1a1a2e; border-top: 3px solid var(--hi); padding: 2px var(--lg); display: flex; align-items: center; gap: var(--md); font-family: 'Courier New', monospace; font-size: 12px; color: #aaa; }
+.role-bar__label { font-weight: 700; white-space: nowrap; }
+.role-bar__btns { display: flex; gap: 2px; }
+.role-btn { padding: var(--sm) var(--md); border: 2px solid #555; background: #2a2a40; color: #ccc; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.role-btn:hover { background: #3a3a55; color: #fff; }
+.role-btn--active { background: var(--hi); color: #000; border-color: var(--hi); }
+.role-user [data-min-role="team-leader"], .role-user [data-min-role="org-admin"], .role-user [data-min-role="integ-admin"], .role-user [data-min-role="super-admin"] { display: none !important; }
+.role-team-leader [data-min-role="org-admin"], .role-team-leader [data-min-role="integ-admin"], .role-team-leader [data-min-role="super-admin"] { display: none !important; }
+.role-org-admin [data-min-role="integ-admin"], .role-org-admin [data-min-role="super-admin"] { display: none !important; }
+.role-integ-admin [data-min-role="super-admin"] { display: none !important; }
+@media (max-width: 1024px) { .slide-over { width: 100vw; } }
+@media (max-width: 768px) { .att-grid { font-size: 11px; } .att-grid th, .att-grid td { padding: var(--xs) var(--sm); } }
+@media (max-width: 480px) { .main { padding: 0 var(--md) var(--2xl); } .page-title { font-size: 24px; padding: var(--lg) 0; } }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+
+.integ-chat { position: fixed; top: 0; bottom: 40px; right: 0; width: 500px; background: #fff; border-left: 3px solid #0a0a0a; box-shadow: -6px 0 24px rgba(0,0,0,0.2); z-index: 1200; display: none; flex-direction: column; }
+.integ-chat--open { display: flex; }
+.integ-chat__header { background: #0a0a0a; color: #fff; padding: 12px 16px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.integ-chat__close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+.integ-chat__close:hover { color: #ffcc00; }
+.integ-chat__body { flex: 1; overflow-y: auto; padding: 16px; font-size: 14px; color: #333; }
+.integ-chat__msg { background: #f0f0f0; border-radius: 8px 8px 8px 0; padding: 10px 14px; margin-bottom: 8px; max-width: 85%; line-height: 1.5; }
+.integ-chat__input-wrap { flex-shrink: 0; padding: 12px; border-top: 2px solid #e0e0e0; display: flex; gap: 8px; }
+.integ-chat__input { flex: 1; border: 2px solid #ccc; padding: 8px 12px; font-size: 14px; font-family: inherit; outline: none; }
+.integ-chat__input:focus { border-color: #0a0a0a; }
+.integ-chat__send { background: #0a0a0a; color: #fff; border: none; padding: 8px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+.integ-chat__send:hover { background: #333; }
+
+.sidebar__preread { display: inline-block; width: 8px; height: 8px; background: #e6001a; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
+</style>
+</head>
+<body class="role-super-admin">
+<a href="#main-content" class="skip-link" id="skip-link">Hoppa till huvudinnehåll</a>
+<aside class="sidebar" aria-label="Huvudnavigering">
+  <div class="sidebar__selectors" id="sidebar-selectors"><div class="sidebar__selector" id="org-selector-wrap"><span class="sidebar__selector-label">Org</span><select id="org-select" aria-label="Välj organisation"></select></div><div class="sidebar__selector" id="team-selector-wrap"><span class="sidebar__selector-label">Team</span><select id="team-select" aria-label="Välj team"></select></div></div>
+  <nav class="sidebar__nav" id="sidebar-nav"></nav>
+  <div class="sidebar__footer"><a href="#" class="sidebar__link" id="nav-integ" onclick="event.preventDefault();toggleIntegChat();">Integ</a><div class="lang-switcher"><button class="lang-btn lang-btn--active" data-lang="sv">SV</button><button class="lang-btn" data-lang="en">EN</button></div></div>
+</aside>
+<div class="page-wrap">
+  <div class="progress-line" id="progress-line"></div>
+  <main class="main" id="main-content">
+    <h1 class="page-title" id="page-title">Närvaro</h1>
+    <div class="toolbar"><div class="toolbar__left"></div><div class="toolbar__right"><button class="btn btn--hi" id="btn-new-meeting">+ Nytt möte</button></div></div>
+    <div style="overflow-x:auto;" id="grid-wrap"><table class="att-grid" id="att-grid" aria-label="Närvaroöversikt"></table></div>
+    <div class="trend-chart" id="trend-chart"><div class="trend-chart__title" id="trend-title">Närvarotrend</div><div style="position:relative;"><div class="trend-chart__y-axis" id="trend-y"></div><div class="trend-chart__area" id="trend-area"></div></div><div class="trend-chart__labels" id="trend-labels"></div></div>
+    <h2 style="font-size:14px;font-weight:900;text-transform:uppercase;margin-top:var(--xl);margin-bottom:var(--md);" id="meeting-list-title">Möteslista</h2>
+    <div id="meeting-list"></div>
+  </main>
+</div>
+<div class="overlay" id="overlay"></div>
+<div class="slide-over" id="so-meeting" role="dialog" aria-modal="true" aria-label="Möte"><div class="so-header"><div class="so-title" id="so-meeting-title">Nytt möte</div><button class="so-close" aria-label="Stäng" id="so-meeting-close">&times;</button></div><div class="so-body" id="so-meeting-body"></div><div class="so-footer" id="so-meeting-footer"></div><div class="so-danger" id="so-meeting-danger" style="display:none;"></div></div>
+<div class="dialog-overlay" id="dialog-overlay"><div class="dialog"><h2 class="dialog__title" id="dialog-title"></h2><p class="dialog__text" id="dialog-text"></p><div class="dialog__actions"><button class="btn btn--outline" id="dialog-cancel">Avbryt</button><button class="btn btn--danger" id="dialog-confirm"></button></div></div></div>
+<div class="toast-container" id="toast-container" role="alert" aria-live="assertive"></div>
+
+<!-- Integ Chat Panel -->
+<div class="integ-chat" id="integ-chat">
+  <div class="integ-chat__header">Integ Chat <button class="integ-chat__close" onclick="toggleIntegChat()">&times;</button></div>
+  <div class="integ-chat__body"><div class="integ-chat__msg">Hello! How can I help you?</div></div>
+  <div class="integ-chat__input-wrap"><input class="integ-chat__input" placeholder="Type a message..." /><button class="integ-chat__send">Send</button></div>
+</div>
+<div class="role-bar"><span class="role-bar__label">Visa som:</span><div class="role-bar__btns" id="role-btns"><button class="role-btn role-btn--active" data-role="super-admin">Super Admin</button><button class="role-btn" data-role="integ-admin">Integ Admin</button><button class="role-btn" data-role="org-admin">Org Admin</button><button class="role-btn" data-role="team-leader">TL</button><button class="role-btn" data-role="user">User</button></div></div>
+
+<script src="mock-data.js?v=2"></script>
+<script src="mock-data-workspace.js?v=2"></script>
+<script src="i18n-sv.js?v=1774551162"></script>
+<script src="i18n-en.js?v=1774551162"></script>
+<script>
+const ACTIVE_MODULE = 'attendance';
+const CURRENT_SECTION = 4;
+const MODULES = [
+  { key: 'strategic', file: 'strategic.html', section: 1, fullKey: 'mod.strategic' },
+  { key: 'locomotiveGoals', file: 'locomotive-goals.html', section: 1, fullKey: 'mod.locomotiveGoals' },
+  { key: 'bestContribution', file: 'our-dashboard.html', section: 2, fullKey: 'mod.bestContribution' },
+  { key: 'goalsMetrics', file: 'goals-metrics.html', section: 2, fullKey: 'mod.goalsMetrics' },
+  { key: 'actionPlan', file: 'action-plan.html', section: 3, fullKey: 'mod.actionPlan' },
+  { key: 'documents', file: 'documents.html', section: 3, fullKey: 'mod.documents' },
+  { key: 'ideas', file: 'ideas.html', section: 3, fullKey: 'mod.ideas' },
+  { key: 'reflections', file: 'reflections.html', section: 4, fullKey: 'mod.reflections' },
+  { key: 'teamRules', file: 'team-rules.html', section: 4, fullKey: 'mod.teamRules' },
+  { key: 'attendance', file: 'attendance.html', section: 4, fullKey: 'mod.attendance' },
+];
+const SECTION_LABELS = { 1: { sv: 'Strategiskt fokus', en: 'Strategic Focus' }, 2: { sv: 'Bästa bidrag', en: 'Best Contribution' }, 3: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, 4: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' } };
+const PROGRESS_STOPS = [
+  { section: 1, label: { sv: 'Strategiskt Fokus', en: 'Strategic Focus' }, file: 'strategic.html' },
+  { section: 2, label: { sv: 'Bästa bidrag', en: 'Best Contribution' }, file: 'our-dashboard.html' },
+  { section: 3, label: { sv: 'Delprojekt & Handlingsplan', en: 'Subprojects & Action Plan' }, file: 'action-plan.html' },
+  { section: 4, label: { sv: 'Reflektioner & Lärdomar', en: 'Reflections & Learnings' }, file: 'reflections.html' },
+];
+const TRANSLATIONS = { sv: LANG_SV, en: LANG_EN };
+let currentLang = localStorage.getItem('itt-lang') || 'sv';
+function t(key, params) { let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['sv'][key] || key; if (params) Object.keys(params).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]); }); return str; }
+function setLang(lang) { currentLang = lang; localStorage.setItem('itt-lang', lang); document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang)); document.documentElement.lang = lang; renderAll(); }
+document.addEventListener('click', e => { if (e.target.matches('[data-lang]')) setLang(e.target.dataset.lang); });
+const S = { role: localStorage.getItem('itt-role') || 'super-admin', orgId: localStorage.getItem('itt-org') || '', editingMeetingId: null };
+const $ = id => document.getElementById(id);
+const actor = () => ACTORS[S.role];
+function getTeamId() { return localStorage.getItem('itt-team') || 'alpha'; }
+function orgsForActor() { const a = actor(); if (S.role === 'super-admin') return DB.organizations; return DB.organizations.filter(o => a.orgs.includes(o.id)); }
+function getUserTeams() { const a = actor(); const u = DB.users.find(u => u.id === a.userId); if (!u) return DB.teams; if (['super-admin','integ-admin','org-admin'].includes(S.role)) { let teams = DB.teams.filter(t => a.orgs.includes(t.orgId)); if (S.orgId) teams = teams.filter(t => t.orgId === S.orgId); return teams; } return DB.teams.filter(t => u.memberships.some(m => m.teamId === t.id)); }
+function getCurrentTeamId() { const teams = getUserTeams(); const stored = getTeamId(); if (stored && teams.some(t => t.id === stored)) return stored; return teams[0]?.id || 'alpha'; }
+function getTeamMembers(teamId) { return DB.users.filter(u => u.registerStatus !== 'soft_deleted' && u.memberships.some(m => m.teamId === teamId)); }
+function isTeamLeader(user, teamId) { return user.memberships.some(m => m.teamId === teamId && m.teamRole === 'team_leader'); }
+function getTeamMeetings(teamId) { return WS.meetings.filter(m => m.teamId === teamId).sort((a, b) => b.date.localeCompare(a.date)); }
+function formatDate(dateStr) { const d = new Date(dateStr + 'T00:00:00'); const months = currentLang === 'sv' ? ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'] : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return `${d.getDate()} ${months[d.getMonth()]}`; }
+function formatDateFull(dateStr) { const d = new Date(dateStr + 'T00:00:00'); return d.toLocaleDateString(currentLang === 'sv' ? 'sv-SE' : 'en-US', { year:'numeric', month:'long', day:'numeric' }); }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function showToast(msg) { const c = $('toast-container'); const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg; c.appendChild(el); setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 4000); }
+
+function renderOrgSelector() { const orgs = orgsForActor(); const sel = $('org-select'); const wrap = $('org-selector-wrap'); const isHighRole = ['super-admin','integ-admin','org-admin'].includes(S.role); if (!isHighRole || orgs.length <= 1) { wrap.style.display = 'none'; if (orgs.length === 1) S.orgId = orgs[0].id; else if (orgs.length === 0) S.orgId = ''; return; } wrap.style.display = ''; if (!S.orgId || !orgs.find(o => o.id === S.orgId)) { S.orgId = orgs[0].id; localStorage.setItem('itt-org', S.orgId); } sel.innerHTML = orgs.map(o => `<option value="${o.id}" ${o.id === S.orgId ? 'selected' : ''}>${o.title}</option>`).join(''); }
+$('org-select').addEventListener('change', e => { S.orgId = e.target.value; localStorage.setItem('itt-org', S.orgId); const teams = getUserTeams(); if (teams.length > 0) localStorage.setItem('itt-team', teams[0].id); renderAll(); });
+function renderTeamSelector() { const sel = $('team-select'); if (!sel) return; const teams = getUserTeams(); const wrap = $('team-selector-wrap'); if (teams.length <= 1) { wrap.style.display = 'none'; return; } wrap.style.display = ''; const currentTeam = getCurrentTeamId(); sel.innerHTML = teams.map(t => `<option value="${t.id}" ${t.id === currentTeam ? 'selected' : ''}>${t.title}</option>`).join(''); }
+$('team-select')?.addEventListener('change', e => { localStorage.setItem('itt-team', e.target.value); renderAll(); });
+
+
+// ============================================================
+// MEETING TIMER
+// ============================================================
+const SECTION_ALLOC = { 1: 720, 2: 720, 3: 1440, 4: 720 }; // seconds (12+12+24+12 = 60 min)
+
+function isMeetingActive() { return localStorage.getItem('itt-meeting-active') === 'true'; }
+
+function startMeeting() {
+  const now = Date.now();
+  localStorage.setItem('itt-meeting-active', 'true');
+  localStorage.setItem('itt-meeting-start', String(now));
+  localStorage.setItem('itt-meeting-section-times', JSON.stringify({1:0,2:0,3:0,4:0}));
+  localStorage.setItem('itt-meeting-section-enter', String(now));
+  localStorage.setItem('itt-meeting-current-section', '1');
+  location.href = 'strategic.html';
+}
+
+function stopMeeting() {
+  flushSectionTime();
+  localStorage.removeItem('itt-meeting-active');
+  localStorage.removeItem('itt-meeting-start');
+  localStorage.removeItem('itt-meeting-section-enter');
+  localStorage.removeItem('itt-meeting-current-section');
+  renderAll();
+}
+
+function flushSectionTime() {
+  if (!isMeetingActive()) return;
+  const enter = parseInt(localStorage.getItem('itt-meeting-section-enter') || '0');
+  const sec = parseInt(localStorage.getItem('itt-meeting-current-section') || '0');
+  if (!enter || !sec || enter < 1000000000000) return;
+  const elapsed = (Date.now() - enter) / 1000;
+  const times = JSON.parse(localStorage.getItem('itt-meeting-section-times') || '{}');
+  times[sec] = (times[sec] || 0) + elapsed;
+  localStorage.setItem('itt-meeting-section-times', JSON.stringify(times));
+  localStorage.setItem('itt-meeting-section-enter', String(Date.now()));
+  localStorage.setItem('itt-meeting-current-section', String(CURRENT_SECTION));
+}
+
+function getSectionFill(section) {
+  const times = JSON.parse(localStorage.getItem('itt-meeting-section-times') || '{}');
+  if (!Object.keys(times).length) return 0;
+  let spent = times[section] || 0;
+  // Add live elapsed for current section
+  if (isMeetingActive() && section === CURRENT_SECTION) {
+    const enter = parseInt(localStorage.getItem('itt-meeting-section-enter') || '0');
+    if (enter) spent += (Date.now() - enter) / 1000;
+  }
+  const alloc = SECTION_ALLOC[section] || 720;
+  return Math.min(100, (spent / alloc) * 100);
+}
+
+// Flush time from previous section on page load
+if (isMeetingActive()) {
+  const prevSec = parseInt(localStorage.getItem('itt-meeting-current-section') || '0');
+  if (prevSec && prevSec !== CURRENT_SECTION) { flushSectionTime(); }
+  localStorage.setItem('itt-meeting-section-enter', String(Date.now()));
+  localStorage.setItem('itt-meeting-current-section', String(CURRENT_SECTION));
+}
+
+// Live timer update every 5 seconds
+setInterval(() => { if (isMeetingActive()) renderProgressLine(); }, 5000);
+
+function renderSidebar() { let html = ''; html += `<a href="my-dashboard.html" class="sidebar__link">${t('nav.myDashboard')}</a>`; if (isMeetingActive()) { html += `<a href="#" class="sidebar__link sidebar__link--meeting-stop" onclick="event.preventDefault();stopMeeting();">&#9632; Avsluta möte</a>`; } else { html += `<a href="#" class="sidebar__link sidebar__link--meeting" onclick="event.preventDefault();startMeeting();">&#9654; Starta möte</a>`; } html += '<div class="sidebar__divider"></div>'; let lastSection = 0; MODULES.forEach(m => { if (m.section !== lastSection) { const l = currentLang === 'en' ? SECTION_LABELS[m.section].en : SECTION_LABELS[m.section].sv; html += `<div class="sidebar__section-label">${l}</div>`; lastSection = m.section; } const isActive = m.key === ACTIVE_MODULE; const preread = (m.key === 'documents' && typeof WS !== 'undefined') ? WS.documents.filter(d => d.teamId === S.teamId && d.isPreRead).length : 0;
+    html += `<a href="${m.file}" class="sidebar__link${isActive ? ' sidebar__link--active' : ''}">${t(m.fullKey)}${preread ? '<span class="sidebar__preread"></span>' : ''}</a>`; }); html += '<div class="sidebar__divider"></div>'; html += '<a href="admin.html" class="sidebar__link" data-min-role="team-leader">' + t('nav.admin') + '</a>'; html += '<a href="archive.html" class="sidebar__link' + (ACTIVE_MODULE === 'archive' ? ' sidebar__link--active' : '') + '">' + t('mod.archive') + '</a>'; $('sidebar-nav').innerHTML = html; }
+function renderProgressLine() {
+  let html = '';
+  const meetingActive = isMeetingActive();
+  const hasMeetingData = !!localStorage.getItem('itt-meeting-section-times');
+  const meeting = meetingActive || hasMeetingData;
+  PROGRESS_STOPS.forEach((stop, i) => {
+    let cls = 'progress-stop';
+    const fill = meeting ? getSectionFill(stop.section) : 0;
+    if (meeting && fill > 0 && stop.section !== CURRENT_SECTION) {
+      cls += ' progress-stop--fill';
+    } else if (meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--fill-current';
+    } else if (hasMeetingData && !meetingActive && stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else if (stop.section < CURRENT_SECTION) {
+      cls += ' progress-stop--visited';
+    } else if (stop.section === CURRENT_SECTION) {
+      cls += ' progress-stop--current';
+    } else {
+      cls += ' progress-stop--future';
+    }
+    const label = currentLang === 'en' ? stop.label.en : stop.label.sv;
+    const style = meeting ? ` style="--fill:${fill.toFixed(1)}%"` : '';
+    html += `<a href="${stop.file}" class="${cls}"${style}>${label}</a>`;
+  });
+  $('progress-line').innerHTML = html;
+}
+
+function renderGrid() { const teamId = getCurrentTeamId(); const members = getTeamMembers(teamId); const meetings = getTeamMeetings(teamId); const grid = $('att-grid'); if (meetings.length === 0) { grid.innerHTML = ''; $('grid-wrap').innerHTML = '<div class="empty-state"><p>Inga möten registrerade.</p></div>'; return; } if (!document.querySelector('.att-grid')) { $('grid-wrap').innerHTML = '<table class="att-grid" id="att-grid" aria-label="Närvaroöversikt"></table>'; } const table = $('att-grid'); let thead = '<thead><tr><th class="att-name" style="text-align:left;"></th>'; meetings.forEach(m => { thead += `<th>${formatDate(m.date)}</th>`; }); thead += `<th>${t('att.pct')}</th></tr></thead>`; let tbody = '<tbody>'; let meetingTotals = meetings.map(() => ({ present: 0, total: 0 })); let overallPresent = 0, overallTotal = 0; members.forEach(member => { const fn = `${member.firstName} ${member.lastName.charAt(0)}.`; const isTL = isTeamLeader(member, teamId); let mp = 0; tbody += '<tr>'; tbody += `<td class="att-name">${fn}${isTL ? ' <span class="badge badge--leader">TL</span>' : ''}</td>`; meetings.forEach((m, i) => { const att = m.attendees.includes(member.id); if (att) { mp++; meetingTotals[i].present++; } meetingTotals[i].total++; overallTotal++; if (att) overallPresent++; tbody += `<td><span class="${att ? 'att-check' : 'att-cross'}">${att ? '\u2713' : '\u2717'}</span></td>`; }); const pct = meetings.length > 0 ? Math.round((mp / meetings.length) * 100) : 0; tbody += `<td class="att-pct${pct >= 75 ? ' att-pct--good' : ''}">${pct}%</td></tr>`; }); tbody += '</tbody>'; let tfoot = '<tfoot><tr class="att-footer">'; tfoot += `<td class="att-name" style="text-align:left;">${t('att.total')}</td>`; meetings.forEach((m, i) => { tfoot += `<td>${meetingTotals[i].present}/${meetingTotals[i].total}</td>`; }); const op = overallTotal > 0 ? Math.round((overallPresent / overallTotal) * 100) : 0; tfoot += `<td class="att-pct${op >= 75 ? ' att-pct--good' : ''}">${op}%</td></tr></tfoot>`; table.innerHTML = thead + tbody + tfoot; }
+function renderTrend() { const teamId = getCurrentTeamId(); const members = getTeamMembers(teamId); const meetings = getTeamMeetings(teamId).slice().reverse(); const area = $('trend-area'); const labels = $('trend-labels'); const yAxis = $('trend-y'); if (meetings.length === 0) { $('trend-chart').style.display = 'none'; return; } $('trend-chart').style.display = ''; const dataPoints = meetings.map(m => { const present = members.filter(u => m.attendees.includes(u.id)).length; return { date: m.date, pct: members.length > 0 ? Math.round((present / members.length) * 100) : 0 }; }); yAxis.innerHTML = '<span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>'; area.innerHTML = ''; if (dataPoints.length === 1) { area.innerHTML = `<div class="trend-chart__point" style="left:50%;bottom:${(dataPoints[0].pct / 100) * 150}px;" title="${dataPoints[0].pct}%"></div>`; labels.innerHTML = `<span>${formatDate(dataPoints[0].date)}</span>`; return; } const count = dataPoints.length; const points = dataPoints.map((dp, i) => ({ xPct: count > 1 ? (i / (count - 1)) * 100 : 50, yPx: (dp.pct / 100) * 150, pct: dp.pct, date: dp.date })); points.forEach((p, i) => { const dot = document.createElement('div'); dot.className = 'trend-chart__point'; dot.style.left = p.xPct + '%'; dot.style.bottom = p.yPx + 'px'; dot.title = p.pct + '%'; area.appendChild(dot); if (i < points.length - 1) { const next = points[i + 1]; const areaWidth = area.offsetWidth || 600; const x1 = (p.xPct / 100) * areaWidth; const y1 = p.yPx; const x2 = (next.xPct / 100) * areaWidth; const y2 = next.yPx; const dx = x2 - x1; const dy = y2 - y1; const len = Math.sqrt(dx * dx + dy * dy); const angle = Math.atan2(-dy, dx) * (180 / Math.PI); const line = document.createElement('div'); line.className = 'trend-chart__line'; line.style.left = p.xPct + '%'; line.style.bottom = y1 + 'px'; line.style.width = len + 'px'; line.style.transform = `rotate(${angle}deg)`; area.appendChild(line); } }); labels.innerHTML = points.map(p => `<span>${formatDate(p.date)}</span>`).join(''); }
+function renderMeetingList() { const teamId = getCurrentTeamId(); const meetings = getTeamMeetings(teamId); const members = getTeamMembers(teamId); const container = $('meeting-list'); if (meetings.length === 0) { container.innerHTML = ''; return; } container.innerHTML = meetings.map(m => { const presentCount = members.filter(u => m.attendees.includes(u.id)).length; const attendeeList = members.map(u => { const att = m.attendees.includes(u.id); const name = `${u.firstName} ${u.lastName}`; const isTL = isTeamLeader(u, teamId); return `<li><span class="${att ? 'att-check' : 'att-cross'}">${att ? '\u2713' : '\u2717'}</span> ${name}${isTL ? ' <span class="badge badge--leader" style="font-size:9px;">TL</span>' : ''}</li>`; }).join(''); return `<div class="meeting-item" data-meeting-id="${m.id}"><div class="meeting-header" data-toggle-meeting="${m.id}"><span class="meeting-header__date">${formatDateFull(m.date)}</span><span class="meeting-header__count">${presentCount}/${members.length} ${currentLang === 'sv' ? 'närvarande' : 'present'}</span><span class="meeting-header__arrow">&#9660;</span></div><div class="meeting-body">${m.note ? `<div class="meeting-body__note">${m.note}</div>` : ''}<ul class="meeting-body__attendees">${attendeeList}</ul><div style="margin-top:var(--md);"><button class="btn btn--sm btn--outline" data-edit-meeting="${m.id}">Redigera</button></div></div></div>`; }).join(''); }
+
+document.addEventListener('click', e => { const toggle = e.target.closest('[data-toggle-meeting]'); if (toggle) { toggle.closest('.meeting-item').classList.toggle('meeting-item--open'); return; } const editBtn = e.target.closest('[data-edit-meeting]'); if (editBtn) { openMeetingSlideOver(editBtn.dataset.editMeeting); return; } });
+function openMeetingSlideOver(meetingId) { const teamId = getCurrentTeamId(); const members = getTeamMembers(teamId); const isEdit = !!meetingId; const meeting = isEdit ? WS.meetings.find(m => m.id === meetingId) : null; S.editingMeetingId = meetingId || null; $('so-meeting-title').textContent = isEdit ? (currentLang === 'sv' ? 'Redigera möte' : 'Edit meeting') : t('att.newMeeting'); const date = meeting ? meeting.date : todayStr(); const note = meeting ? meeting.note : ''; const attendees = meeting ? meeting.attendees : []; $('so-meeting-body').innerHTML = `<div class="form-group"><label class="form-label" for="meeting-date">${t('att.date')}</label><input type="date" class="form-input" id="meeting-date" value="${date}"></div><div class="form-group"><label class="form-label">${currentLang === 'sv' ? 'Deltagare' : 'Attendees'}</label><ul class="check-list" id="meeting-attendees">${members.map(u => { const checked = attendees.includes(u.id) ? 'checked' : ''; const isTL = isTeamLeader(u, teamId); return `<li class="check-item"><input type="checkbox" id="att-${u.id}" value="${u.id}" ${checked}><label for="att-${u.id}">${u.firstName} ${u.lastName}${isTL ? ' (TL)' : ''}</label></li>`; }).join('')}</ul></div><div class="form-group"><label class="form-label" for="meeting-note">${t('att.note')}</label><textarea class="form-input" id="meeting-note" rows="3">${note}</textarea></div>`; $('so-meeting-footer').innerHTML = `<button class="btn btn--hi" id="btn-save-meeting">${t('btn.save')}</button><button class="btn btn--outline" id="btn-cancel-meeting">${t('btn.cancel')}</button>`; const dangerEl = $('so-meeting-danger'); if (isEdit) { dangerEl.style.display = ''; dangerEl.innerHTML = `<button class="btn btn--danger btn--sm" id="btn-delete-meeting">${t('att.deleteMeeting')}</button>`; } else { dangerEl.style.display = 'none'; dangerEl.innerHTML = ''; } $('overlay').classList.add('overlay--visible'); $('so-meeting').classList.add('slide-over--open'); }
+function closeMeetingSlideOver() { $('overlay').classList.remove('overlay--visible'); $('so-meeting').classList.remove('slide-over--open'); S.editingMeetingId = null; }
+
+let confirmCallback = null;
+function showConfirm(title, text, btnLabel, onConfirm) { $('dialog-title').textContent = title; $('dialog-text').textContent = text; $('dialog-confirm').textContent = btnLabel; confirmCallback = onConfirm; $('dialog-overlay').classList.add('dialog-overlay--visible'); }
+$('dialog-cancel').addEventListener('click', () => { $('dialog-overlay').classList.remove('dialog-overlay--visible'); confirmCallback = null; });
+$('dialog-confirm').addEventListener('click', () => { $('dialog-overlay').classList.remove('dialog-overlay--visible'); if (confirmCallback) confirmCallback(); confirmCallback = null; });
+
+document.addEventListener('click', e => {
+  if (e.target.id === 'btn-save-meeting') { const teamId = getCurrentTeamId(); const date = $('meeting-date')?.value; const note = $('meeting-note')?.value || ''; const checkboxes = document.querySelectorAll('#meeting-attendees input[type="checkbox"]'); const attendees = []; checkboxes.forEach(cb => { if (cb.checked) attendees.push(cb.value); }); if (!date) { showToast(currentLang === 'sv' ? 'Ange ett datum.' : 'Enter a date.'); return; } if (S.editingMeetingId) { const meeting = WS.meetings.find(m => m.id === S.editingMeetingId); if (meeting) { meeting.date = date; meeting.note = note; meeting.attendees = attendees; } showToast(currentLang === 'sv' ? 'Mötet har uppdaterats' : 'Meeting updated'); } else { WS.meetings.push({ id: 'm' + Date.now(), teamId, date, note, attendees }); showToast(currentLang === 'sv' ? 'Mötet har skapats' : 'Meeting created'); } closeMeetingSlideOver(); renderAll(); }
+  if (e.target.id === 'btn-cancel-meeting') closeMeetingSlideOver();
+  if (e.target.id === 'btn-new-meeting') openMeetingSlideOver(null);
+  if (e.target.id === 'btn-delete-meeting') { showConfirm(t('att.deleteMeeting'), currentLang === 'sv' ? 'Vill du radera detta möte?' : 'Delete this meeting?', currentLang === 'sv' ? 'Radera' : 'Delete', () => { WS.meetings = WS.meetings.filter(m => m.id !== S.editingMeetingId); closeMeetingSlideOver(); renderAll(); showToast(currentLang === 'sv' ? 'Mötet har raderats' : 'Meeting deleted'); }); }
+  if (e.target.id === 'so-meeting-close' || (e.target.id === 'overlay' && $('so-meeting').classList.contains('slide-over--open'))) closeMeetingSlideOver();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('dialog-overlay').classList.contains('dialog-overlay--visible')) { $('dialog-overlay').classList.remove('dialog-overlay--visible'); return; } if ($('so-meeting').classList.contains('slide-over--open')) closeMeetingSlideOver(); } });
+
+function updateStaticText() { $('skip-link').textContent = t('skip'); $('nav-integ').textContent = 'Integ'; $('page-title').textContent = t('att.title'); $('trend-title').textContent = t('att.trend'); $('meeting-list-title').textContent = t('att.meetingList'); $('btn-new-meeting').textContent = t('att.newMeeting'); $('dialog-cancel').textContent = t('btn.cancel'); }
+function setRole(role) { S.role = role; localStorage.setItem('itt-role', role); document.body.className = 'role-' + role; document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('role-btn--active', b.dataset.role === role)); const orgs = orgsForActor(); if (orgs.length > 0 && !orgs.find(o => o.id === S.orgId)) { S.orgId = orgs[0].id; localStorage.setItem('itt-org', S.orgId); } renderAll(); }
+document.querySelectorAll('.role-btn').forEach(b => { b.addEventListener('click', () => setRole(b.dataset.role)); });
+
+function toggleIntegChat() {
+  const chat = document.getElementById('integ-chat');
+  if (chat) chat.classList.toggle('integ-chat--open');
+}
+
+function renderAll() { updateStaticText(); renderOrgSelector(); renderTeamSelector(); renderSidebar(); renderProgressLine(); renderGrid(); renderTrend(); renderMeetingList(); }
+(function init() { const lang = localStorage.getItem('itt-lang') || 'sv'; document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('lang-btn--active', b.dataset.lang === lang)); document.documentElement.lang = lang; setRole(S.role); })();
+</script>
+</body>
+</html>

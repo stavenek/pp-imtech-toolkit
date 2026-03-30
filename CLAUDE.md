@@ -63,3 +63,8 @@ The prototypes in this repo will eventually be implemented as a production app u
 - Keep the concepts in the code as few as possible
 - Reuse code and UI patterns and concepts and flows
 
+
+# Updating webpages 
+- Make sure common elements are always displayed exactly the same on every page where they are shown, eg navigation, top bars, etc
+- Make sure no breaking changes are introduced by always testing every changed page after updates
+

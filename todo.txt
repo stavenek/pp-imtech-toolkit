@@ -1,0 +1,33 @@
+sida: Personal dash
+
+- Nyckeltal – karusell (man kan klicka pil för att visa nöästa mätetal, ett i taget)
+- kritisk linje ska visas (sned från startvärde till målläge)
+
+sida: Team dash
+- titel ska vara korrekt (Team dashboard)
+
+- Nyheter - rubikr = "vårt eget lokala nyhetsflöde"
+
+
+sida: Mätetal 
+
+Ta bort: kritisitk
+- byt: “bästa bidrag” --> “fokuserat mätetal”
+
+sida: Action plan
+
+Ta bort rad : team focus
+
+på alla sidor: 
+
+- ska vara Startläge (inte nuläge), "önskat läge" och "varför" - Överallt! dessa 3 ska alltid visas tillsammans, oftast nu bara 2. 
+
+
+
+sida: Action plan (forts.)
+
+- ingen separat editsida - man ska redigera direkt i sidan actionplan. flytta all redigeringsfunktionaoitet från modalen till actionplan-sidan. 
+- Mer plats för kommentarer, lite mindre för själva aktiviteten.
+
+
+
